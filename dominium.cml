@@ -1,0 +1,421 @@
+Domain GestaoCondominal {
+	Subdomain Moradores
+	Subdomain Financeiro
+	Subdomain EspacosCondominio
+	Subdomain Governanca
+	Subdomain Operacional
+}
+
+ContextMap {
+	contains Moradores
+	contains Financeiro
+	contains EspacosCondominio
+	contains Governanca
+	contains Operacional
+
+	Moradores Shared-Kernel Financeiro
+	Moradores Shared-Kernel EspacosCondominio
+	Moradores Shared-Kernel Governanca
+	Financeiro Shared-Kernel Operacional
+	Governanca Shared-Kernel Operacional
+}
+
+BoundedContext Moradores implements Moradores {
+	Aggregate Pessoa {
+		Entity Pessoa {
+			aggregateRoot
+			-PessoaId id
+			String nome
+			-Cpf cpf
+			-Email emailPessoa
+			String telefone
+			Date dataNascimento
+		}
+		ValueObject PessoaId {
+			int id
+		}
+		ValueObject Cpf {
+			String numero
+		}
+		ValueObject Email {
+			String endereco
+		}
+	}
+
+	Aggregate Unidade {
+		Entity Unidade {
+			aggregateRoot
+			-UnidadeId id
+			String numero
+			String bloco nullable
+			-StatusUnidade status
+			-StatusAdimplencia statusAdimplencia
+			double saldoDevedor
+			Repository UnidadeRepository {
+				@Unidade obter(@UnidadeId id);
+				List<@Unidade> listarInadimplentes();
+			}
+		}
+		ValueObject UnidadeId {
+			int id
+		}
+		enum StatusUnidade {
+			ATIVA, INATIVA
+		}
+		enum StatusAdimplencia {
+			ADIMPLENTE, INADIMPLENTE
+		}
+	}
+
+	Aggregate VinculoUnidade {
+		Entity VinculoUnidade {
+			aggregateRoot
+			-VinculoId id
+			-PessoaId pessoaId
+			-UnidadeId unidadeId
+			-TipoVinculo tipoVinculo
+			Date dataInicio
+			Date dataFim nullable
+		}
+		ValueObject VinculoId {
+			int id
+		}
+		enum TipoVinculo {
+			PROPRIETARIO_RESIDENTE,
+			PROPRIETARIO_NAO_RESIDENTE,
+			INQUILINO,
+			DEPENDENTE
+		}
+	}
+
+	Aggregate HistoricoTitularidade {
+		Entity HistoricoTitularidade {
+			aggregateRoot
+			-HistoricoId id
+			-UnidadeId unidadeId
+			-PessoaId proprietarioId
+			Date dataInicio
+			Date dataFim nullable
+		}
+		ValueObject HistoricoId {
+			int id
+		}
+	}
+}
+
+BoundedContext Financeiro implements Financeiro {
+	Aggregate TaxaCondominial {
+		Entity TaxaCondominial {
+			aggregateRoot
+			-TaxaId id
+			-UnidadeId unidadeId
+			int mes
+			int ano
+			double valorTotal
+			Date dataVencimento
+			Date dataPagamento nullable
+			-StatusTaxa status
+		}
+		ValueObject TaxaId {
+			int id
+		}
+		enum StatusTaxa {
+			PENDENTE, PAGO, ATRASADO
+		}
+	}
+
+	Aggregate ComposicaoTaxa {
+		Entity ComposicaoTaxa {
+			aggregateRoot
+			-ComposicaoId id
+			-TaxaId taxaId
+			String descricao
+			double valor
+		}
+		ValueObject ComposicaoId {
+			int id
+		}
+	}
+
+	Aggregate Multa {
+		Entity Multa {
+			aggregateRoot
+			-MultaId id
+			-UnidadeId unidadeId
+			-OcorrenciaId ocorrenciaId nullable
+			double valor
+			String descricao
+			-TipoMulta tipo
+			-StatusMulta status
+			Date dataGeracao
+		}
+		ValueObject MultaId {
+			int id
+		}
+		enum TipoMulta {
+			MANUAL, AUTOMATICA
+		}
+		enum StatusMulta {
+			PENDENTE, PAGO, CONTESTADO
+		}
+	}
+
+	Aggregate RecursoMulta {
+		Entity RecursoMulta {
+			aggregateRoot
+			-RecursoId id
+			-MultaId multaId
+			-PessoaId pessoaId
+			String justificativa
+			String parecerSindico nullable
+			Date dataSolicitacao
+			Date dataDecisao nullable
+			-StatusRecurso status
+		}
+		ValueObject RecursoId {
+			int id
+		}
+		enum StatusRecurso {
+			PENDENTE, MANTIDO, CANCELADO, ALTERADO
+		}
+	}
+
+	Aggregate DespesaOrcamento {
+		Entity DespesaOrcamento {
+			aggregateRoot
+			-DespesaId id
+			String descricao
+			double valor
+			String categoria
+			Date data
+			-StatusDespesa status
+			boolean exigeAssembleia
+		}
+		ValueObject DespesaId {
+			int id
+		}
+		enum StatusDespesa {
+			PENDENTE, APROVADA, REJEITADA
+		}
+	}
+}
+
+BoundedContext EspacosCondominio implements EspacosCondominio {
+	Aggregate AreaComum {
+		Entity AreaComum {
+			aggregateRoot
+			-AreaId id
+			String nome
+			int capacidadeMaxima
+			double valorReserva
+			-StatusArea status
+		}
+		ValueObject AreaId {
+			int id
+		}
+		enum StatusArea {
+			DISPONIVEL, MANUTENCAO, INTERDITADA
+		}
+	}
+
+	Aggregate Reserva {
+		Service ReservaServico {
+			void realizarReserva(@UnidadeId unidade, @PessoaId pessoa, @AreaId area, Date data, String horaInicio, String horaFim);
+			void cancelarReserva(@ReservaId reserva);
+		}
+
+		DomainEvent ReservaRealizadaEvento {
+			-Reserva reserva
+		}
+
+		DomainEvent ReservaCanceladaEvento {
+			-Reserva reserva
+			boolean multaAplicada
+		}
+
+		Entity Reserva {
+			aggregateRoot
+			-ReservaId id
+			-AreaId areaId
+			-UnidadeId unidadeId
+			-PessoaId pessoaId
+			Date dataReserva
+			String horaInicio
+			String horaFim
+			-StatusReserva status
+			boolean multaCancelamentoAplicado
+			Repository ReservaRepository {
+				@Reserva obter(@ReservaId id);
+				List<@Reserva> listarPorArea(@AreaId area, Date data);
+			}
+		}
+		ValueObject ReservaId {
+			int id
+		}
+		enum StatusReserva {
+			ATIVA, CANCELADA, CONCLUIDA
+		}
+	}
+
+	Aggregate FilaDeEspera {
+		Entity FilaDeEspera {
+			aggregateRoot
+			-FilaId id
+			-AreaId areaId
+			-UnidadeId unidadeId
+			Date dataCadastro
+			-StatusFila status
+		}
+		ValueObject FilaId {
+			int id
+		}
+		enum StatusFila {
+			AGUARDANDO, PROMOVIDO, EXPIRADO, CONFIRMADO
+		}
+	}
+}
+
+BoundedContext Governanca implements Governanca {
+	Aggregate Assembleia {
+		Entity Assembleia {
+			aggregateRoot
+			-AssembleiaId id
+			Date dataHora
+			-StatusAssembleia status
+			String pautaDescricao nullable
+		}
+		ValueObject AssembleiaId {
+			int id
+		}
+		enum StatusAssembleia {
+			AGENDADA, EM_ANDAMENTO, ENCERRADA
+		}
+	}
+
+	Aggregate PautaVotacao {
+		Entity PautaVotacao {
+			aggregateRoot
+			-PautaId id
+			-AssembleiaId assembleiaId
+			String titulo
+			String descricao
+			-TipoQuorum tipoQuorum
+			-StatusPauta status
+			-ResultadoPauta resultadoFinal nullable
+		}
+		ValueObject PautaId {
+			int id
+		}
+		enum TipoQuorum {
+			SIMPLES, QUALIFICADO
+		}
+		enum StatusPauta {
+			ABERTA, ENCERRADA
+		}
+		enum ResultadoPauta {
+			APROVADO, REJEITADO, ADIADO
+		}
+	}
+
+	Aggregate Voto {
+		Entity Voto {
+			aggregateRoot
+			-VotoId id
+			-PautaId pautaId
+			-UnidadeId unidadeId
+			-PessoaId pessoaId
+			-OpcaoVoto opcao
+		}
+		ValueObject VotoId {
+			int id
+		}
+		enum OpcaoVoto {
+			FAVOR, CONTRA, ABSTENCAO
+		}
+	}
+}
+
+BoundedContext Operacional implements Operacional {
+	Aggregate Ocorrencia {
+		Entity Ocorrencia {
+			aggregateRoot
+			-OcorrenciaId id
+			-UnidadeId unidadeId
+			String descricao
+			Date dataOcorrido
+			-StatusOcorrencia status
+			boolean possuiEvidencia
+		}
+		ValueObject OcorrenciaId {
+			int id
+		}
+		enum StatusOcorrencia {
+			ABERTA, EM_ANALISE, ENCERRADA
+		}
+	}
+
+	Aggregate FuncionarioPrestador {
+		Entity FuncionarioPrestador {
+			aggregateRoot
+			-PrestadorId id
+			String nome
+			-Cpf cpf
+			-TipoVinculoPrestador tipoVinculo
+			Date dataInicioContrato
+			Date dataFimContrato nullable
+			-StatusContrato statusContrato
+		}
+		ValueObject PrestadorId {
+			int id
+		}
+		ValueObject Cpf {
+			String numero
+		}
+		enum TipoVinculoPrestador {
+			CLT, TERCEIRIZADO, EVENTUAL
+		}
+		enum StatusContrato {
+			ATIVO, VENCIDO, BLOQUEADO
+		}
+	}
+
+	Aggregate Notificacao {
+		Entity Notificacao {
+			aggregateRoot
+			-NotificacaoId id
+			-PessoaId pessoaId
+			-TipoNotificacao tipo
+			String mensagem
+			-StatusLeitura statusLeitura
+			Date dataEnvio
+		}
+		ValueObject NotificacaoId {
+			int id
+		}
+		enum TipoNotificacao {
+			MULTA, RESERVA, ASSEMBLEIA, FINANCEIRO, OCORRENCIA
+		}
+		enum StatusLeitura {
+			LIDO, NAO_LIDO
+		}
+	}
+
+	Aggregate Documento {
+		Entity Documento {
+			aggregateRoot
+			-DocumentoId id
+			String nome
+			-CategoriaDocumento categoria
+			String urlArquivo
+			int versao
+			boolean ativo
+			Date dataValidade nullable
+		}
+		ValueObject DocumentoId {
+			int id
+		}
+		enum CategoriaDocumento {
+			ATA, REGULAMENTO, CONTRATO
+		}
+	}
+}
