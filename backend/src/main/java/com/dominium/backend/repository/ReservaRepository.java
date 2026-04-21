@@ -1,20 +1,20 @@
-package Repository;
+package com.dominium.backend.repository;
 
-import Entity.Reserva;
+import com.dominium.backend.entity.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public interface ReservaRepository extends JpaRepository<Reserva, Long> {
+public interface ReservaRepository extends JpaRepository<Reserva, Long>{
 
     List<Reserva> findByUnidadeId(Long unidadeId);
 
-    // verificar conflito de horário
     @Query("""
         SELECT r FROM Reserva r
         WHERE r.dataReserva = :data

@@ -1,8 +1,9 @@
-package Entity;
+package com.dominium.backend.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,7 +22,10 @@ public class Reserva {
     private LocalTime horaInicio;
     private LocalTime horaFim;
 
-    private String status; // ATIVA, CANCELADA
+    private String status;
+
+    public Reserva() {
+    }
 
     public Reserva(Long id, Long unidadeId, Long pessoaId, LocalDate dataReserva, LocalTime horaInicio, LocalTime horaFim, String status) {
         this.id = id;

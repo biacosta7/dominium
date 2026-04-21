@@ -1,7 +1,7 @@
-package Controller;
+package com.dominium.backend.controller;
 
-import Entity.Reserva;
-import Service.ReservaService;
+import com.dominium.backend.entity.Reserva;
+import com.dominium.backend.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

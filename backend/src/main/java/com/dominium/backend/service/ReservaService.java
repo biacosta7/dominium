@@ -1,9 +1,10 @@
-package Service;
+package com.dominium.backend.service;
 
-import Entity.Reserva;
-import Repository.ReservaRepository;
+import com.dominium.backend.entity.Reserva;
+import com.dominium.backend.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
@@ -14,7 +15,6 @@ public class ReservaService {
 
     public Reserva criarReserva(Reserva reserva) {
 
-        // 🔒 Regra: não pode ter conflito de horário
         List<Reserva> conflitos = repository.verificarConflito(
                 reserva.getDataReserva(),
                 reserva.getHoraInicio(),
@@ -51,4 +51,6 @@ public class ReservaService {
         reserva.setStatus("CANCELADA");
         repository.save(reserva);
     }
+
+
 }
