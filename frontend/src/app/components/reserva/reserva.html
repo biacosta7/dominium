@@ -1,0 +1,32 @@
+<div class="dashboard">
+  <div class="calendar-section">
+    <h2>Março 2026</h2>
+    <div class="calendar-grid">
+      <div class="day" *ngFor="let d of [1,2,3,4,5]" [ngClass]="{'sua-reserva': d==5}">{{d}}</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h3>Espaços Disponíveis</h3>
+    <div class="card-espaco">
+      <div class="info">
+        <strong>Churrasqueira 2</strong>
+        <span>Cap. 30 pessoas</span>
+      </div>
+      <span class="status ocupado">Reservada 07/03</span>
+    </div>
+
+    <div class="minhas-reservas">
+      <h3>Minhas Reservas</h3>
+      <div class="reserva-item" *ngFor="let r of minhasReservas">
+        <span>{{r.dataReserva | date:'dd/MM/yyyy'}} • {{r.horaInicio}}</span>
+        <button (click)="cancelar(r.id!)">Cancelar</button>
+      </div>
+      <button class="btn-nova" (click)="abrirModal()">+ Nova Reserva</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-feedback" *ngIf="mostrarFeedback">
+  <i class="icon-lixo"></i> Reserva cancelada
+</div>
