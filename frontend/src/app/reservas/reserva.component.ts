@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservaService, Reserva } from './reserva.service';
+import { CalendarioComponent } from './components/calendario.component';
 
 @Component({
   selector: 'app-reserva',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CalendarioComponent],
   templateUrl: './reserva.component.html',
   styleUrls: ['./reserva.component.css']
 })
