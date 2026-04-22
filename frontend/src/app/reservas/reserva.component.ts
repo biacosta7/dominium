@@ -2,78 +2,124 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservaService, Reserva } from './reserva.service';
-import { ReservationModalComponent } from './reservation-modal/reservation-modal.component';
 
 @Component({
   selector: 'app-reserva',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReservationModalComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reserva.component.html',
   styleUrls: ['./reserva.component.css']
 })
-
 export class ReservaComponent implements OnInit {
-  // Configurações de Data (Padrão: hoje)
-  selectedDate: string = new Date().toISOString().split('T')[0];
-  
-  // Espaços conforme as imagens
-  espacos = [
-    { id: 'churrasqueira', nome: 'Churrasqueira', icon: 'filter_frames', limite: 20, func: '8h às 22h' },
-    { id: 'piscina', nome: 'Área da Piscina', icon: 'pool', limite: 30, func: '7h às 20h' },
-    { id: 'academia', nome: 'Academia', icon: 'fitness_center', limite: 10, func: '6h às 23h' },
-    { id: 'salao', nome: 'Salão de Festas', icon: 'celebration', limite: 50, func: '10h às 23h' },
-    { id: 'coworking', nome: 'Espaço Coworking', icon: 'business_center', limite: 15, func: '8h às 20h' }
-  ];
 
-  selectedSpace: any = this.espacos[0]; // Começa com churrasqueira selecionada
-  reservasDoDia: Reserva[] = [];
-  horariosDisponiveis: string[] = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
-  
-  isModalOpen = false;
+  // 🔹 estado principal
+  reservas: Reserva[] = [];
+
+  selectedDate: string = new Date().toISOString().split('T')[0];
+  selectedSpace: string = 'piscina';
+
+  unidadeId = 1; 
+  pessoaId = 1;
+  //this.unidadeId = Number(localStorage.getItem('unidadeId'));
+  //this.pessoaId = Number(localStorage.getItem('pessoaId'));
+
+  // 🔹 controle de UI
+  loading = false;
+  erro = '';
+
+  // 🔹 espaços disponíveis
+  spaces = [
+    'piscina',
+    'churrasqueira',
+    'academia',
+    'salao',
+    'coworking'
+  ];
 
   constructor(private service: ReservaService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.carregarReservas();
   }
 
+  proximaHora(hora: string): string {
+  const [h, m] = hora.split(':').map(Number);
+  return `${(h + 1).toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
+
+  // =============================
+  // 📥 CARREGAR
+  // =============================
   carregarReservas() {
-    // Busca no back-end as reservas da unidade e filtra pela data/espaço selecionados
-    this.service.listarPorUnidade(1).subscribe({
+    this.loading = true;
+
+    this.service.listarPorUnidade(this.unidadeId).subscribe({
       next: (res) => {
-        this.reservasDoDia = res.filter(r => r.dataReserva === this.selectedDate);
+        this.reservas = res;
+        this.loading = false;
       },
-      error: (err) => console.error('Erro ao carregar:', err)
+      error: () => {
+        this.erro = 'Erro ao carregar reservas';
+        this.loading = false;
+      }
     });
   }
 
-  selecionarEspaco(espaco: any) {
-    this.selectedSpace = espaco;
-    this.carregarReservas();
-  }
+  // =============================
+  // ➕ CRIAR
+  // =============================
+  criarReserva(horaInicio: string, horaFim: string) {
 
-  // Verifica se o horário está dentro de uma reserva existente para mudar a cor no front
-  isHorarioOcupado(hora: string): boolean {
-    return this.reservasDoDia.some(r => hora >= r.horaInicio && hora < r.horaFim);
-  }
-
-  abrirModal() {
-    this.isModalOpen = true;
-  }
-
-  confirmarReserva(dados: any) {
     const nova: Reserva = {
-      unidadeId: 1, // Exemplo: vindo de um login
-      pessoaId: 1,
+      unidadeId: this.unidadeId,
+      pessoaId: this.pessoaId,
       dataReserva: this.selectedDate,
-      horaInicio: dados.horaInicio,
-      horaFim: dados.horaFim,
-      espaco: this.selectedSpace.nome // Adicione este campo na sua interface se necessário
+      horaInicio,
+      horaFim,
+      espacoReservado: this.selectedSpace
     };
 
-    this.service.criar(nova).subscribe(() => {
-      this.carregarReservas();
-      this.isModalOpen = false;
+    this.service.criar(nova).subscribe({
+      next: () => {
+        this.carregarReservas();
+        this.erro = '';
+      },
+      error: (err) => {
+        this.erro = err.error?.message || 'Erro ao criar reserva';
+      }
     });
   }
+
+  // =============================
+  // ❌ CANCELAR
+  // =============================
+  cancelarReserva(id: number) {
+    this.service.cancelar(id).subscribe(() => {
+      this.carregarReservas();
+    });
+  }
+
+  // =============================
+  // 🔍 FILTROS
+  // =============================
+
+  reservasDoDia(): Reserva[] {
+    return this.reservas.filter(r => r.dataReserva === this.selectedDate);
+  }
+
+  reservasDoEspaco(): Reserva[] {
+    return this.reservasDoDia().filter(
+      r => r.espacoReservado === this.selectedSpace
+    );
+  }
+
+  // =============================
+  // ⛔ BLOQUEIO DE HORÁRIO
+  // =============================
+  isHorarioOcupado(hora: string): boolean {
+    return this.reservasDoEspaco().some(r => {
+      return hora >= r.horaInicio && hora < r.horaFim;
+    });
+  }
+
 }
