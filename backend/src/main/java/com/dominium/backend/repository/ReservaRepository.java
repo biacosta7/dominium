@@ -16,18 +16,20 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>{
     List<Reserva> findByUnidadeId(Long unidadeId);
 
     @Query("""
-        SELECT r FROM Reserva r
-        WHERE r.dataReserva = :data
-        AND r.status = 'ATIVA'
-        AND (
-            (:inicio BETWEEN r.horaInicio AND r.horaFim) OR
-            (:fim BETWEEN r.horaInicio AND r.horaFim) OR
-            (r.horaInicio BETWEEN :inicio AND :fim)
-        )
-    """)
+    SELECT r FROM Reserva r
+    WHERE r.dataReserva = :data
+    AND r.status = 'ATIVA'
+    AND r.espacoReservado = :espaco
+    AND (
+        (:inicio BETWEEN r.horaInicio AND r.horaFim) OR
+        (:fim BETWEEN r.horaInicio AND r.horaFim) OR
+        (r.horaInicio BETWEEN :inicio AND :fim)
+    )
+""")
     List<Reserva> verificarConflito(
             @Param("data") LocalDate data,
             @Param("inicio") LocalTime inicio,
-            @Param("fim") LocalTime fim
+            @Param("fim") LocalTime fim,
+            @Param("espaco") String espaco
     );
 }

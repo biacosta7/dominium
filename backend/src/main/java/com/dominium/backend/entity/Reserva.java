@@ -21,13 +21,13 @@ public class Reserva {
     private LocalDate dataReserva;
     private LocalTime horaInicio;
     private LocalTime horaFim;
-
+    private String espacoReservado;
     private String status;
 
     public Reserva() {
     }
 
-    public Reserva(Long id, Long unidadeId, Long pessoaId, LocalDate dataReserva, LocalTime horaInicio, LocalTime horaFim, String status) {
+    public Reserva(Long id, Long unidadeId, Long pessoaId, LocalDate dataReserva, LocalTime horaInicio, LocalTime horaFim, String status, String espacoReservado) {
         this.id = id;
         this.unidadeId = unidadeId;
         this.pessoaId = pessoaId;
@@ -35,6 +35,7 @@ public class Reserva {
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
         this.status = status;
+        this.espacoReservado = espacoReservado;
     }
 
     public Long getId() {
@@ -91,5 +92,13 @@ public class Reserva {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getEspacoReservado() {
+        return espacoReservado;
+    }
+
+    public void setEspacoReservado(String espacoReservado) {
+        this.espacoReservado = espacoReservado;
     }
 }

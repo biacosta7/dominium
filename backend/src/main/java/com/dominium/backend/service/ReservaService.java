@@ -18,7 +18,8 @@ public class ReservaService {
         List<Reserva> conflitos = repository.verificarConflito(
                 reserva.getDataReserva(),
                 reserva.getHoraInicio(),
-                reserva.getHoraFim()
+                reserva.getHoraFim(),
+                reserva.getEspacoReservado()
         );
 
         if (!conflitos.isEmpty()) {
