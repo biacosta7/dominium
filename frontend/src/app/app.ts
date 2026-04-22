@@ -2,8 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
-import { ReservaComponent } from './components/reserva/reserva';
-import { NovaReservaComponent } from './components/nova-reserva/nova-reserva'; 
+import { ReservaComponent } from './reservas/reserva.component';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +11,7 @@ import { NovaReservaComponent } from './components/nova-reserva/nova-reserva';
     RouterOutlet,
     CommonModule,
     FormsModule,
-    ReservaComponent,
-    NovaReservaComponent
+    ReservaComponent 
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

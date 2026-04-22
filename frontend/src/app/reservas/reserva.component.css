@@ -1,0 +1,169 @@
+/* Layout e Fundo */
+.container {
+  padding: 40px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+}
+
+header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* Grid Principal */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* Coluna esquerda menor que a direita */
+  gap: 30px;
+}
+
+/* Cards Gerais */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+}
+
+/* Coluna Esquerda: Calendário e Lista */
+.calendar-card {
+  height: auto;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 { margin: 0; font-size: 18px; }
+
+input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #1e293b;
+}
+
+/* Lista de Reservas busy */
+.reservas-list h3 { margin: 0 0 16px 0; font-size: 16px; color: #64748b; }
+
+.reserva-item {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.reserva-item.busy {
+  background-color: #f1f5f9;
+  border-left: 4px solid #64748b;
+}
+
+.reserva-item strong { display: block; margin-bottom: 2px; }
+.reserva-item small { color: #64748b; display: block;}
+
+/* Área de Seleção (Direita) */
+.selection-area h2 { margin: 0 0 20px 0; font-size: 18px; }
+
+/* Grid de Espaços */
+.spaces-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.space-option {
+  background-color: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.space-option.active {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.space-info { display: flex; flex-direction: column; gap: 4px; }
+.space-info strong { font-size: 16px; margin-bottom: 4px; }
+.space-info span { font-size: 14px; color: #64748b; display: flex; align-items: center; gap: 6px;}
+
+/* Área de Ícones (Para Material Icons se usar) */
+.icon { font-size: 18px; color: #2563eb; }
+.space-option.active .icon { color: #2563eb; }
+
+/* Detalhes e Horários */
+.details-card h3 { margin: 0 0 16px 0; font-size: 16px; }
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-row span { color: #64748b; }
+
+.details-card h4 { margin: 20px 0 12px 0; font-size: 16px; }
+
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hora-slot {
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Estado Disponível (Verde) */
+.hora-slot {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Estado Ocupado/Busy (Cinza) */
+.hora-slot.occupied {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+/* Botão Principal */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover { background-color: #1d4ed8; }

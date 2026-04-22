@@ -1,0 +1,50 @@
+<div class="container">
+  <header>
+    <h1>Reservas do Condomínio</h1>
+    <p>Selecione a data e o espaço desejado para fazer sua reserva</p>
+  </header>
+
+  <div class="main-grid">
+    <section class="card calendar-card">
+      <div class="calendar-header">
+        <h2>Calendário</h2>
+        <input type="date" [(ngModel)]="selectedDate" (change)="carregarReservas()">
+      </div>
+
+      <div class="reservas-list">
+        <h3>Reservas em {{selectedDate | date:'dd de MMMM'}}</h3>
+        <div *ngFor="let r of reservasDoDia" class="reserva-item busy">
+          <strong>{{selectedSpace.nome}}</strong>
+          <span>{{r.horaInicio}} - {{r.horaFim}}</span>
+          <small>Morador - Apto {{r.unidadeId}}</small>
+        </div>
+        <p *ngIf="reservasDoDia.length === 0" class="empty-msg">Sem reservas para este espaço nesta data.</p>
+      </div>
+    </section>
+
+    <section class="selection-area">
+      <h2>Espaços Disponíveis</h2>
+      <div class="spaces-grid">
+        <div *ngFor="let s of espacos" 
+            class="space-option" 
+            [class.active]="selectedSpace?.id === s.id"
+            (click)="selecionarEspaco(s)">
+          <div class="space-info">
+            <strong>{{s.nome}}</strong>
+            <span><i class="icon">group</i> {{s.limite}} pessoas</span>
+            <span><i class="icon">schedule</i> {{s.func}}</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<app-reservation-modal 
+  [isOpen]="isModalOpen" 
+  [data]="selectedDate"
+  [espaco]="selectedSpace?.nome"
+  (close)="isModalOpen = false"
+  (confirm)="confirmarReserva($event)">
+</app-reservation-modal>
