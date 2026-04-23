@@ -26,6 +26,50 @@ public class Reserva {
     private LocalTime horaFim;
     private StatusReserva status;
 
+    // Factory method — único jeito de criar uma reserva nova
+    public static Reserva criar(
+            ReservaId id,
+            AreaComumId areaComumId,
+            Unidade unidade,
+            Usuario usuario,
+            LocalDate data,
+            LocalTime inicio,
+            LocalTime fim
+    ) {
+        Reserva r = new Reserva();
+        r.id = id;
+        r.areaComumId = areaComumId;
+        r.unidadeId = unidade;
+        r.usuarioId = usuario;
+        r.dataReserva = data;
+        r.horaInicio = inicio;
+        r.horaFim = fim;
+        r.status = StatusReserva.PENDENTE; // nunca fica null
+        return r;
+    }
+
+    public static Reserva reconstituir(
+            ReservaId id,
+            AreaComumId areaComumId,
+            Unidade unidade,
+            Usuario usuario,
+            LocalDate data,
+            LocalTime inicio,
+            LocalTime fim,
+            StatusReserva status
+    ) {
+        Reserva r = new Reserva();
+        r.id = id;
+        r.areaComumId = areaComumId;
+        r.unidadeId = unidade;
+        r.usuarioId = usuario;
+        r.dataReserva = data;
+        r.horaInicio = inicio;
+        r.horaFim = fim;
+        r.status = status; // preserva o status real
+        return r;
+    }
+
     public void cancelar(){
         this.status = StatusReserva.CANCELADA;
     }
@@ -45,11 +89,17 @@ public class Reserva {
     }
 
     public boolean conflitoCom(Reserva outra){
-        if(!this.dataReserva.equals(outra.dataReserva)){
+        if (outra.status == StatusReserva.CANCELADA ||
+                outra.status == StatusReserva.CONCLUIDA) {
             return false;
         }
-        return this.horaInicio.isBefore(outra.getHoraFim()) &&
-                outra.getHoraInicio().isBefore(this.horaFim);
+
+        if (!this.dataReserva.equals(outra.dataReserva)) {
+            return false;
+        }
+
+        return this.horaInicio.isBefore(outra.horaFim) &&
+                outra.horaInicio.isBefore(this.horaFim);
     }
 
 }

@@ -7,6 +7,8 @@ import java.util.List;
 
 public class PoliticaReserva {
 
+    private static final int MAX_RESERVAS_SIMULTANEAS = 1;
+
     public void validarNovaReserva(
             Reserva novaReserva,
             AreaComum area,
@@ -21,10 +23,10 @@ public class PoliticaReserva {
                 .anyMatch(r -> r.conflitoCom(novaReserva));
 
         if (conflito) {
-            throw new RuntimeException("Conflito de horário");
+            throw new RuntimeException("Já existe uma reserva nesse horário");
         }
 
-        if (!area.temCapacidade(reservasExistentes.size())) {
+        if (!area.temCapacidade(reservasExistentes.size() + 1)) {
             throw new RuntimeException("Capacidade máxima atingida");
         }
     }

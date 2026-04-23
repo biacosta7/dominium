@@ -20,7 +20,7 @@ public class AreaComum {
     }
 
     public boolean temCapacidade(int quantidade) {
-        return quantidade < capacidadeMaxima;
+        return quantidade <= capacidadeMaxima;
     }
 
 }
