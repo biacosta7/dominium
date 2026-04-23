@@ -1,4 +1,4 @@
-package com.dominium.backend.delivery.rest.usuario;
+package com.dominium.backend.presentation.usuario;
 
 import com.dominium.backend.application.usuario.dto.UsuarioRequestDTO;
 import com.dominium.backend.application.usuario.dto.UsuarioResponseDTO;
@@ -6,6 +6,7 @@ import com.dominium.backend.application.usuario.usecase.CreateUsuarioUseCase;
 import com.dominium.backend.application.usuario.usecase.DeleteUsuarioUseCase;
 import com.dominium.backend.application.usuario.usecase.GetUsuarioUseCase;
 import com.dominium.backend.application.usuario.usecase.UpdateUsuarioUseCase;
+import com.dominium.backend.domain.shared.exceptions.ExceptionHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,42 +22,49 @@ public class UsuarioController {
     private final GetUsuarioUseCase getUsuarioUseCase;
     private final UpdateUsuarioUseCase updateUsuarioUseCase;
     private final DeleteUsuarioUseCase deleteUsuarioUseCase;
+    private final ExceptionHandler exceptionHandler;
 
     public UsuarioController(
             CreateUsuarioUseCase createUsuarioUseCase,
             GetUsuarioUseCase getUsuarioUseCase,
             UpdateUsuarioUseCase updateUsuarioUseCase,
-            DeleteUsuarioUseCase deleteUsuarioUseCase) {
+            DeleteUsuarioUseCase deleteUsuarioUseCase,
+            ExceptionHandler exceptionHandler) {
         this.createUsuarioUseCase = createUsuarioUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.updateUsuarioUseCase = updateUsuarioUseCase;
         this.deleteUsuarioUseCase = deleteUsuarioUseCase;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioRequestDTO request) {
-        UsuarioResponseDTO response = createUsuarioUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<?> create(@Valid @RequestBody UsuarioRequestDTO request) {
+        return exceptionHandler.withHandler(() -> {
+            UsuarioResponseDTO response = createUsuarioUseCase.execute(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        });
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioResponseDTO>> findAll() {
-        return ResponseEntity.ok(getUsuarioUseCase.findAll());
+    public ResponseEntity<?> findAll() {
+        return exceptionHandler.withHandler(() -> ResponseEntity.ok(getUsuarioUseCase.findAll()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(getUsuarioUseCase.findById(id));
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return exceptionHandler.withHandler(() -> ResponseEntity.ok(getUsuarioUseCase.findById(id)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO request) {
-        return ResponseEntity.ok(updateUsuarioUseCase.execute(id, request));
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO request) {
+        return exceptionHandler.withHandler(() -> ResponseEntity.ok(updateUsuarioUseCase.execute(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        deleteUsuarioUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return exceptionHandler.withHandler(() -> {
+            deleteUsuarioUseCase.execute(id);
+            return ResponseEntity.noContent().build();
+        });
     }
 }

@@ -5,6 +5,8 @@ import com.dominium.backend.application.usuario.dto.UsuarioRequestDTO;
 import com.dominium.backend.application.usuario.dto.UsuarioResponseDTO;
 import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import com.dominium.backend.domain.shared.exceptions.DomainException;
+import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,11 +22,11 @@ public class UpdateUsuarioUseCase {
 
     public UsuarioResponseDTO execute(Long id, UsuarioRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         if (!usuario.getEmail().equals(request.getEmail()) && 
             usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email já cadastrado para outro usuário");
+            throw new DomainException("Email já cadastrado para outro usuário");
         }
 
         usuario.setNome(request.getNome());

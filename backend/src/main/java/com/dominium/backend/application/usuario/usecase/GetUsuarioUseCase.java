@@ -3,6 +3,7 @@ package com.dominium.backend.application.usuario.usecase;
 import com.dominium.backend.application.usuario.dto.UsuarioResponseDTO;
 import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class GetUsuarioUseCase {
 
     public UsuarioResponseDTO findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         return UsuarioResponseDTO.fromEntity(usuario);
     }
 }

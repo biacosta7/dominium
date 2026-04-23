@@ -5,6 +5,7 @@ import com.dominium.backend.application.usuario.dto.UsuarioRequestDTO;
 import com.dominium.backend.application.usuario.dto.UsuarioResponseDTO;
 import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import com.dominium.backend.domain.shared.exceptions.DomainException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +21,7 @@ public class CreateUsuarioUseCase {
 
     public UsuarioResponseDTO execute(UsuarioRequestDTO request) {
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new DomainException("Email já cadastrado");
         }
 
         Usuario usuario = new Usuario();
