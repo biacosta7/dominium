@@ -1,6 +1,8 @@
 package com.dominium.backend.domain.reservas.repository;
 
-import com.dominium.backend.domain.reservas.Reserva;
+import com.dominium.backend.domain.reservas.*;
+import com.dominium.backend.domain.areacomum.AreaComumId;
+import com.dominium.backend.domain.usuario.UsuarioId;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,14 +13,14 @@ public interface ReservaRepository {
 
     Reserva save(Reserva reserva);
 
-    Optional<Reserva> findById(Long id);
+    Optional<Reserva> findById(ReservaId id);
 
-    List<Reserva> listPorUnidade(Long unidadeId);
+    List<Reserva> buscarPorUsuario(UsuarioId usuarioId);
 
-    long contarReservasAtivas(
-            LocalDate dataReserva,
-            LocalTime horaInicio,
-            LocalTime horaFim,
-            Long areaId
+    List<Reserva> buscarAtivasPorPeriodo(
+            AreaComumId areaComumId,
+            LocalDate data,
+            LocalTime inicio,
+            LocalTime fim
     );
 }

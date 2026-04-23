@@ -11,7 +11,7 @@ public class AreaComumService {
         this.repository = repository;
     }
 
-    public AreaComum buscarArea(Long id) {
+    public AreaComum buscarArea(AreaComumId id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Área comum não encontrada"));
     }
