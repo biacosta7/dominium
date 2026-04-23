@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 
 import com.dominium.backend.domain.usuario.Usuario;
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
