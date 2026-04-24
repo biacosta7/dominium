@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PoliticaReserva {
 
-    private static final int MAX_RESERVAS_SIMULTANEAS = 1;
+    //private static final int MAX_RESERVAS_SIMULTANEAS = 1;
 
     public void validarNovaReserva(
             Reserva novaReserva,
