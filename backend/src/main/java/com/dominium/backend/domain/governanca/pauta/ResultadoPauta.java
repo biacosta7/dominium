@@ -3,5 +3,6 @@ package com.dominium.backend.domain.governanca.pauta;
 public enum ResultadoPauta {
     APROVADO,
     REJEITADO,
-    ADIADO
+    ADIADO,
+    EM_ANDAMENTO
 }

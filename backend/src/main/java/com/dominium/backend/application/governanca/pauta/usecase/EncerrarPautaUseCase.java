@@ -9,7 +9,6 @@ import com.dominium.backend.domain.governanca.voto.Voto;
 import com.dominium.backend.domain.governanca.voto.VotoRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class EncerrarPautaUseCase {
     private final PautaRepository pautaRepository;

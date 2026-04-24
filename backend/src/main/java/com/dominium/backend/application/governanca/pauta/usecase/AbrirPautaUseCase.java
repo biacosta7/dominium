@@ -18,13 +18,14 @@ public class AbrirPautaUseCase {
     ) {
 
         Pauta pauta = new Pauta(
-                PautaId.novaPauta(),
+                PautaId.novo(),
                 assembleiaId,
                 titulo,
                 descricao,
                 quorum,
                 maioria,
-                StatusPauta.ABERTA
+                StatusPauta.ABERTA,
+                ResultadoPauta.EM_ANDAMENTO
         );
 
         return repository.save(pauta);

@@ -13,6 +13,14 @@ public class PautaId {
         this.valor = valor;
     }
 
+    public static PautaId novo() {
+        return new PautaId(null); // ou gerar ID se quiser
+    }
+
+    public static PautaId de(Long valor) {
+        return new PautaId(valor);
+    }
+
     public Long getValor() {
         return valor;
     }

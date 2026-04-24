@@ -1,5 +1,7 @@
 package com.dominium.backend.domain.governanca.voto;
 
+import com.dominium.backend.domain.governanca.pauta.PautaId;
+
 import java.util.Objects;
 
 public class VotoId {
@@ -11,6 +13,14 @@ public class VotoId {
             throw new IllegalArgumentException("ID do voto não pode ser nulo");
         }
         this.valor = valor;
+    }
+
+    public static VotoId votar() {
+        return new VotoId(null); // ou gerar ID se quiser
+    }
+
+    public static VotoId de(Long valor) {
+        return new VotoId(valor);
     }
 
     public Long getValor() {

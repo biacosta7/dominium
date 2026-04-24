@@ -35,6 +35,8 @@ public class AtualizarReservaUseCase {
 
         AreaComum area = areaComumService.buscarArea(reserva.getAreaComumId());
 
+        areaComumService.validarDisponibilidade(area);
+
         // cria uma "nova versão" temporária pra validar
         Reserva versaoAtualizada = Reserva.reconstituir(
                 reserva.getId(),

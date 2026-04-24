@@ -34,6 +34,8 @@ public class VotarUseCase {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new RuntimeException("Pauta não encontrada"));
 
+        pauta.validarSeEstaAberta();
+
         regraVotacao.validarEgebilidade(usuarioId, unidadeId);
 
         boolean jaVotou = votoRepository.findByPautaAndUnidade(pautaId, unidadeId);
@@ -42,6 +44,7 @@ public class VotarUseCase {
             throw new RuntimeException("Unidade já votou nessa pauta");
         }
 
+
         Voto voto = new Voto(
                 VotoId.votar(),
                 pautaId,
@@ -49,6 +52,9 @@ public class VotarUseCase {
                 usuarioId,
                 opcaoVoto
         );
+
+        voto.pertenceAPauta(pautaId);
+        voto.ehDaUnidade(unidadeId);
 
         votoRepository.save(voto);
     }

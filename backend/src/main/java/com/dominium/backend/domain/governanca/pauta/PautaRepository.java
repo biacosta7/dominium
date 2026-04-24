@@ -11,7 +11,6 @@ public interface PautaRepository {
 
     Optional<Pauta> findById(PautaId pautaId);
 
-    List<Pauta> findAll(PautaId pautaId);
+    List<Pauta> buscarAbertas();
 
-    void deleteById(PautaId pautaId);
 }

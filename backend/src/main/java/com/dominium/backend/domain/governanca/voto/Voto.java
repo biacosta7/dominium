@@ -5,9 +5,6 @@ import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.usuario.UsuarioId;
 import lombok.*;
 
-import java.time.DateTimeException;
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +17,6 @@ public class Voto {
     private UnidadeId unidadeId;
     private UsuarioId usuarioId;
     private OpcaoVoto opcaoVoto;
-    private Date dataHora;
 
     public static Voto criar(
             VotoId id,
@@ -40,7 +36,6 @@ public class Voto {
         voto.unidadeId = unidadeId;
         voto.usuarioId = usuarioId;
         voto.opcaoVoto = opcao;
-        voto.dataHora = new Date();
 
         return voto;
     }

@@ -15,7 +15,7 @@ public class ListarVotosUseCase {
         this.votoRepository = votoRepository;
     }
 
-    public List<Voto> listarPorPauta(PautaId pautaId) {
-        return votoRepository.findByPauta(pautaId);
+    public List<Voto> ListarPorPauta(PautaId pautaId) {
+        return votoRepository.buscarPorPauta(pautaId);
     }
 }
