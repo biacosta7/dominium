@@ -2,6 +2,7 @@ package com.dominium.backend.domain.governanca.voto;
 
 import com.dominium.backend.domain.governanca.pauta.PautaId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface VotoRepository {

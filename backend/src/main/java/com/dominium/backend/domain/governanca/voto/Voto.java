@@ -21,4 +21,36 @@ public class Voto {
     private UsuarioId usuarioId;
     private OpcaoVoto opcaoVoto;
     private Date dataHora;
+
+    public static Voto criar(
+            VotoId id,
+            PautaId pautaId,
+            UnidadeId unidadeId,
+            UsuarioId usuarioId,
+            OpcaoVoto opcao
+    ) {
+
+        if (opcao == null) {
+            throw new IllegalArgumentException("Opção de voto é obrigatória");
+        }
+
+        Voto voto = new Voto();
+        voto.id = id;
+        voto.pautaId = pautaId;
+        voto.unidadeId = unidadeId;
+        voto.usuarioId = usuarioId;
+        voto.opcaoVoto = opcao;
+        voto.dataHora = new Date();
+
+        return voto;
+    }
+
+    public boolean pertenceAPauta(PautaId pautaId) {
+        return this.pautaId.equals(pautaId);
+    }
+
+    public boolean ehDaUnidade(UnidadeId unidadeId) {
+        return this.unidadeId.equals(unidadeId);
+    }
+
 }
