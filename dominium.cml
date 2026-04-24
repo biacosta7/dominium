@@ -4,6 +4,7 @@ Domain GestaoCondominal {
 	Subdomain EspacosCondominio
 	Subdomain Governanca
 	Subdomain Operacional
+	Subdomain Comunicacao
 }
 
 ContextMap {
@@ -12,26 +13,29 @@ ContextMap {
 	contains EspacosCondominio
 	contains Governanca
 	contains Operacional
+	contains Comunicacao
 
 	Moradores Shared-Kernel Financeiro
 	Moradores Shared-Kernel EspacosCondominio
 	Moradores Shared-Kernel Governanca
+	Moradores Shared-Kernel Comunicacao
+	Moradores Shared-Kernel Operacional
 	Financeiro Shared-Kernel Operacional
 	Governanca Shared-Kernel Operacional
 }
 
 BoundedContext Moradores implements Moradores {
-	Aggregate Pessoa {
-		Entity Pessoa {
+	Aggregate Usuario {
+		Entity Usuario {
 			aggregateRoot
-			-PessoaId id
+			-UsuarioId id
 			String nome
 			-Cpf cpf
-			-Email emailPessoa
+			-Email emailUsuario
 			String telefone
 			Date dataNascimento
 		}
-		ValueObject PessoaId {
+		ValueObject UsuarioId {
 			int id
 		}
 		ValueObject Cpf {
@@ -71,7 +75,7 @@ BoundedContext Moradores implements Moradores {
 		Entity VinculoUnidade {
 			aggregateRoot
 			-VinculoId id
-			-PessoaId pessoaId
+			-UsuarioId usuarioId
 			-UnidadeId unidadeId
 			-TipoVinculo tipoVinculo
 			Date dataInicio
@@ -93,7 +97,7 @@ BoundedContext Moradores implements Moradores {
 			aggregateRoot
 			-HistoricoId id
 			-UnidadeId unidadeId
-			-PessoaId proprietarioId
+			-UsuarioId proprietarioId
 			Date dataInicio
 			Date dataFim nullable
 		}
@@ -165,7 +169,7 @@ BoundedContext Financeiro implements Financeiro {
 			aggregateRoot
 			-RecursoId id
 			-MultaId multaId
-			-PessoaId pessoaId
+			-UsuarioId usuarioId
 			String justificativa
 			String parecerSindico nullable
 			Date dataSolicitacao
@@ -204,13 +208,13 @@ BoundedContext EspacosCondominio implements EspacosCondominio {
 	Aggregate AreaComum {
 		Entity AreaComum {
 			aggregateRoot
-			-AreaId id
+			-AreaComumId id
 			String nome
 			int capacidadeMaxima
 			double valorReserva
 			-StatusArea status
 		}
-		ValueObject AreaId {
+		ValueObject AreaComumId {
 			int id
 		}
 		enum StatusArea {
@@ -219,26 +223,17 @@ BoundedContext EspacosCondominio implements EspacosCondominio {
 	}
 
 	Aggregate Reserva {
-		Service ReservaServico {
-			void realizarReserva(@UnidadeId unidade, @PessoaId pessoa, @AreaId area, Date data, String horaInicio, String horaFim);
+		Service EspacosCondominioServico {
+			void realizarReserva(@UnidadeId unidade, @UsuarioId usuario, @AreaComumId area, Date data, String horaInicio, String horaFim);
 			void cancelarReserva(@ReservaId reserva);
-		}
-
-		DomainEvent ReservaRealizadaEvento {
-			-Reserva reserva
-		}
-
-		DomainEvent ReservaCanceladaEvento {
-			-Reserva reserva
-			boolean multaAplicada
 		}
 
 		Entity Reserva {
 			aggregateRoot
 			-ReservaId id
-			-AreaId areaId
+			-AreaComumId areaComumId
 			-UnidadeId unidadeId
-			-PessoaId pessoaId
+			-UsuarioId usuarioId
 			Date dataReserva
 			String horaInicio
 			String horaFim
@@ -246,7 +241,7 @@ BoundedContext EspacosCondominio implements EspacosCondominio {
 			boolean multaCancelamentoAplicado
 			Repository ReservaRepository {
 				@Reserva obter(@ReservaId id);
-				List<@Reserva> listarPorArea(@AreaId area, Date data);
+				List<@Reserva> listarPorArea(@AreaComumId area, Date data);
 			}
 		}
 		ValueObject ReservaId {
@@ -261,8 +256,8 @@ BoundedContext EspacosCondominio implements EspacosCondominio {
 		Entity FilaDeEspera {
 			aggregateRoot
 			-FilaId id
-			-AreaId areaId
-			-UnidadeId unidadeId
+			-AreaComumId areaComumId
+			-UsuarioId usuarioId
 			Date dataCadastro
 			-StatusFila status
 		}
@@ -292,28 +287,42 @@ BoundedContext Governanca implements Governanca {
 		}
 	}
 
-	Aggregate PautaVotacao {
-		Entity PautaVotacao {
+	Aggregate Pauta {
+		Entity Pauta {
 			aggregateRoot
 			-PautaId id
 			-AssembleiaId assembleiaId
+
 			String titulo
 			String descricao
+
 			-TipoQuorum tipoQuorum
+			-TipoMaioria tipoMaioria
+
 			-StatusPauta status
 			-ResultadoPauta resultadoFinal nullable
 		}
+
 		ValueObject PautaId {
 			int id
 		}
 		enum TipoQuorum {
-			SIMPLES, QUALIFICADO
+			SIMPLES,
+			QUALIFICADO
+		}
+		enum TipoMaioria {
+			SIMPLES,
+			ABSOLUTA,
+			QUALIFICADA
 		}
 		enum StatusPauta {
-			ABERTA, ENCERRADA
+			ABERTA,
+			ENCERRADA
 		}
 		enum ResultadoPauta {
-			APROVADO, REJEITADO, ADIADO
+			APROVADO,
+			REJEITADO,
+			ADIADO
 		}
 	}
 
@@ -323,8 +332,9 @@ BoundedContext Governanca implements Governanca {
 			-VotoId id
 			-PautaId pautaId
 			-UnidadeId unidadeId
-			-PessoaId pessoaId
+			-UsuarioId usuarioId
 			-OpcaoVoto opcao
+			Date dataHora
 		}
 		ValueObject VotoId {
 			int id
@@ -333,6 +343,7 @@ BoundedContext Governanca implements Governanca {
 			FAVOR, CONTRA, ABSTENCAO
 		}
 	}
+	
 }
 
 BoundedContext Operacional implements Operacional {
@@ -378,12 +389,14 @@ BoundedContext Operacional implements Operacional {
 			ATIVO, VENCIDO, BLOQUEADO
 		}
 	}
+}
 
+BoundedContext Comunicacao implements Comunicacao{
 	Aggregate Notificacao {
 		Entity Notificacao {
 			aggregateRoot
 			-NotificacaoId id
-			-PessoaId pessoaId
+			-UsuarioId usuarioId
 			-TipoNotificacao tipo
 			String mensagem
 			-StatusLeitura statusLeitura
