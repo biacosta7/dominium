@@ -34,3 +34,26 @@ CREATE TABLE IF NOT EXISTS vinculos_morador (
     CONSTRAINT fk_vinculo_unidade FOREIGN KEY (unidade_id) REFERENCES unidades(id),
     CONSTRAINT fk_vinculo_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+
+CREATE TABLE IF NOT EXISTS orcamentos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ano INTEGER NOT NULL UNIQUE,
+    valor_total DECIMAL(19, 2) NOT NULL,
+    valor_gasto DECIMAL(19, 2) DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS despesas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(19, 2) NOT NULL,
+    data DATE NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    orcamento_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
+);
