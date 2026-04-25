@@ -4,7 +4,9 @@ import com.dominium.backend.domain.reservas.*;
 import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
 import com.dominium.backend.domain.reservas.repository.ReservaRepository;
 import com.dominium.backend.domain.shared.notification.NotificacaoService;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import com.dominium.backend.domain.usuario.UsuarioId;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -51,11 +53,17 @@ public class CancelarReservaUseCase {
             fila.setStatus(FilaDeEspera.StatusFila.PROMOVIDO);
             filaRepository.salvar(fila);
 
+            UnidadeId unidadeId = unidadeRepository.findAll().stream()
+                    .filter(u -> u.getInquilino() != null && u.getInquilino().getId().equals(fila.getUsuarioId()))
+                    .map(u -> new UnidadeId(u.getId()))
+                    .findFirst()
+                    .orElse(null);
+
             Reserva novaReserva = Reserva.promoverDeFila(
                     ReservaId.novo(),
                     fila.getAreaComumId(),
-                    unidadeRepository.findAll().stream().filter(u -> u.getInquilino() != null && u.getInquilino().getId().equals(fila.getUsuarioId())).findFirst().orElse(null), // Simplificação para exemplo
-                    usuarioRepository.findById(fila.getUsuarioId()).orElse(null),
+                    unidadeId,
+                    new UsuarioId(fila.getUsuarioId()),
                     fila.getDataDesejada(),
                     fila.getHoraInicio(),
                     fila.getHoraFim()

@@ -4,6 +4,7 @@ import com.dominium.backend.domain.areacomum.AreaComumId;
 import com.dominium.backend.domain.reservas.*;
 import com.dominium.backend.domain.reservas.repository.ReservaRepository;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.usuario.UsuarioId;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,8 +40,8 @@ public class JdbcReservaRepository implements ReservaRepository {
             return Reserva.reconstituir(
                     id,
                     areaId,
-                    unidadeRepository.findById(rs.getLong("unidade_id")).orElse(null),
-                    usuarioRepository.findById(rs.getLong("usuario_id")).orElse(null),
+                    new UnidadeId(rs.getLong("unidade_id")),
+                    new UsuarioId(rs.getLong("usuario_id")),
                     rs.getDate("data_reserva").toLocalDate(),
                     rs.getTime("hora_inicio").toLocalTime(),
                     rs.getTime("hora_fim").toLocalTime(),
