@@ -5,9 +5,9 @@ import com.dominium.backend.application.governanca.pauta.dto.PautaResponse;
 import com.dominium.backend.application.governanca.pauta.usecase.AbrirPautaUseCase;
 import com.dominium.backend.application.governanca.pauta.usecase.EncerrarPautaUseCase;
 import com.dominium.backend.application.governanca.pauta.usecase.ListarPautasUseCase;
+import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.governanca.pauta.Pauta;
 import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.governanca.assembleia.AssembleiaId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +47,7 @@ public class PautaController {
 
     @PatchMapping("/{id}/encerrar")
     public ResponseEntity<PautaResponse> encerrarPauta(@PathVariable Long id) {
-        Pauta pauta = encerrarPautaUseCase.executar(PautaId.de(id));
+        Pauta pauta = encerrarPautaUseCase.executar(new PautaId(id));
 
         return ResponseEntity.ok(toResponse(pauta));
     }

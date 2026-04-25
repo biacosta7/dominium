@@ -1,5 +1,6 @@
 package com.dominium.backend.domain.governanca.pauta;
 
+import com.dominium.backend.domain.assembleia.AssembleiaId;
 import lombok.*;
 
 @Getter

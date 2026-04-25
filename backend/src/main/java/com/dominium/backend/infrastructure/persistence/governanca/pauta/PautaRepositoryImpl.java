@@ -1,5 +1,6 @@
 package com.dominium.backend.infrastructure.persistence.governanca.pauta;
 
+import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.governanca.pauta.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -115,3 +115,24 @@ CREATE TABLE IF NOT EXISTS voto (
     -- Uma unidade só pode votar uma vez por pauta
     CONSTRAINT uk_voto_pauta_unidade UNIQUE (pauta_id, unidade_id)
     );
+
+CREATE TABLE IF NOT EXISTS assembleias (
+    id VARCHAR(36) PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    data_hora TIMESTAMP NOT NULL,
+    local VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    sindico_id BIGINT NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
+    CONSTRAINT fk_assembleia_sindico FOREIGN KEY (sindico_id) REFERENCES usuarios(id)
+    );
+
+
+CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ssembleia_id VARCHAR(36) NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    notificado_em TIMESTAMP NOT NULL,
+    CONSTRAINT fk_notificacao_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id),
+    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    );

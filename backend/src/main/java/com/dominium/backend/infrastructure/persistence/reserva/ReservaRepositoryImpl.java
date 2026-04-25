@@ -23,34 +23,34 @@ import java.util.Optional;
 public class ReservaRepositoryImpl implements ReservaRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final UsuarioRepository usuarioRepository ;
     private final UnidadeRepository unidadeRepository;
-    private final UsuarioRepository usuarioRepository;
 
     public ReservaRepositoryImpl(
             JdbcTemplate jdbcTemplate,
-            UnidadeRepository unidadeRepository,
-            UsuarioRepository usuarioRepository
+            UsuarioRepository usuarioRepository,
+            UnidadeRepository unidadeRepository
     ) {
         this.jdbcTemplate = jdbcTemplate;
-        this.unidadeRepository = unidadeRepository;
         this.usuarioRepository = usuarioRepository;
+        this.unidadeRepository = unidadeRepository;
     }
 
     private final RowMapper<Reserva> rowMapper = (rs, rowNum) -> {
-
-        Unidade unidade = unidadeRepository
-                .findById(rs.getLong("unidade_id"))
-                .orElse(null);
 
         Usuario usuario = usuarioRepository
                 .findById(rs.getLong("usuario_id"))
                 .orElse(null);
 
+        Unidade unidade = unidadeRepository
+                .findById(rs.getLong("unidade_id"))
+                .orElse(null);
+
         return Reserva.reconstituir(
                 ReservaId.de(rs.getString("id")),
                 new AreaComumId(rs.getLong("area_comum_id")),
-                unidade,
                 usuario,
+                unidade,
                 rs.getDate("data_reserva").toLocalDate(),
                 rs.getTime("hora_inicio").toLocalTime(),
                 rs.getTime("hora_fim").toLocalTime(),

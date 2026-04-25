@@ -1,5 +1,6 @@
 package com.dominium.backend.application.governanca.pauta.usecase;
 
+import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.governanca.pauta.*;
 
 public class AbrirPautaUseCase {

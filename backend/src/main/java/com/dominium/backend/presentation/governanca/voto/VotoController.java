@@ -29,7 +29,7 @@ public class VotoController {
     @PostMapping
     public ResponseEntity<Void> votar(@RequestBody @Valid VotarRequest request) {
         votarUseCase.executar(
-                PautaId.de(request.pautaId()),
+                new PautaId(request.pautaId()),
                 new UsuarioId(request.usuarioId()),
                 new UnidadeId(request.unidadeId()),
                 request.opcao()
@@ -42,7 +42,7 @@ public class VotoController {
 
     @GetMapping("/pauta/{pautaId}")
     public ResponseEntity<List<VotoResponse>> listarPorPauta(@PathVariable Long pautaId) {
-        List<VotoResponse> votos = listarVotosUseCase.ListarPorPauta(PautaId.de(pautaId))
+        List<VotoResponse> votos = listarVotosUseCase.ListarPorPauta(new PautaId(pautaId))
                 .stream()
                 .map(this::toResponse)
                 .toList();
