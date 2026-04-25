@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS assembleias (
 
 CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ssembleia_id VARCHAR(36) NOT NULL,
+    assembleia_id VARCHAR(36) NOT NULL,
     usuario_id BIGINT NOT NULL,
     notificado_em TIMESTAMP NOT NULL,
     CONSTRAINT fk_notificacao_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id),

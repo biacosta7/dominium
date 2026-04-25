@@ -10,7 +10,9 @@ import com.dominium.backend.domain.governanca.voto.VotoId;
 import com.dominium.backend.domain.governanca.voto.VotoRepository;
 import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.usuario.UsuarioId;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VotarUseCase {
 
     private final VotoRepository votoRepository;

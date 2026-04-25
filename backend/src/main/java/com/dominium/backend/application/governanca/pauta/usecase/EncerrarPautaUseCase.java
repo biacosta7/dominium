@@ -7,9 +7,11 @@ import com.dominium.backend.domain.governanca.pauta.PautaRepository;
 import com.dominium.backend.domain.governanca.pauta.ResultadoPauta;
 import com.dominium.backend.domain.governanca.voto.Voto;
 import com.dominium.backend.domain.governanca.voto.VotoRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EncerrarPautaUseCase {
     private final PautaRepository pautaRepository;
     private final VotoRepository votoRepository;

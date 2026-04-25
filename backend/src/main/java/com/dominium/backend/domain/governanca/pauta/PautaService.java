@@ -2,9 +2,11 @@ package com.dominium.backend.domain.governanca.pauta;
 
 import com.dominium.backend.domain.governanca.RegraVotacao;
 import com.dominium.backend.domain.governanca.voto.Voto;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PautaService {
 
     private final RegraVotacao regraVotacao;

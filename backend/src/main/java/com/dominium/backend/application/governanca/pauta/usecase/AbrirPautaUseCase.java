@@ -2,7 +2,9 @@ package com.dominium.backend.application.governanca.pauta.usecase;
 
 import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.governanca.pauta.*;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AbrirPautaUseCase {
     private final PautaRepository repository;
 

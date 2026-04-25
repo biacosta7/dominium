@@ -12,9 +12,11 @@ import com.dominium.backend.domain.morador.VinculoMorador;
 import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
 import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.usuario.UsuarioId;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class RegraVotacao {
 
     private final VinculoMoradorRepository vinculoRepository;
@@ -26,8 +28,13 @@ public class RegraVotacao {
     public void validarElegebilidade(UsuarioId usuarioId, UnidadeId unidadeId){
 
         VinculoMorador vinculo = vinculoRepository
-                .findByUsuarioAndUnidade(usuarioId, unidadeId)
-                .orElseThrow(() -> new RuntimeException("Usuário não possui vínculo com a unidade"));
+                .findByUsuarioAndUnidade(
+                        usuarioId.getValor(),
+                        unidadeId.getValor()
+                )
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Vínculo não encontrado"));
 
         if (vinculo.getTipo() != TipoVinculo.TITULAR){
             throw new RuntimeException("Apenas titular pode votar");
