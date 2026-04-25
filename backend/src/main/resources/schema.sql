@@ -79,3 +79,14 @@ CREATE TABLE multas (
         FOREIGN KEY (unidade_id)
         REFERENCES unidades(id)
 );
+
+CREATE TABLE IF NOT EXISTS recurso_multa (
+    id UUID PRIMARY KEY,
+    multa_id UUID NOT NULL,
+    morador_id UUID NOT NULL,
+    motivo TEXT NOT NULL,
+    data_solicitacao TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    justificativa_sindico TEXT,
+    data_decisao TIMESTAMP
+);
