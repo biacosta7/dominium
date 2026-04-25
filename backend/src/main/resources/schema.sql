@@ -93,3 +93,25 @@ CREATE TABLE IF NOT EXISTS fila_espera (
     CONSTRAINT fk_fila_area FOREIGN KEY (area_comum_id) REFERENCES areas_comuns(id),
     CONSTRAINT fk_fila_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+
+CREATE TABLE multas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ocorrencia_id BIGINT,
+    unidade_id BIGINT NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(15,2) NOT NULL,
+    valor_base DECIMAL(15,2),
+    tipo_valor VARCHAR(30) NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    reincidencia INTEGER NOT NULL DEFAULT 0,
+    data_criacao TIMESTAMP NOT NULL,
+    data_pagamento TIMESTAMP,
+    valor_pago DECIMAL(15,2),
+    updated_at TIMESTAMP,
+    justificativa_contestacao TEXT,
+    data_contestacao TIMESTAMP,
+
+    CONSTRAINT fk_multa_unidade
+        FOREIGN KEY (unidade_id)
+        REFERENCES unidades(id)
+);
