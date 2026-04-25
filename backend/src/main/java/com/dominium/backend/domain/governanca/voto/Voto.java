@@ -18,6 +18,19 @@ public class Voto {
     private UsuarioId usuarioId;
     private OpcaoVoto opcaoVoto;
 
+    public static Voto reconstituir(
+            VotoId id, PautaId pautaId, UnidadeId unidadeId,
+            UsuarioId usuarioId, OpcaoVoto opcao
+    ) {
+        Voto voto = new Voto();
+        voto.id = id;
+        voto.pautaId = pautaId;
+        voto.unidadeId = unidadeId;
+        voto.usuarioId = usuarioId;
+        voto.opcaoVoto = opcao;
+        return voto;
+    }
+
     public static Voto criar(
             VotoId id,
             PautaId pautaId,

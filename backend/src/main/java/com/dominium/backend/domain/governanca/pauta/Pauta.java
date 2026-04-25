@@ -18,6 +18,23 @@ public class Pauta {
     private StatusPauta status;
     private ResultadoPauta resultadoFinal;
 
+    public static Pauta reconstituir(
+            PautaId id, AssembleiaId assembleiaId, String titulo,
+            String descricao, TipoQuorum tipoQuorum, TipoMaioria tipoMaioria,
+            StatusPauta status, ResultadoPauta resultado
+    ) {
+        Pauta pauta = new Pauta();
+        pauta.id = id;
+        pauta.assembleiaId = assembleiaId;
+        pauta.titulo = titulo;
+        pauta.descricao = descricao;
+        pauta.tipoQuorum = tipoQuorum;
+        pauta.tipoMaioria = tipoMaioria;
+        pauta.status = status;
+        pauta.resultadoFinal = resultado;
+        return pauta;
+    }
+
     public static Pauta criar(
             PautaId id,
             AssembleiaId assembleiaId,
