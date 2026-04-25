@@ -57,3 +57,30 @@ CREATE TABLE IF NOT EXISTS despesas (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
 );
+
+CREATE TABLE IF NOT EXISTS assembleias (
+    id VARCHAR(36) PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    data_hora TIMESTAMP NOT NULL,
+    local VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    sindico_id BIGINT NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
+    CONSTRAINT fk_assembleia_sindico FOREIGN KEY (sindico_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS pauta_assembleia (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    assembleia_id VARCHAR(36) NOT NULL,
+    descricao VARCHAR(500) NOT NULL,
+    CONSTRAINT fk_pauta_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id)
+);
+
+CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    assembleia_id VARCHAR(36) NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    notificado_em TIMESTAMP NOT NULL,
+    CONSTRAINT fk_notificacao_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id),
+    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
