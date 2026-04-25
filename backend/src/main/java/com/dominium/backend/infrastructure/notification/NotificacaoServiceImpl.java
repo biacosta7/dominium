@@ -4,9 +4,12 @@ import com.dominium.backend.domain.notificacao.Notificacao;
 import com.dominium.backend.domain.notificacao.repository.NotificacaoRepository;
 import com.dominium.backend.domain.shared.notification.NotificacaoService;
 import com.dominium.backend.domain.shared.notification.TipoNotificacao;
+
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
+@Primary
 public class NotificacaoServiceImpl implements NotificacaoService {
 
     private final NotificacaoRepository notificacaoRepository;
