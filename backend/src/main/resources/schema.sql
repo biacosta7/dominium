@@ -57,3 +57,22 @@ CREATE TABLE IF NOT EXISTS despesas (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
 );
+
+CREATE TABLE IF NOT EXISTS assembleia (
+    id VARCHAR(36) PRIMARY KEY,
+    data_hora TIMESTAMP NOT NULL,
+    local VARCHAR(255) NOT NULL,
+    concluida BOOLEAN DEFAULT FALSE,
+    ata TEXT
+);
+
+CREATE TABLE IF NOT EXISTS pauta (
+    id VARCHAR(36) PRIMARY KEY,
+    assembleia_id VARCHAR(36) NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    votos_sim INT DEFAULT 0,
+    votos_nao INT DEFAULT 0,
+    abstencoes INT DEFAULT 0,
+    FOREIGN KEY (assembleia_id) REFERENCES assembleia(id) ON DELETE CASCADE
+);
