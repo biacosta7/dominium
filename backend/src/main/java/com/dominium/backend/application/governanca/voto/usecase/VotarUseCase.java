@@ -46,7 +46,7 @@ public class VotarUseCase {
 
 
         Voto voto = Voto.criar(
-                VotoId.novo(),
+                new VotoId(null),
                 pautaId,
                 unidadeId,
                 usuarioId,

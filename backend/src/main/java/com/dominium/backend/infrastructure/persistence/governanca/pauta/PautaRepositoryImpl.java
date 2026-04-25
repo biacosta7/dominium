@@ -19,7 +19,7 @@ public class PautaRepositoryImpl implements PautaRepository {
     private final JdbcTemplate jdbc;
 
     private final RowMapper<Pauta> pautaMapper = (rs, rowNum) -> Pauta.reconstituir(
-            PautaId.de(rs.getLong("id")),
+            new PautaId(rs.getLong("id")),
             new AssembleiaId(rs.getLong("assembleia_id")),
             rs.getString("titulo"),
             rs.getString("descricao"),
@@ -32,7 +32,7 @@ public class PautaRepositoryImpl implements PautaRepository {
 
     @Override
     public Pauta save(Pauta pauta) {
-        if (!pauta.getId().temValor()) {
+        if (pauta.getId() == null || pauta.getId().getValor() == null) {
             return inserir(pauta);
         }
         return atualizar(pauta);
@@ -61,7 +61,7 @@ public class PautaRepositoryImpl implements PautaRepository {
         Long idGerado = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         return Pauta.reconstituir(
-                PautaId.de(idGerado),
+                new PautaId(idGerado),
                 pauta.getAssembleiaId(),
                 pauta.getTitulo(),
                 pauta.getDescricao(),

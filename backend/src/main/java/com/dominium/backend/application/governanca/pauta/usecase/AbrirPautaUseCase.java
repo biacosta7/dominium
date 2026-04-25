@@ -18,7 +18,7 @@ public class AbrirPautaUseCase {
     ) {
 
         Pauta pauta = Pauta.criar(
-                PautaId.novo(),
+                new PautaId(null),
                 assembleiaId,
                 titulo,
                 descricao,

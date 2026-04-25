@@ -27,8 +27,8 @@ public class VotoRepositoryImpl implements VotoRepository {
 
     // RowMapper embutido como lambda — mapeia ResultSet → Voto
     private final RowMapper<Voto> votoMapper = (rs, rowNum) -> Voto.reconstituir(
-            VotoId.de(rs.getLong("id")),
-            PautaId.de(rs.getLong("pauta_id")),
+            new VotoId(rs.getLong("id")),
+            new PautaId(rs.getLong("pauta_id")),
             new UnidadeId(rs.getLong("unidade_id")),
             new UsuarioId(rs.getLong("usuario_id")),
             OpcaoVoto.valueOf(rs.getString("opcao_voto"))
@@ -56,7 +56,7 @@ public class VotoRepositoryImpl implements VotoRepository {
         Long idGerado = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         return Voto.reconstituir(
-                VotoId.de(idGerado),
+                new VotoId(idGerado),
                 voto.getPautaId(),
                 voto.getUnidadeId(),
                 voto.getUsuarioId(),
