@@ -23,7 +23,7 @@ public class RegraVotacao {
         this.vinculoRepository = vinculoRepository;
     }
 
-    public void validarEgebilidade(UnidadeId unidadeId, UsuarioId usuarioId){
+    public void validarElegebilidade(UsuarioId usuarioId, UnidadeId unidadeId){
 
         VinculoMorador vinculo = vinculoRepository
                 .findByUsuarioAndUnidade(usuarioId, unidadeId)

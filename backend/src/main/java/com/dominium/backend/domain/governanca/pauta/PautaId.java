@@ -7,9 +7,6 @@ public class PautaId {
     private final Long valor;
 
     public PautaId(Long valor) {
-        if (valor == null) {
-            throw new IllegalArgumentException("ID da pauta não pode ser nulo");
-        }
         this.valor = valor;
     }
 
@@ -18,6 +15,9 @@ public class PautaId {
     }
 
     public static PautaId de(Long valor) {
+        if (valor == null) {
+            throw new IllegalArgumentException("ID da pauta não pode ser nulo");
+        }
         return new PautaId(valor);
     }
 
@@ -25,12 +25,16 @@ public class PautaId {
         return valor;
     }
 
+    public boolean temValor() {
+        return valor != null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PautaId)) return false;
         PautaId pautaId = (PautaId) o;
-        return valor.equals(pautaId.valor);
+        return Objects.equals(valor, pautaId.valor);
     }
 
     @Override
@@ -40,6 +44,6 @@ public class PautaId {
 
     @Override
     public String toString() {
-        return valor.toString();
+        return valor != null ? valor.toString() : "sem-id";
     }
 }

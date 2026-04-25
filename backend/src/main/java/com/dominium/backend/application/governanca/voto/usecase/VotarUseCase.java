@@ -36,7 +36,7 @@ public class VotarUseCase {
 
         pauta.validarSeEstaAberta();
 
-        regraVotacao.validarEgebilidade(usuarioId, unidadeId);
+        regraVotacao.validarElegebilidade(usuarioId, unidadeId);
 
         boolean jaVotou = votoRepository.findByPautaAndUnidade(pautaId, unidadeId);
 
@@ -45,16 +45,21 @@ public class VotarUseCase {
         }
 
 
-        Voto voto = new Voto(
-                VotoId.votar(),
+        Voto voto = Voto.criar(
+                VotoId.novo(),
                 pautaId,
                 unidadeId,
                 usuarioId,
                 opcaoVoto
         );
 
-        voto.pertenceAPauta(pautaId);
-        voto.ehDaUnidade(unidadeId);
+        if (!voto.pertenceAPauta(pautaId)) {
+            throw new IllegalStateException("Voto não pertence à pauta informada");
+        }
+
+        if (!voto.ehDaUnidade(unidadeId)) {
+            throw new IllegalStateException("Voto não pertence à unidade informada");
+        }
 
         votoRepository.save(voto);
     }

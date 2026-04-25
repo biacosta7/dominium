@@ -17,15 +17,13 @@ public class AbrirPautaUseCase {
             TipoMaioria maioria
     ) {
 
-        Pauta pauta = new Pauta(
+        Pauta pauta = Pauta.criar(
                 PautaId.novo(),
                 assembleiaId,
                 titulo,
                 descricao,
                 quorum,
-                maioria,
-                StatusPauta.ABERTA,
-                ResultadoPauta.EM_ANDAMENTO
+                maioria
         );
 
         return repository.save(pauta);

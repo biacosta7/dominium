@@ -30,7 +30,7 @@ public class EncerrarPautaUseCase {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new RuntimeException("Pauta não encontrada"));
 
-        List<Voto> votos = votoRepository.findByPauta(pautaId);
+        List<Voto> votos = votoRepository.buscarPorPauta(pautaId);
 
         ResultadoPauta resultado =
                 regraVotacao.calcularResultado(pauta, votos);
