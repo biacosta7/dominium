@@ -1,4 +1,4 @@
-REATE TABLE IF NOT EXISTS usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -35,6 +35,65 @@ CREATE TABLE IF NOT EXISTS vinculos_morador (
     CONSTRAINT fk_vinculo_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+CREATE TABLE IF NOT EXISTS orcamentos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ano INTEGER NOT NULL UNIQUE,
+    valor_total DECIMAL(19, 2) NOT NULL,
+    valor_gasto DECIMAL(19, 2) DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS despesas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(19, 2) NOT NULL,
+    data DATE NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    orcamento_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
+);
+
+CREATE TABLE IF NOT EXISTS areas_comuns (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    capacidade_maxima INTEGER NOT NULL,
+    status VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reservas (
+    id VARCHAR(36) PRIMARY KEY,
+    area_comum_id BIGINT NOT NULL,
+    unidade_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    data_reserva DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    data_expira_confirmacao TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reserva_area FOREIGN KEY (area_comum_id) REFERENCES areas_comuns(id),
+    CONSTRAINT fk_reserva_unidade FOREIGN KEY (unidade_id) REFERENCES unidades(id),
+    CONSTRAINT fk_reserva_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS fila_espera (
+    id VARCHAR(36) PRIMARY KEY,
+    area_comum_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    data_desejada DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_fila_area FOREIGN KEY (area_comum_id) REFERENCES areas_comuns(id),
+    CONSTRAINT fk_fila_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
 CREATE TABLE IF NOT EXISTS pauta (
     id BIGSERIAL PRIMARY KEY,
     assembleia_id BIGINT NOT NULL,
@@ -55,15 +114,4 @@ CREATE TABLE IF NOT EXISTS voto (
 
     -- Uma unidade só pode votar uma vez por pauta
     CONSTRAINT uk_voto_pauta_unidade UNIQUE (pauta_id, unidade_id)
-    );
-
-CREATE TABLE IF NOT EXISTS reserva (
-    id  VARCHAR(36) PRIMARY KEY,  -- UUID gerado pelo domínio
-    area_comum_id BIGINT NOT NULL,
-    unidade_id BIGINT NOT NULL REFERENCES unidade(id),
-    usuario_id BIGINT NOT NULL REFERENCES usuario(id),
-    data_reserva DATE NOT NULL,
-    hora_inicio TIME NOT NULL,
-    hora_fim TIME NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'PENDENTE'
     );
