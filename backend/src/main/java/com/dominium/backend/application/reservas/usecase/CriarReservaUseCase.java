@@ -6,8 +6,11 @@ import com.dominium.backend.domain.reservas.*;
 import com.dominium.backend.domain.reservas.repository.ReservaRepository;
 import com.dominium.backend.domain.reservas.service.PoliticaReserva;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class CriarReservaUseCase {
 
     private final ReservaRepository repository;

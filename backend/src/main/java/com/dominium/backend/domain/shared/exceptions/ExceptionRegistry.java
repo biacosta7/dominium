@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.dominium.backend.domain.reservas.exception.*;
 
 @Component
 public class ExceptionRegistry {
@@ -59,5 +60,11 @@ public class ExceptionRegistry {
         register(IllegalStateException.class, HttpStatus.CONFLICT);
         register(RuntimeException.class, HttpStatus.INTERNAL_SERVER_ERROR);
         register(Exception.class, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        // Reserva Exceptions
+        register(ReservaException.class, HttpStatus.valueOf(422));
+        register(ConflitoReservaException.class, HttpStatus.CONFLICT);
+        register(AreaNaoDisponivelException.class, HttpStatus.FORBIDDEN);
+        register(CapacidadeExcedidaException.class, HttpStatus.CONFLICT);
     }
 }

@@ -6,7 +6,8 @@ import com.dominium.backend.domain.areacomum.AreaComumService;
 import com.dominium.backend.domain.reservas.FilaDeEspera;
 import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Service
 public class AdicionarNaFilaUseCase {
@@ -18,11 +19,11 @@ public class AdicionarNaFilaUseCase {
         this.areaComumService = areaComumService;
     }
 
-    public FilaDeEspera executar(AreaComumId areaId, Long usuarioId, LocalDateTime dataDesejada) {
+    public FilaDeEspera executar(AreaComumId areaId, Long usuarioId, LocalDate data, LocalTime inicio, LocalTime fim) {
 
         AreaComum area = areaComumService.buscarArea(areaId);
 
-        FilaDeEspera fila = FilaDeEspera.criar(areaId, usuarioId, dataDesejada);
+        FilaDeEspera fila = FilaDeEspera.criar(areaId, usuarioId, data, inicio, fim);
 
         return repository.salvar(fila);
     }

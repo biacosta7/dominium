@@ -1,17 +1,9 @@
 package com.dominium.backend.domain.areacomum;
 
-public class AreaComumId {
+import com.dominium.backend.domain.shared.valueobjects.ValueObjectId;
 
-    private final Long valor;
-
+public class AreaComumId extends ValueObjectId<Long> {
     public AreaComumId(Long valor) {
-        if (valor == null) {
-            throw new IllegalArgumentException("ID inválido");
-        }
-        this.valor = valor;
-    }
-
-    public Long getValor() {
-        return valor;
+        super(valor);
     }
 }

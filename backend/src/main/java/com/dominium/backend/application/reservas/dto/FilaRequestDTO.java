@@ -2,12 +2,15 @@ package com.dominium.backend.application.reservas.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 public class FilaRequestDTO {
     private Long areaComumId;
     private Long usuarioId;
-    private LocalDateTime dataDesejada;
+    private LocalDate data;
+    private LocalTime horaInicio;
+    private LocalTime horaFim;
 }
