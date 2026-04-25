@@ -4,6 +4,7 @@ import com.dominium.backend.domain.reservas.*;
 import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
 import com.dominium.backend.domain.reservas.repository.ReservaRepository;
 import com.dominium.backend.domain.shared.notification.NotificacaoService;
+import com.dominium.backend.domain.shared.notification.TipoNotificacao;
 import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 import com.dominium.backend.domain.usuario.UsuarioId;
@@ -76,7 +77,7 @@ public class CancelarReservaUseCase {
             
             notificacaoService.enviar(fila.getUsuarioId(), 
                 "Sua reserva para a área " + reserva.getAreaComumId().getValor() + 
-                " foi promovida da fila de espera! Você tem 24h para confirmar.");
+                " foi promovida da fila de espera! Você tem 24h para confirmar.", TipoNotificacao.CANCELAMENTO_RESERVA);
         });
     }
 }

@@ -25,6 +25,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/usuarios/**").permitAll()
                 .requestMatchers("/unidades/**").permitAll()
+                .requestMatchers("/notificacoes/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
