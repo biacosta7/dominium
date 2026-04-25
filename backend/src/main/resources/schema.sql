@@ -57,3 +57,39 @@ CREATE TABLE IF NOT EXISTS despesas (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
 );
+
+CREATE TABLE IF NOT EXISTS areas_comuns (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    capacidade_maxima INTEGER NOT NULL,
+    status VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reservas (
+    id VARCHAR(36) PRIMARY KEY,
+    area_comum_id BIGINT NOT NULL,
+    unidade_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    data_reserva DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    data_expira_confirmacao TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reserva_area FOREIGN KEY (area_comum_id) REFERENCES areas_comuns(id),
+    CONSTRAINT fk_reserva_unidade FOREIGN KEY (unidade_id) REFERENCES unidades(id),
+    CONSTRAINT fk_reserva_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS fila_espera (
+    id VARCHAR(36) PRIMARY KEY,
+    area_comum_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    data_desejada DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_fila_area FOREIGN KEY (area_comum_id) REFERENCES areas_comuns(id),
+    CONSTRAINT fk_fila_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);

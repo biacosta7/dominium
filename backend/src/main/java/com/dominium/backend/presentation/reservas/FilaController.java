@@ -21,7 +21,9 @@ public class FilaController {
         return useCase.executar(
                 new AreaComumId(dto.getAreaComumId()),
                 dto.getUsuarioId(),
-                dto.getDataDesejada()
+                dto.getData(),
+                dto.getHoraInicio(),
+                dto.getHoraFim()
         );
     }
 }

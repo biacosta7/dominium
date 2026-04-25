@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,6 +26,7 @@ public class Reserva {
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private StatusReserva status;
+    private LocalDateTime dataExpiraConfirmacao;
 
     // Factory method — único jeito de criar uma reserva nova
     public static Reserva criar(
@@ -70,12 +72,47 @@ public class Reserva {
         return r;
     }
 
+    public static Reserva promoverDeFila(
+            ReservaId id,
+            AreaComumId areaComumId,
+            Unidade unidade,
+            Usuario usuario,
+            LocalDate data,
+            LocalTime inicio,
+            LocalTime fim
+    ) {
+        Reserva r = new Reserva();
+        r.id = id;
+        r.areaComumId = areaComumId;
+        r.unidadeId = unidade;
+        r.usuarioId = usuario;
+        r.dataReserva = data;
+        r.horaInicio = inicio;
+        r.horaFim = fim;
+        r.status = StatusReserva.AGUARDANDO_CONFIRMACAO;
+        r.dataExpiraConfirmacao = LocalDateTime.now().plusHours(24); // Prazo de 24h
+        return r;
+    }
+
     public void cancelar(){
         this.status = StatusReserva.CANCELADA;
     }
 
     public void ativar() {
         this.status = StatusReserva.ATIVA;
+        this.dataExpiraConfirmacao = null;
+    }
+
+    public void confirmar() {
+        if (this.status != StatusReserva.AGUARDANDO_CONFIRMACAO) {
+            throw new IllegalStateException("Reserva não está aguardando confirmação");
+        }
+        if (LocalDateTime.now().isAfter(dataExpiraConfirmacao)) {
+            this.status = StatusReserva.CANCELADA;
+            throw new IllegalStateException("Prazo de confirmação expirado");
+        }
+        this.status = StatusReserva.ATIVA;
+        this.dataExpiraConfirmacao = null;
     }
 
     public void atualizarDados(
