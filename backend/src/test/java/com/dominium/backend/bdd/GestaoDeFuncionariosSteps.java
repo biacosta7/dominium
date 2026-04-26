@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dominium.backend.domain.financeiro.CategoriaDespesa;
 import com.dominium.backend.domain.financeiro.Despesa;
 import com.dominium.backend.domain.financeiro.Orcamento;
-import com.dominium.backend.domain.funcionario.AvaliacaoFuncionario;
 import com.dominium.backend.domain.funcionario.Funcionario;
 import com.dominium.backend.domain.funcionario.FuncionarioId;
 import com.dominium.backend.domain.funcionario.OrdemServico;
