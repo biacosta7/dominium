@@ -58,6 +58,40 @@ CREATE TABLE IF NOT EXISTS despesas (
     CONSTRAINT fk_despesa_orcamento FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
 );
 
+CREATE TABLE IF NOT EXISTS funcionarios (
+    id VARCHAR(36) PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cpf VARCHAR(14) NOT NULL,
+    email VARCHAR(255),
+    telefone VARCHAR(20),
+    tipo_vinculo VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    contrato_inicio DATE NOT NULL,
+    contrato_fim DATE NOT NULL,
+    valor_mensal DECIMAL(19, 2),
+    sindico_id BIGINT NOT NULL,
+    data_cadastro TIMESTAMP NOT NULL,
+    CONSTRAINT fk_funcionario_sindico FOREIGN KEY (sindico_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS ordens_servico (
+    id VARCHAR(36) PRIMARY KEY,
+    descricao VARCHAR(500) NOT NULL,
+    funcionario_id VARCHAR(36) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    CONSTRAINT fk_os_funcionario FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS avaliacoes_funcionario (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    funcionario_id VARCHAR(36) NOT NULL,
+    positiva BOOLEAN NOT NULL,
+    comentario VARCHAR(500),
+    data DATE NOT NULL,
+    CONSTRAINT fk_avaliacao_funcionario FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+=======
 CREATE TABLE IF NOT EXISTS areas_comuns (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
