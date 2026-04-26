@@ -489,14 +489,14 @@ public class DominiumFuncionalidade {
 
             @Override
             public List<Voto> buscarPorPauta(PautaId pautaId) {
-                return db.values().stream().filter(v -> v.getPautaId().equals(pautaId.getValor()))
+                return db.values().stream().filter(v -> v.getPautaId().equals(pautaId))
                         .collect(Collectors.toList());
             }
 
             @Override
             public boolean findByPautaAndUnidade(PautaId pautaId, UnidadeId unidadeId) {
-                return db.values().stream().anyMatch(v -> v.getPautaId().equals(pautaId.getValor())
-                        && v.getUnidadeId().equals(unidadeId.getValor()));
+                return db.values().stream().anyMatch(v -> v.getPautaId().equals(pautaId)
+                        && v.getUnidadeId().equals(unidadeId));
             }
         };
 
@@ -599,6 +599,13 @@ public class DominiumFuncionalidade {
                 return Optional.ofNullable(db.get(id.getValor()));
             }
 
+            @Override
+            public AreaComum save(AreaComum a) {
+                if (a.getId() == null)
+                    a.setId(new AreaComumId(currentId++));
+                db.put(a.getId().getValor(), a);
+                return a;
+            }
         };
     }
 
@@ -679,7 +686,7 @@ public class DominiumFuncionalidade {
         editarAssembleiaUseCase = new EditarAssembleiaUseCase(assembleiaRepository, usuarioRepository);
 
         // ── Pautas e Votações ─────────────────────────────────────────────────────
-        RegraVotacao regraVotacao = new RegraVotacao(vinculoMoradorRepository);
+        RegraVotacao regraVotacao = new RegraVotacao(vinculoMoradorRepository, unidadeRepository);
         abrirPautaUseCase = new AbrirPautaUseCase(pautaRepository);
         encerrarPautaUseCase = new EncerrarPautaUseCase(pautaRepository, votoRepository, regraVotacao);
         listarPautasUseCase = new ListarPautasUseCase(pautaRepository);
