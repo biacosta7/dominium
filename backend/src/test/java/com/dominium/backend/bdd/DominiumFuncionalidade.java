@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.dominium.backend.application.assembleia.usecase.*;
 import com.dominium.backend.application.financeiro.usecase.*;
+import com.dominium.backend.application.funcionario.usecase.*;
 import com.dominium.backend.application.governanca.pauta.usecase.*;
 import com.dominium.backend.application.governanca.voto.usecase.*;
 import com.dominium.backend.application.morador.usecase.*;
@@ -32,6 +33,16 @@ import com.dominium.backend.domain.financeiro.Orcamento;
 import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
 import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
 import com.dominium.backend.domain.financeiro.service.RateioService;
+import com.dominium.backend.domain.funcionario.AvaliacaoFuncionario;
+import com.dominium.backend.domain.funcionario.Funcionario;
+import com.dominium.backend.domain.funcionario.FuncionarioId;
+import com.dominium.backend.domain.funcionario.OrdemServico;
+import com.dominium.backend.domain.funcionario.OrdemServicoId;
+import com.dominium.backend.domain.funcionario.StatusFuncionario;
+import com.dominium.backend.domain.funcionario.StatusOrdemServico;
+import com.dominium.backend.domain.funcionario.repository.AvaliacaoFuncionarioRepository;
+import com.dominium.backend.domain.funcionario.repository.FuncionarioRepository;
+import com.dominium.backend.domain.funcionario.repository.OrdemServicoRepository;
 import com.dominium.backend.domain.governanca.RegraVotacao;
 import com.dominium.backend.domain.governanca.pauta.Pauta;
 import com.dominium.backend.domain.governanca.pauta.PautaId;
@@ -88,6 +99,9 @@ public class DominiumFuncionalidade {
     protected FilaDeEsperaRepository filaDeEsperaRepository;
     protected OcorrenciaRepository ocorrenciaRepository;
     protected AreaComumRepository areaComumRepository;
+    protected FuncionarioRepository funcionarioRepository;
+    protected AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepository;
+    protected OrdemServicoRepository ordemServicoRepository;
 
     // ── Use Cases: Unidades ──────────────────────────────────────────────────────
     protected CreateUnidadeUseCase createUnidadeUseCase;
@@ -153,6 +167,14 @@ public class DominiumFuncionalidade {
     // ── Use Cases: Ocorrências ───────────────────────────────────────────────────
     protected GerenciarOcorrenciaUseCase gerenciarOcorrenciaUseCase;
     protected EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase;
+
+    // ── Use Cases: Funcionários ──────────────────────────────────────────────────
+    protected CadastrarFuncionarioUseCase cadastrarFuncionarioUseCase;
+    protected CriarOrdemServicoUseCase criarOrdemServicoUseCase;
+    protected EncerrarOrdemServicoUseCase encerrarOrdemServicoUseCase;
+    protected RegistrarAvaliacaoUseCase registrarAvaliacaoUseCase;
+    protected RenovarContratoUseCase renovarContratoUseCase;
+    protected GerarDespesasMensaisUseCase gerarDespesasMensaisUseCase;
 
     // ── Captura de exceção ───────────────────────────────────────────────────────
     protected RuntimeException excecao;
@@ -600,6 +622,86 @@ public class DominiumFuncionalidade {
             }
 
         };
+
+        funcionarioRepository = new FuncionarioRepository() {
+            private final Map<String, Funcionario> db = new HashMap<>();
+
+            @Override
+            public Funcionario save(Funcionario f) {
+                db.put(f.getId().getValor(), f);
+                return f;
+            }
+
+            @Override
+            public Optional<Funcionario> findById(FuncionarioId id) {
+                return Optional.ofNullable(db.get(id.getValor()));
+            }
+
+            @Override
+            public List<Funcionario> findAll() {
+                return List.copyOf(db.values());
+            }
+
+            @Override
+            public List<Funcionario> findByStatus(StatusFuncionario status) {
+                return db.values().stream().filter(f -> f.getStatus() == status).collect(Collectors.toList());
+            }
+        };
+
+        avaliacaoFuncionarioRepository = new AvaliacaoFuncionarioRepository() {
+            private final Map<Long, AvaliacaoFuncionario> db = new HashMap<>();
+
+            @Override
+            public AvaliacaoFuncionario save(AvaliacaoFuncionario a) {
+                if (a.getId() == null)
+                    a.setId(currentId++);
+                db.put(a.getId(), a);
+                return a;
+            }
+
+            @Override
+            public List<AvaliacaoFuncionario> findByFuncionarioId(FuncionarioId funcionarioId) {
+                return db.values().stream()
+                        .filter(a -> a.getFuncionarioId().equals(funcionarioId))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public long contarNegativasRecentes(FuncionarioId funcionarioId, int limite) {
+                return db.values().stream()
+                        .filter(a -> a.getFuncionarioId().equals(funcionarioId) && !a.isPositiva())
+                        .count();
+            }
+        };
+
+        ordemServicoRepository = new OrdemServicoRepository() {
+            private final Map<String, OrdemServico> db = new HashMap<>();
+
+            @Override
+            public OrdemServico save(OrdemServico os) {
+                db.put(os.getId().getValor(), os);
+                return os;
+            }
+
+            @Override
+            public Optional<OrdemServico> findById(OrdemServicoId id) {
+                return Optional.ofNullable(db.get(id.getValor()));
+            }
+
+            @Override
+            public List<OrdemServico> findByFuncionarioId(FuncionarioId funcionarioId) {
+                return db.values().stream()
+                        .filter(os -> os.getFuncionarioId().equals(funcionarioId))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public boolean existeAtivaParaFuncionario(FuncionarioId funcionarioId) {
+                return db.values().stream()
+                        .anyMatch(os -> os.getFuncionarioId().equals(funcionarioId)
+                                && os.getStatus() == StatusOrdemServico.ABERTA);
+            }
+        };
     }
 
     // ────────────────────────────────────────────────────────────────────────────
@@ -700,5 +802,18 @@ public class DominiumFuncionalidade {
         // ── Ocorrências ──────────────────────────────────────────────────────────
         gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository);
         encerrarOcorrenciaUseCase = new EncerrarOcorrenciaUseCase(ocorrenciaRepository, createMultaManualUseCase);
+
+        // ── Funcionários ─────────────────────────────────────────────────────────
+        cadastrarFuncionarioUseCase = new CadastrarFuncionarioUseCase(funcionarioRepository, usuarioRepository);
+        criarOrdemServicoUseCase = new CriarOrdemServicoUseCase(ordemServicoRepository, funcionarioRepository,
+                usuarioRepository);
+        encerrarOrdemServicoUseCase = new EncerrarOrdemServicoUseCase(ordemServicoRepository, funcionarioRepository,
+                usuarioRepository);
+        registrarAvaliacaoUseCase = new RegistrarAvaliacaoUseCase(avaliacaoFuncionarioRepository, funcionarioRepository,
+                usuarioRepository);
+        renovarContratoUseCase = new RenovarContratoUseCase(funcionarioRepository, avaliacaoFuncionarioRepository,
+                usuarioRepository);
+        gerarDespesasMensaisUseCase = new GerarDespesasMensaisUseCase(funcionarioRepository, despesaRepository,
+                orcamentoRepository);
     }
 }
