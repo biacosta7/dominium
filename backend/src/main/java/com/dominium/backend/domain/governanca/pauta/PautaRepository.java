@@ -1,7 +1,5 @@
 package com.dominium.backend.domain.governanca.pauta;
 
-import com.dominium.backend.domain.unidade.UnidadeId;
-
 import java.util.List;
 import java.util.Optional;
 
