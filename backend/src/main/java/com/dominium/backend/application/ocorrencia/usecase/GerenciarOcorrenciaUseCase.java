@@ -18,9 +18,11 @@ public class GerenciarOcorrenciaUseCase {
     }
 
     public Ocorrencia executar(OcorrenciaRequestDTO dto) {
+        if (dto.getUnidadeId() == null) {
+            throw new RuntimeException("Ocorrência deve estar vinculada a uma unidade");
+        }
+        
         Ocorrencia ocorrencia = new Ocorrencia();
-
-        // Agora esses métodos existem na classe Ocorrencia
         ocorrencia.setDescricao(dto.getDescricao());
         ocorrencia.setUnidadeId(new UnidadeId(dto.getUnidadeId()));
         ocorrencia.setDataRegistro(LocalDateTime.now());

@@ -1,7 +1,6 @@
 package com.dominium.backend.application.funcionario.usecase;
 
 import com.dominium.backend.domain.funcionario.Funcionario;
-import com.dominium.backend.domain.funcionario.FuncionarioId;
 import com.dominium.backend.domain.funcionario.OrdemServico;
 import com.dominium.backend.domain.funcionario.OrdemServicoId;
 import com.dominium.backend.domain.funcionario.repository.FuncionarioRepository;
@@ -22,8 +21,8 @@ public class EncerrarOrdemServicoUseCase {
     private final UsuarioRepository usuarioRepository;
 
     public EncerrarOrdemServicoUseCase(OrdemServicoRepository ordemServicoRepository,
-                                        FuncionarioRepository funcionarioRepository,
-                                        UsuarioRepository usuarioRepository) {
+            FuncionarioRepository funcionarioRepository,
+            UsuarioRepository usuarioRepository) {
         this.ordemServicoRepository = ordemServicoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.usuarioRepository = usuarioRepository;

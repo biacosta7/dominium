@@ -1,85 +1,93 @@
-// package com.dominium.backend.application.multa.usecase;
+package com.dominium.backend.application.multa.usecase;
 
-// import java.math.BigDecimal;
-// import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-// import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 
-// import com.dominium.backend.application.multa.dto.MultaResponseDTO;
-// import com.dominium.backend.domain.multa.Multa;
-// import com.dominium.backend.domain.multa.StatusMulta;
-// import com.dominium.backend.domain.multa.TipoValorMulta;
-// import com.dominium.backend.domain.multa.repository.MultaRepository;
-// import com.dominium.backend.domain.ocorrencia.Ocorrencia;
-// import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
+import com.dominium.backend.application.multa.dto.MultaResponseDTO;
+import com.dominium.backend.domain.multa.Multa;
+import com.dominium.backend.domain.multa.StatusMulta;
+import com.dominium.backend.domain.multa.TipoValorMulta;
+import com.dominium.backend.domain.multa.repository.MultaRepository;
+import com.dominium.backend.domain.ocorrencia.Ocorrencia;
+import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
+import com.dominium.backend.domain.unidade.Unidade;
+import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 
-// @Service
-// public class CreateMultaAutomaticaUseCase {
+@Service
+public class CreateMultaAutomaticaUseCase {
 
-//     private final MultaRepository multaRepository;
-//     private final OcorrenciaRepository ocorrenciaRepository;
+    private final MultaRepository multaRepository;
+    private final OcorrenciaRepository ocorrenciaRepository;
+    private final UnidadeRepository unidadeRepository;
 
-//     public CreateMultaAutomaticaUseCase(
-//             MultaRepository multaRepository,
-//             OcorrenciaRepository ocorrenciaRepository
-//     ) {
-//         this.multaRepository = multaRepository;
-//         this.ocorrenciaRepository = ocorrenciaRepository;
-//     }
+    public CreateMultaAutomaticaUseCase(
+            MultaRepository multaRepository,
+            OcorrenciaRepository ocorrenciaRepository,
+            UnidadeRepository unidadeRepository
+    ) {
+        this.multaRepository = multaRepository;
+        this.ocorrenciaRepository = ocorrenciaRepository;
+        this.unidadeRepository = unidadeRepository;
+    }
 
-//     public MultaResponseDTO execute(Long ocorrenciaId) {
+    public MultaResponseDTO execute(Long ocorrenciaId) {
 
-//         Ocorrencia ocorrencia = ocorrenciaRepository.findById(ocorrenciaId)
-//                 .orElseThrow(() ->
-//                         new IllegalArgumentException("Ocorrência não encontrada."));
+        Ocorrencia ocorrencia = ocorrenciaRepository.buscarPorId(ocorrenciaId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Ocorrência não encontrada."));
 
-//         long reincidencias = multaRepository.countByUnidadeIdAndDescricao(
-//                 ocorrencia.getUnidade().getId(),
-//                 ocorrencia.getDescricao()
-//         );
+        Unidade unidade = unidadeRepository.findById(ocorrencia.getUnidadeId())
+                .orElseThrow(() -> new IllegalArgumentException("Unidade vinculada à ocorrência não encontrada."));
 
-//         BigDecimal valorBase = definirValorBase(ocorrencia);
+        long reincidencias = multaRepository.countByUnidadeIdAndDescricao(
+                ocorrencia.getUnidadeId(),
+                ocorrencia.getDescricao()
+        );
 
-//         BigDecimal valorFinal = aplicarProgressividade(
-//                 valorBase,
-//                 reincidencias
-//         );
+        BigDecimal valorBase = definirValorBase(ocorrencia);
 
-//         Multa multa = new Multa();
-//         multa.setOcorrenciaId(ocorrencia.getId());
-//         multa.setUnidade(ocorrencia.getUnidade());
-//         multa.setDescricao(ocorrencia.getDescricao());
-//         multa.setTipoValor(TipoValorMulta.FIXO);
-//         multa.setValor(valorFinal);
-//         multa.setValorBase(valorBase);
-//         multa.setStatus(StatusMulta.ABERTA);
-//         multa.setReincidencia((int) reincidencias);
-//         multa.setDataCriacao(LocalDateTime.now());
+        BigDecimal valorFinal = aplicarProgressividade(
+                valorBase,
+                reincidencias
+        );
 
-//         Multa salva = multaRepository.save(multa);
+        Multa multa = new Multa();
+        multa.setOcorrenciaId(ocorrencia.getId());
+        multa.setUnidade(unidade);
+        multa.setDescricao(ocorrencia.getDescricao());
+        multa.setTipoValor(TipoValorMulta.FIXO);
+        multa.setValor(valorFinal);
+        multa.setValorBase(valorBase);
+        multa.setStatus(StatusMulta.ABERTA);
+        multa.setReincidencia((int) reincidencias);
+        multa.setDataCriacao(LocalDateTime.now());
 
-//         return MultaResponseDTO.fromEntity(salva);
-//     }
+        Multa salva = multaRepository.save(multa);
 
-//     private BigDecimal definirValorBase(Ocorrencia ocorrencia) {
-//         // Regra inicial simples.
-//         // Futuramente isso pode vir de configuração do condomínio.
-//         return BigDecimal.valueOf(150.00);
-//     }
+        return MultaResponseDTO.fromEntity(salva);
+    }
 
-//     private BigDecimal aplicarProgressividade(
-//             BigDecimal valorBase,
-//             long reincidencias
-//     ) {
-//         if (reincidencias == 0) {
-//             return valorBase;
-//         }
+    private BigDecimal definirValorBase(Ocorrencia ocorrencia) {
+        // Regra inicial simples.
+        // Futuramente isso pode vir de configuração do condomínio.
+        return BigDecimal.valueOf(150.00);
+    }
 
-//         BigDecimal percentual =
-//                 BigDecimal.valueOf(0.10 * reincidencias);
+    private BigDecimal aplicarProgressividade(
+            BigDecimal valorBase,
+            long reincidencias
+    ) {
+        if (reincidencias == 0) {
+            return valorBase;
+        }
 
-//         return valorBase.add(
-//                 valorBase.multiply(percentual)
-//         );
-//     }
-// }
+        BigDecimal percentual =
+                BigDecimal.valueOf(0.10 * reincidencias);
+
+        return valorBase.add(
+                valorBase.multiply(percentual)
+        );
+    }
+}

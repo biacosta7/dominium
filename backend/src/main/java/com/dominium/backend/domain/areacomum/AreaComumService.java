@@ -1,7 +1,5 @@
 package com.dominium.backend.domain.areacomum;
 
-import com.dominium.backend.domain.areacomum.AreaComum;
-import com.dominium.backend.domain.areacomum.AreaComumRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,7 +7,7 @@ public class AreaComumService {
 
     private final AreaComumRepository repository;
 
-    public AreaComumService(AreaComumRepository repository){
+    public AreaComumService(AreaComumRepository repository) {
         this.repository = repository;
     }
 
