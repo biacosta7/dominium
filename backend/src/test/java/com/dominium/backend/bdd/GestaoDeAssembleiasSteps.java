@@ -6,6 +6,7 @@ import com.dominium.backend.domain.assembleia.Assembleia;
 import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.assembleia.StatusAssembleia;
 import com.dominium.backend.domain.governanca.pauta.Pauta;
+import com.dominium.backend.domain.governanca.pauta.StatusPauta;
 import com.dominium.backend.domain.usuario.TipoUsuario;
 import com.dominium.backend.domain.usuario.Usuario;
 
@@ -82,9 +83,13 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
         assembleiaIdContexto = assembleia.getId();
 
         if ("possui".equals(possuiPautas)) {
+            assembleia.setPauta(java.util.List.of("Pauta 1"));
+            assembleiaRepository.save(assembleia); // Update the entity with the pauta
+            
             Pauta pauta = new Pauta();
             pauta.setAssembleiaId(assembleiaIdContexto);
             pauta.setTitulo("Pauta 1");
+            pauta.setStatus(StatusPauta.ABERTA);
             pautaRepository.save(pauta);
         }
     }
