@@ -16,6 +16,7 @@ import com.dominium.backend.application.ocorrencia.usecase.*;
 import com.dominium.backend.application.recurso.usecase.*;
 import com.dominium.backend.application.reservas.usecase.*;
 import com.dominium.backend.application.security.PasswordEncryptor;
+import com.dominium.backend.application.taxa.usecase.*;
 import com.dominium.backend.application.unidade.usecase.*;
 import com.dominium.backend.application.usuario.usecase.*;
 
@@ -59,6 +60,9 @@ import com.dominium.backend.domain.multa.StatusMulta;
 import com.dominium.backend.domain.multa.repository.MultaRepository;
 import com.dominium.backend.domain.ocorrencia.Ocorrencia;
 import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
+import com.dominium.backend.domain.taxa.TaxaCondominial;
+import com.dominium.backend.domain.taxa.TaxaId;
+import com.dominium.backend.domain.taxa.repository.TaxaCondominialRepository;
 import com.dominium.backend.domain.recurso.Recurso;
 import com.dominium.backend.domain.recurso.RecursoId;
 import com.dominium.backend.domain.recurso.repository.RecursoRepository;
@@ -102,6 +106,7 @@ public class DominiumFuncionalidade {
     protected FuncionarioRepository funcionarioRepository;
     protected AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepository;
     protected OrdemServicoRepository ordemServicoRepository;
+    protected TaxaCondominialRepository taxaCondominialRepository;
 
     // ── Use Cases: Unidades ──────────────────────────────────────────────────────
     protected CreateUnidadeUseCase createUnidadeUseCase;
@@ -175,6 +180,12 @@ public class DominiumFuncionalidade {
     protected RegistrarAvaliacaoUseCase registrarAvaliacaoUseCase;
     protected RenovarContratoUseCase renovarContratoUseCase;
     protected GerarDespesasMensaisUseCase gerarDespesasMensaisUseCase;
+    
+    // ── Use Cases: Taxas ─────────────────────────────────────────────────────────
+    protected GerarTaxaMensalUseCase gerarTaxaMensalUseCase;
+    protected AtualizarValorTaxaUseCase atualizarValorTaxaUseCase;
+    protected RegistrarPagamentoTaxaUseCase registrarPagamentoTaxaUseCase;
+    protected ConsultarHistoricoTaxasUseCase consultarHistoricoTaxasUseCase;
 
     // ── Captura de exceção ───────────────────────────────────────────────────────
     protected RuntimeException excecao;
@@ -709,6 +720,46 @@ public class DominiumFuncionalidade {
                                 && os.getStatus() == StatusOrdemServico.ABERTA);
             }
         };
+
+        taxaCondominialRepository = new TaxaCondominialRepository() {
+            private final Map<Long, TaxaCondominial> db = new HashMap<>();
+
+            @Override
+            public void salvar(TaxaCondominial taxa) {
+                if (taxa.getId() == null) {
+                    taxa.setId(new TaxaId(currentId++));
+                }
+                db.put(taxa.getId().getValor(), taxa);
+            }
+
+            @Override
+            public void atualizar(TaxaCondominial taxa) {
+                salvar(taxa);
+            }
+
+            @Override
+            public Optional<TaxaCondominial> buscarPorId(TaxaId id) {
+                return Optional.ofNullable(db.get(id.getValor()));
+            }
+
+            @Override
+            public List<TaxaCondominial> listarPorUnidade(UnidadeId unidadeId) {
+                return db.values().stream()
+                        .filter(t -> t.getUnidadeId().equals(unidadeId))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public List<TaxaCondominial> listarTodas() {
+                return List.copyOf(db.values());
+            }
+
+            @Override
+            public boolean existeTaxaAtrasadaPorUnidade(UnidadeId unidadeId) {
+                return db.values().stream()
+                        .anyMatch(t -> t.getUnidadeId().equals(unidadeId) && t.getStatus().name().equals("ATRASADA"));
+            }
+        };
     }
 
     // ────────────────────────────────────────────────────────────────────────────
@@ -798,6 +849,12 @@ public class DominiumFuncionalidade {
         // ── Reservas ─────────────────────────────────────────────────────────────
         AreaComumService areaComumService = new AreaComumService(areaComumRepository);
         PoliticaReserva politicaReserva = new PoliticaReserva();
+        
+        // ── Taxas ───────────────────────────────────────────────────────────────
+        gerarTaxaMensalUseCase = new GerarTaxaMensalUseCase(taxaCondominialRepository);
+        atualizarValorTaxaUseCase = new AtualizarValorTaxaUseCase(taxaCondominialRepository);
+        registrarPagamentoTaxaUseCase = new RegistrarPagamentoTaxaUseCase(taxaCondominialRepository);
+        consultarHistoricoTaxasUseCase = new ConsultarHistoricoTaxasUseCase(taxaCondominialRepository);
         criarReservaUseCase = new CriarReservaUseCase(reservaRepository, politicaReserva, areaComumService);
         cancelarReservaUseCase = new CancelarReservaUseCase(reservaRepository, filaDeEsperaRepository,
                 notificacaoService, unidadeRepository, usuarioRepository);

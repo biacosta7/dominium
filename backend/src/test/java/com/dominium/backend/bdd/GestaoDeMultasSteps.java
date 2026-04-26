@@ -134,8 +134,8 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
         multaIdContexto = multa.getId();
     }
 
-    @When("o sistema registra o {string} da {string}")
-    public void o_sistema_registra_o_pagamento_da_multa(String p1, String p2) {
+    @When("o sistema registra o {string} da \"multa\"")
+    public void o_sistema_registra_o_pagamento_da_multa(String p1) {
         try {
             RegistrarPagamentoRequestDTO dto = new RegistrarPagamentoRequestDTO();
             dto.setValorPago(new BigDecimal("150.00"));

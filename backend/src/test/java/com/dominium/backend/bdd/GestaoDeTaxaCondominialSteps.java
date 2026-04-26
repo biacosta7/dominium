@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.dominium.backend.application.taxa.dto.AtualizarTaxaRequestDTO;
 import com.dominium.backend.application.taxa.dto.TaxaRequestDTO;
 import com.dominium.backend.application.taxa.dto.TaxaResponseDTO;
-import com.dominium.backend.application.taxa.usecase.*;
 import com.dominium.backend.domain.taxa.StatusTaxa;
 import com.dominium.backend.domain.taxa.TaxaCondominial;
 import com.dominium.backend.domain.taxa.TaxaId;
-import com.dominium.backend.domain.taxa.repository.TaxaCondominialRepository;
 import com.dominium.backend.domain.unidade.StatusAdimplencia;
 import com.dominium.backend.domain.unidade.Unidade;
 import com.dominium.backend.domain.unidade.UnidadeId;
@@ -17,24 +15,12 @@ import com.dominium.backend.domain.unidade.UnidadeId;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public class GestaoDeTaxaCondominialSteps extends DominiumFuncionalidade {
-
-    @Autowired
-    private TaxaCondominialRepository taxaCondominialRepository;
-    @Autowired
-    private GerarTaxaMensalUseCase gerarTaxaMensalUseCase;
-    @Autowired
-    private AtualizarValorTaxaUseCase atualizarValorTaxaUseCase;
-    @Autowired
-    private RegistrarPagamentoTaxaUseCase registrarPagamentoTaxaUseCase;
-    @Autowired
-    private ConsultarHistoricoTaxasUseCase consultarHistoricoTaxasUseCase;
 
     private Long unidadeIdContexto;
     private Long taxaIdContexto;
@@ -84,8 +70,7 @@ public class GestaoDeTaxaCondominialSteps extends DominiumFuncionalidade {
                 new UnidadeId(unidadeIdContexto),
                 new BigDecimal(valorBase),
                 BigDecimal.ZERO,
-                LocalDate.now().plusDays(10)
-        );
+                LocalDate.now().plusDays(10));
         taxaCondominialRepository.salvar(taxa);
         taxaIdContexto = taxa.getId().getValor();
     }
@@ -114,8 +99,8 @@ public class GestaoDeTaxaCondominialSteps extends DominiumFuncionalidade {
         uma_taxa_existe_com_valor_base(p1, status, p3, valorBase); // Reutiliza o Given anterior
     }
 
-    @When("o sistema registra o {string} da {string}")
-    public void o_sistema_registra_o_pagamento(String p1, String p2) {
+    @When("o sistema registra o {string} da \"taxa\"")
+    public void o_sistema_registra_o_pagamento(String p1) {
         try {
             registrarPagamentoTaxaUseCase.executar(taxaIdContexto);
         } catch (RuntimeException e) {
@@ -140,8 +125,7 @@ public class GestaoDeTaxaCondominialSteps extends DominiumFuncionalidade {
                     new UnidadeId(unidadeIdContexto),
                     new BigDecimal("300.00"),
                     BigDecimal.ZERO,
-                    LocalDate.now().minusMonths(i)
-            );
+                    LocalDate.now().minusMonths(i));
             taxaCondominialRepository.salvar(taxa);
         }
     }
@@ -176,7 +160,8 @@ public class GestaoDeTaxaCondominialSteps extends DominiumFuncionalidade {
 
     @When("o sistema verifica se existe taxa atrasada para a {string}")
     public void o_sistema_verifica_se_existe_taxa_atrasada(String p1) {
-        existePendenciaContexto = taxaCondominialRepository.existeTaxaAtrasadaPorUnidade(new UnidadeId(unidadeIdContexto));
+        existePendenciaContexto = taxaCondominialRepository
+                .existeTaxaAtrasadaPorUnidade(new UnidadeId(unidadeIdContexto));
     }
 
     @Then("o sistema deve retornar que existe pendência")
