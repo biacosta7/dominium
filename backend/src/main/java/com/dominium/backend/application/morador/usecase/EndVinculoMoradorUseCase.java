@@ -39,7 +39,10 @@ public class EndVinculoMoradorUseCase {
             
             List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId, StatusVinculo.ATIVO);
             boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()
-                    .anyMatch(v -> v.getUnidade().getId().equals(unidadeId) && v.getTipo() == TipoVinculo.TITULAR);
+                    .anyMatch(v ->
+                            v.getTipo() == TipoVinculo.TITULAR &&
+                            v.getUnidade().equals(vinculoParaRemover.getUnidade())
+                    );
             
             if (!isTitularDaMesmaUnidade) {
                 throw new IllegalStateException("Apenas o titular da unidade ou o síndico podem remover um morador");

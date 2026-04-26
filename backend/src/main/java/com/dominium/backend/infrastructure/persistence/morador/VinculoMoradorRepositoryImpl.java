@@ -78,7 +78,7 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
         } else {
             String sql = "UPDATE vinculos_morador SET unidade_id = ?, usuario_id = ?, tipo = ?, status = ? WHERE id = ?";
             jdbcTemplate.update(sql,
-                vinculo.getUnidade().getId(), 
+                vinculo.getUnidade().getId().getValor(),
                 vinculo.getUsuario().getId(), 
                 vinculo.getTipo().name(), 
                 vinculo.getStatus().name(), 
@@ -107,7 +107,7 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
     public List<VinculoMorador> findByUsuarioAndUnidade(Long usuarioId, Long unidadeId) {
 
         String sql = """
-        SELECT * FROM vinculo_morador
+        SELECT * FROM vinculos_morador
         WHERE usuario_id = ? AND unidade_id = ?
     """;
 

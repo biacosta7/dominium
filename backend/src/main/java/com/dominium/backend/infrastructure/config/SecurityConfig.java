@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/votos/**").permitAll()
                 .requestMatchers("/api/fila/**").permitAll()
                 .requestMatchers("/api/unidades/**").permitAll()
+                .requestMatchers("/api/moradores/**").permitAll()
                 .requestMatchers(
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
