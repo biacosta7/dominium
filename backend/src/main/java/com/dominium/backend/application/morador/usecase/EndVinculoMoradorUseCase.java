@@ -35,7 +35,7 @@ public class EndVinculoMoradorUseCase {
         // Se for síndico, tem permissão total
         if (requester.getTipo() != TipoUsuario.SINDICO) {
             // Se não for síndico, verifica se o solicitante é titular da mesma unidade
-            Long unidadeId = vinculoParaRemover.getUnidade().getId();
+            Long unidadeId = vinculoParaRemover.getUnidade().getId().getValor();
             
             List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId, StatusVinculo.ATIVO);
             boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()

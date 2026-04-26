@@ -3,6 +3,7 @@ package com.dominium.backend.application.unidade.usecase;
 import org.springframework.stereotype.Service;
 
 import com.dominium.backend.domain.unidade.Unidade;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 
 @Service
@@ -17,7 +18,7 @@ public class DeleteUnidadeUseCase {
     public void execute(Long id) {
 
         // 1. Buscar unidade
-        Unidade unidade = unidadeRepository.findById(id)
+        Unidade unidade = unidadeRepository.findById(new UnidadeId(id))
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada"));
 
         // 2. Regra de negócio: não pode deletar com débito
@@ -27,6 +28,6 @@ public class DeleteUnidadeUseCase {
         }
 
         // 3. Deletar
-        unidadeRepository.deleteById(id);
+        unidadeRepository.deleteById(new UnidadeId(id));
     }
 }

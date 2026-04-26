@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+import com.dominium.backend.domain.multa.MultaId;
 @Getter
 @AllArgsConstructor
 public class Recurso {
     private RecursoId id;
-    private Long multaId;
+    private MultaId multaId;
     private UUID moradorId;
     private String motivo;
     private LocalDateTime dataSolicitacao;
@@ -17,7 +17,7 @@ public class Recurso {
     private String justificativaSindico;
     private LocalDateTime dataDecisao;
 
-    public static Recurso abrir(Long multaId, UUID moradorId, String motivo) {
+    public static Recurso abrir(MultaId multaId, UUID moradorId, String motivo) {
         if (motivo == null || motivo.trim().isEmpty()) {
             throw new IllegalArgumentException("O motivo do recurso é obrigatório.");
         }

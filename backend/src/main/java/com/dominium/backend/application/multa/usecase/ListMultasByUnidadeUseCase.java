@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.dominium.backend.application.multa.dto.MultaResponseDTO;
 import com.dominium.backend.domain.multa.repository.MultaRepository;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 
 @Service
@@ -24,11 +25,11 @@ public class ListMultasByUnidadeUseCase {
 
     public List<MultaResponseDTO> execute(Long unidadeId) {
 
-        unidadeRepository.findById(unidadeId)
+        unidadeRepository.findById(new UnidadeId(unidadeId))
                 .orElseThrow(() ->
                         new IllegalArgumentException("Unidade não encontrada."));
 
-        return multaRepository.findByUnidadeId(unidadeId)
+        return multaRepository.findByUnidadeId(new UnidadeId(unidadeId))
                 .stream()
                 .map(MultaResponseDTO::fromEntity)
                 .toList();

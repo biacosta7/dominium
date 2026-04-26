@@ -36,9 +36,9 @@ public class MultaResponseDTO {
     public static MultaResponseDTO fromEntity(Multa multa) {
         MultaResponseDTO dto = new MultaResponseDTO();
 
-        dto.setId(multa.getId());
+        dto.setId(multa.getId().getValor());
         dto.setOcorrenciaId(multa.getOcorrenciaId());
-        dto.setUnidadeId(multa.getUnidade().getId());
+        dto.setUnidadeId(multa.getUnidade().getId().getValor());
 
         dto.setDescricao(multa.getDescricao());
         dto.setValor(multa.getValor());

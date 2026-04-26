@@ -18,7 +18,7 @@ public class VinculoResponseDTO {
     public static VinculoResponseDTO fromEntity(VinculoMorador vinculo) {
         VinculoResponseDTO dto = new VinculoResponseDTO();
         dto.setId(vinculo.getId());
-        dto.setUnidadeId(vinculo.getUnidade().getId());
+        dto.setUnidadeId(vinculo.getUnidade().getId().getValor());
         if (vinculo.getUsuario() != null) {
             UsuarioResponseDTO usuarioDto = new UsuarioResponseDTO();
             usuarioDto.setId(vinculo.getUsuario().getId());

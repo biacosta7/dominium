@@ -11,6 +11,7 @@ import com.dominium.backend.domain.multa.Multa;
 import com.dominium.backend.domain.multa.StatusMulta;
 import com.dominium.backend.domain.multa.repository.MultaRepository;
 import com.dominium.backend.domain.unidade.Unidade;
+import com.dominium.backend.domain.unidade.UnidadeId; // Importado
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 
 @Service
@@ -28,9 +29,11 @@ public class CreateMultaManualUseCase {
 
     public MultaResponseDTO execute(CreateMultaRequestDTO request) {
 
-        Unidade unidade = unidadeRepository.findById(request.getUnidadeId())
+        // Converte o Long do DTO para UnidadeId ao buscar no repositório
+        Unidade unidade = unidadeRepository.findById(new UnidadeId(request.getUnidadeId()))
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada."));
 
+        // unidade.getId() agora já retorna um UnidadeId, então o repositório aceita direto
         long reincidencias = multaRepository.countByUnidadeIdAndDescricao(
                 unidade.getId(),
                 request.getDescricao()
@@ -53,6 +56,7 @@ public class CreateMultaManualUseCase {
 
         Multa salva = multaRepository.save(multa);
 
+        // O mapeamento para o DTO de resposta agora acontece no .fromEntity()
         return MultaResponseDTO.fromEntity(salva);
     }
 

@@ -1,5 +1,6 @@
 package com.dominium.backend.infrastructure.persistence.recurso;
 
+import com.dominium.backend.domain.multa.MultaId;
 import com.dominium.backend.domain.recurso.Recurso;
 import com.dominium.backend.domain.recurso.RecursoId;
 import com.dominium.backend.domain.recurso.StatusRecurso;
@@ -52,10 +53,10 @@ public class RecursoRepositoryImpl implements RecursoRepository {
         return jdbcTemplate.query(sql, this::mapRowToRecurso, id.getValue()).stream().findFirst();
     }
 
-    private Recurso mapRowToRecurso(ResultSet rs, int rowNum) throws SQLException {
+        private Recurso mapRowToRecurso(ResultSet rs, int rowNum) throws SQLException {
         return new Recurso(
                 new RecursoId(rs.getObject("id", UUID.class)),
-                rs.getLong("multa_id"), // Lendo como Long agora
+                new MultaId(rs.getLong("multa_id")),
                 rs.getObject("morador_id", UUID.class),
                 rs.getString("motivo"),
                 rs.getTimestamp("data_solicitacao").toLocalDateTime(),

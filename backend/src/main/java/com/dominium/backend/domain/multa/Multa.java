@@ -13,7 +13,7 @@ import lombok.*;
 @EqualsAndHashCode(of = "id")
 
 public class Multa {
-    private Long id;
+    private MultaId id;
 
     // Pode ser null (multa manual)
     private Long ocorrenciaId;

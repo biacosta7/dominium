@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.dominium.backend.application.multa.dto.MultaResponseDTO;
 import com.dominium.backend.application.multa.dto.RegistrarPagamentoRequestDTO;
 import com.dominium.backend.domain.multa.Multa;
+import com.dominium.backend.domain.multa.MultaId;
 import com.dominium.backend.domain.multa.StatusMulta;
 import com.dominium.backend.domain.multa.repository.MultaRepository;
 
@@ -25,7 +26,7 @@ public class RegistrarPagamentoMultaUseCase {
             Long multaId,
             RegistrarPagamentoRequestDTO request
     ) {
-        Multa multa = multaRepository.findById(multaId)
+        Multa multa = multaRepository.findById(new MultaId(multaId))
                 .orElseThrow(() ->
                         new IllegalArgumentException("Multa não encontrada."));
 

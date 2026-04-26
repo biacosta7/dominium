@@ -173,12 +173,27 @@ CREATE TABLE multas (
 );
 
 CREATE TABLE IF NOT EXISTS recurso_multa (
-    id UUID PRIMARY KEY,
-    multa_id UUID NOT NULL,
-    morador_id UUID NOT NULL,
+    id UUID PRIMARY KEY, -- Mantém UUID se o seu RecursoId for UUID
+    multa_id BIGINT NOT NULL, -- Alterado de UUID para BIGINT para bater com MultaId
+    morador_id BIGINT NOT NULL, -- Alterado de UUID para BIGINT para bater com UsuarioId
     motivo TEXT NOT NULL,
     data_solicitacao TIMESTAMP NOT NULL,
     status VARCHAR(20) NOT NULL,
     justificativa_sindico TEXT,
-    data_decisao TIMESTAMP
+    data_decisao TIMESTAMP,
+    
+    -- É boa prática adicionar as chaves estrangeiras para garantir a integridade
+    CONSTRAINT fk_recurso_multa FOREIGN KEY (multa_id) REFERENCES multas(id),
+    CONSTRAINT fk_recurso_usuario FOREIGN KEY (morador_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS historico_titularidade (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    unidade_id BIGINT NOT NULL,
+    proprietario_anterior_id BIGINT NOT NULL,
+    novo_proprietario_id BIGINT NOT NULL,
+    data_transferencia TIMESTAMP NOT NULL,
+    CONSTRAINT fk_hist_unidade FOREIGN KEY (unidade_id) REFERENCES unidades(id),
+    CONSTRAINT fk_hist_prop_ant FOREIGN KEY (proprietario_anterior_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_hist_prop_novo FOREIGN KEY (novo_proprietario_id) REFERENCES usuarios(id)
 );
