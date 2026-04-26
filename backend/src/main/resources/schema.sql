@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS unidades (
     status VARCHAR(50),
     saldo_devedor DECIMAL(19, 2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_proprietario FOREIGN KEY (proprietario_id) REFERENCES usuarios(id),
     CONSTRAINT fk_inquilino FOREIGN KEY (inquilino_id) REFERENCES usuarios(id),
     CONSTRAINT uk_numero_bloco UNIQUE(numero, bloco)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS vinculos_morador (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
