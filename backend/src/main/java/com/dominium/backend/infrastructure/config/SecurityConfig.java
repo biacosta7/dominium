@@ -32,6 +32,11 @@ public class SecurityConfig {
                 .requestMatchers("/pautas/**").permitAll()
                 .requestMatchers("/votos/**").permitAll()
                 .requestMatchers("/api/fila/**").permitAll()
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html"
+                ).permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
