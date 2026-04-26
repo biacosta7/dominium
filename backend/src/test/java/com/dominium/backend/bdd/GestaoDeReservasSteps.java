@@ -40,8 +40,7 @@ public class GestaoDeReservasSteps extends DominiumFuncionalidade {
         area.setNome("Salão de Festas");
         area.setCapacidadeMaxima(50);
         area.setStatus(StatusArea.DISPONIVEL);
-        // areaComumRepository mock save is not in interface, so we just assume it
-        // exists if findById works
+        areaComumRepository.save(area);
     }
 
     @Given("a {string} {string} conflito de horário")
