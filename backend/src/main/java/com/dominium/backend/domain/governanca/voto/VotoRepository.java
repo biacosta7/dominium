@@ -1,0 +1,18 @@
+package com.dominium.backend.domain.governanca.voto;
+
+import com.dominium.backend.domain.governanca.pauta.PautaId;
+import com.dominium.backend.domain.unidade.UnidadeId;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface VotoRepository {
+
+    Voto save(Voto voto);
+
+    Optional<Voto> findById(VotoId votoId);
+
+    List<Voto> buscarPorPauta(PautaId pautaId);
+
+    boolean findByPautaAndUnidade(PautaId pautaId, UnidadeId unidadeId);
+}

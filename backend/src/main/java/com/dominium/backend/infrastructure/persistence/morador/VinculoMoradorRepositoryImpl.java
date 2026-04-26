@@ -100,6 +100,17 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
     }
 
     @Override
+    public List<VinculoMorador> findByUsuarioAndUnidade(Long usuarioId, Long unidadeId) {
+
+        String sql = """
+        SELECT * FROM vinculo_morador
+        WHERE usuario_id = ? AND unidade_id = ?
+    """;
+
+        return jdbcTemplate.query(sql, rowMapper, usuarioId, unidadeId);
+    }
+
+    @Override
     public long countByUnidadeIdAndStatus(Long unidadeId, StatusVinculo status) {
         Long count = jdbcTemplate.queryForObject("SELECT count(*) FROM vinculos_morador WHERE unidade_id = ? AND status = ?", Long.class, unidadeId, status.name());
         return count != null ? count : 0L;
