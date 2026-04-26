@@ -79,8 +79,9 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
                 ps.setBigDecimal(6, unidade.getSaldoDevedor());
                 return ps;
             }, keyHolder);
-            if (keyHolder.getKey() != null) {
-                unidade.setId(keyHolder.getKey().longValue());
+            if (keyHolder.getKeys() != null) {
+                Number id = (Number) keyHolder.getKeys().get("id");
+                unidade.setId(id.longValue());
             }
         } else {
             String sql = "UPDATE unidades SET numero = ?, bloco = ?, proprietario_id = ?, inquilino_id = ?, status = ?, saldo_devedor = ? WHERE id = ?";
