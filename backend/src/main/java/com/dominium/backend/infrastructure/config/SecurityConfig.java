@@ -26,6 +26,12 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/**").permitAll()
                 .requestMatchers("/unidades/**").permitAll()
                 .requestMatchers("/assembleias/**").permitAll()
+                .requestMatchers("/multas/**").permitAll()
+                .requestMatchers("/ocorrencias/**").permitAll()
+                .requestMatchers("/reservas/**").permitAll()
+                .requestMatchers("/pautas/**").permitAll()
+                .requestMatchers("/votos/**").permitAll()
+                .requestMatchers("/api/fila/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
