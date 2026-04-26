@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.dominium.backend.domain.financeiro.CategoriaDespesa;
 
 import com.dominium.backend.application.financeiro.dto.DespesaRequestDTO;
 import com.dominium.backend.application.financeiro.dto.DespesaResponseDTO;
@@ -22,6 +25,10 @@ import com.dominium.backend.application.financeiro.usecase.AprovarDespesaExtraor
 import com.dominium.backend.application.financeiro.usecase.CadastrarOrcamentoUseCase;
 import com.dominium.backend.application.financeiro.usecase.ConsultarSaldoUseCase;
 import com.dominium.backend.application.financeiro.usecase.RegistrarDespesaUseCase;
+import com.dominium.backend.application.financeiro.usecase.GetOrcamentoPorAnoUseCase;
+import com.dominium.backend.application.financeiro.usecase.ListOrcamentosUseCase;
+import com.dominium.backend.application.financeiro.usecase.ListDespesasPorOrcamentoUseCase;
+import com.dominium.backend.application.financeiro.usecase.GetDespesaUseCase;
 import com.dominium.backend.domain.financeiro.Despesa;
 import com.dominium.backend.domain.financeiro.Orcamento;
 import com.dominium.backend.domain.shared.exceptions.ExceptionHandler;
@@ -36,6 +43,10 @@ public class FinanceiroController {
     private final RegistrarDespesaUseCase registrarDespesaUseCase;
     private final AprovarDespesaExtraordinariaUseCase aprovarDespesaExtraordinariaUseCase;
     private final ConsultarSaldoUseCase consultarSaldoUseCase;
+    private final GetOrcamentoPorAnoUseCase getOrcamentoPorAnoUseCase;
+    private final ListOrcamentosUseCase listOrcamentosUseCase;
+    private final ListDespesasPorOrcamentoUseCase listDespesasPorOrcamentoUseCase;
+    private final GetDespesaUseCase getDespesaUseCase;
     private final ExceptionHandler exceptionHandler;
 
     public FinanceiroController(
@@ -43,11 +54,19 @@ public class FinanceiroController {
             RegistrarDespesaUseCase registrarDespesaUseCase,
             AprovarDespesaExtraordinariaUseCase aprovarDespesaExtraordinariaUseCase,
             ConsultarSaldoUseCase consultarSaldoUseCase,
+            GetOrcamentoPorAnoUseCase getOrcamentoPorAnoUseCase,
+            ListOrcamentosUseCase listOrcamentosUseCase,
+            ListDespesasPorOrcamentoUseCase listDespesasPorOrcamentoUseCase,
+            GetDespesaUseCase getDespesaUseCase,
             ExceptionHandler exceptionHandler) {
         this.cadastrarOrcamentoUseCase = cadastrarOrcamentoUseCase;
         this.registrarDespesaUseCase = registrarDespesaUseCase;
         this.aprovarDespesaExtraordinariaUseCase = aprovarDespesaExtraordinariaUseCase;
         this.consultarSaldoUseCase = consultarSaldoUseCase;
+        this.getOrcamentoPorAnoUseCase = getOrcamentoPorAnoUseCase;
+        this.listOrcamentosUseCase = listOrcamentosUseCase;
+        this.listDespesasPorOrcamentoUseCase = listDespesasPorOrcamentoUseCase;
+        this.getDespesaUseCase = getDespesaUseCase;
         this.exceptionHandler = exceptionHandler;
     }
 
@@ -85,6 +104,46 @@ public class FinanceiroController {
         return exceptionHandler.withHandler(() -> {
             BigDecimal saldo = consultarSaldoUseCase.execute(ano);
             return ResponseEntity.ok(saldo);
+        });
+    }
+
+    @GetMapping("/orcamentos")
+    public ResponseEntity<?> listarOrcamentos() {
+        return exceptionHandler.withHandler(() -> {
+            List<OrcamentoResponseDTO> response = listOrcamentosUseCase.execute()
+                    .stream()
+                    .map(OrcamentoResponseDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(response);
+        });
+    }
+
+    @GetMapping("/orcamentos/{ano}")
+    public ResponseEntity<?> detalharOrcamento(@PathVariable Integer ano) {
+        return exceptionHandler.withHandler(() -> {
+            Orcamento orcamento = getOrcamentoPorAnoUseCase.execute(ano);
+            return ResponseEntity.ok(new OrcamentoResponseDTO(orcamento));
+        });
+    }
+
+    @GetMapping("/orcamentos/{ano}/despesas")
+    public ResponseEntity<?> listarDespesasPorOrcamento(
+            @PathVariable Integer ano,
+            @RequestParam(required = false) CategoriaDespesa categoria) {
+        return exceptionHandler.withHandler(() -> {
+            List<DespesaResponseDTO> response = listDespesasPorOrcamentoUseCase.execute(ano, categoria)
+                    .stream()
+                    .map(DespesaResponseDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(response);
+        });
+    }
+
+    @GetMapping("/despesas/{id}")
+    public ResponseEntity<?> detalharDespesa(@PathVariable Long id) {
+        return exceptionHandler.withHandler(() -> {
+            Despesa despesa = getDespesaUseCase.execute(id);
+            return ResponseEntity.ok(new DespesaResponseDTO(despesa));
         });
     }
 }
