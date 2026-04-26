@@ -96,7 +96,12 @@ public class GestaoDePautasEVotacoesSteps extends DominiumFuncionalidade {
 
     @Given("a {string} {string} o quórum mínimo exigido")
     public void a_pauta_p2_o_quorum_minimo(String p1, String atingiu) {
+        setupUsuarioUnidadeEvinculo("está");
         pautaIdContexto = criarPautaAtiva();
+        
+        if ("atingiu".equals(atingiu)) {
+            votarUseCase.executar(pautaIdContexto, usuarioIdContexto, unidadeIdContexto, OpcaoVoto.FAVOR);
+        }
     }
 
     @When("o síndico encerra a {string}")
