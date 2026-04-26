@@ -2,12 +2,9 @@ package com.dominium.backend.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dominium.backend.application.reservas.dto.CriarReservaRequest;
 import com.dominium.backend.domain.areacomum.AreaComum;
 import com.dominium.backend.domain.areacomum.AreaComumId;
 import com.dominium.backend.domain.areacomum.StatusArea;
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.StatusMulta;
 import com.dominium.backend.domain.reservas.Reserva;
 import com.dominium.backend.domain.reservas.ReservaId;
 import com.dominium.backend.domain.reservas.StatusReserva;
@@ -19,11 +16,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 public class GestaoDeReservasSteps extends DominiumFuncionalidade {
 
@@ -46,7 +40,8 @@ public class GestaoDeReservasSteps extends DominiumFuncionalidade {
         area.setNome("Salão de Festas");
         area.setCapacidadeMaxima(50);
         area.setStatus(StatusArea.DISPONIVEL);
-        // areaComumRepository mock save is not in interface, so we just assume it exists if findById works
+        // areaComumRepository mock save is not in interface, so we just assume it
+        // exists if findById works
     }
 
     @Given("a {string} {string} conflito de horário")

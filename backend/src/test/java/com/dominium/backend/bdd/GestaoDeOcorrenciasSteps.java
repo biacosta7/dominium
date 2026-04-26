@@ -3,9 +3,6 @@ package com.dominium.backend.bdd;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dominium.backend.application.ocorrencia.dto.OcorrenciaRequestDTO;
-import com.dominium.backend.application.ocorrencia.dto.EncerrarOcorrenciaRequestDTO;
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.StatusMulta;
 import com.dominium.backend.domain.ocorrencia.Ocorrencia;
 import com.dominium.backend.domain.ocorrencia.TipoPenalidade;
 import com.dominium.backend.domain.unidade.StatusAdimplencia;
@@ -17,7 +14,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class GestaoDeOcorrenciasSteps extends DominiumFuncionalidade {
 

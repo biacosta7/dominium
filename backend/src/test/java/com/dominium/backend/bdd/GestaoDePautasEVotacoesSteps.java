@@ -2,15 +2,12 @@ package com.dominium.backend.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dominium.backend.application.governanca.voto.dto.VotarRequest;
 import com.dominium.backend.domain.assembleia.Assembleia;
-import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.assembleia.StatusAssembleia;
 import com.dominium.backend.domain.governanca.pauta.Pauta;
 import com.dominium.backend.domain.governanca.pauta.PautaId;
 import com.dominium.backend.domain.governanca.pauta.StatusPauta;
 import com.dominium.backend.domain.governanca.voto.OpcaoVoto;
-import com.dominium.backend.domain.governanca.voto.Voto;
 import com.dominium.backend.domain.morador.StatusVinculo;
 import com.dominium.backend.domain.morador.TipoVinculo;
 import com.dominium.backend.domain.morador.VinculoMorador;
@@ -23,9 +20,6 @@ import com.dominium.backend.domain.usuario.UsuarioId;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class GestaoDePautasEVotacoesSteps extends DominiumFuncionalidade {
 

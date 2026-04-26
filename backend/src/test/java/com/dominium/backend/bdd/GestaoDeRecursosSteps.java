@@ -7,13 +7,8 @@ import com.dominium.backend.application.recurso.dto.JulgarRecursoRequestDTO;
 import com.dominium.backend.domain.multa.Multa;
 import com.dominium.backend.domain.multa.MultaId;
 import com.dominium.backend.domain.multa.StatusMulta;
-import com.dominium.backend.domain.multa.TipoValorMulta;
-import com.dominium.backend.domain.recurso.Recurso;
-import com.dominium.backend.domain.recurso.RecursoId;
 import com.dominium.backend.domain.recurso.StatusRecurso;
-import com.dominium.backend.domain.unidade.StatusAdimplencia;
 import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.usuario.Usuario;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

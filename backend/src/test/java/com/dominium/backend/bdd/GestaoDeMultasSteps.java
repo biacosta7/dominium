@@ -19,7 +19,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class GestaoDeMultasSteps extends DominiumFuncionalidade {
 
@@ -71,7 +70,8 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
     public void o_sistema_aplica_o_valor_da_p1(String p1) {
         assertNull(this.excecao);
         Multa multa = multaRepository.findById(multaIdContexto).orElseThrow();
-        // Se houver reincidência, valor deve ser > 150 (base definida no use case como 150)
+        // Se houver reincidência, valor deve ser > 150 (base definida no use case como
+        // 150)
         assertTrue(multa.getValor().compareTo(new BigDecimal("150.00")) >= 0);
     }
 

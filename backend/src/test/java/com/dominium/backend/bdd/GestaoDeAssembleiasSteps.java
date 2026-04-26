@@ -2,12 +2,10 @@ package com.dominium.backend.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.dominium.backend.application.assembleia.dto.CriarAssembleiaRequest;
 import com.dominium.backend.domain.assembleia.Assembleia;
 import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.assembleia.StatusAssembleia;
 import com.dominium.backend.domain.governanca.pauta.Pauta;
-import com.dominium.backend.domain.governanca.pauta.PautaId;
 import com.dominium.backend.domain.usuario.TipoUsuario;
 import com.dominium.backend.domain.usuario.Usuario;
 
@@ -47,7 +45,8 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
     @When("o síndico solicita a criação da \"assembleia\"")
     public void o_sindico_solicita_a_criacao_da_assembleia() {
         try {
-            Assembleia assembleia = criarAssembleiaUseCase.executar(sindicoId, "Assembleia Geral", dataHoraContexto, "Salão de Festas", pautasContexto);
+            Assembleia assembleia = criarAssembleiaUseCase.executar(sindicoId, "Assembleia Geral", dataHoraContexto,
+                    "Salão de Festas", pautasContexto);
             assembleiaIdContexto = assembleia.getId();
         } catch (RuntimeException e) {
             this.excecao = e;
