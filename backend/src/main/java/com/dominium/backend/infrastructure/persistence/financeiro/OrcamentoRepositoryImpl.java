@@ -45,7 +45,10 @@ public class OrcamentoRepositoryImpl implements OrcamentoRepository {
             String sql = "INSERT INTO orcamentos(ano, valor_total, valor_gasto) VALUES (?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[] { "id" }
+                );
                 ps.setInt(1, orcamento.getAno());
                 ps.setBigDecimal(2, orcamento.getValorTotal());
                 ps.setBigDecimal(3, orcamento.getValorGasto());
