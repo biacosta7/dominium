@@ -44,6 +44,13 @@ public class GestaoDeOcorrenciasSteps extends DominiumFuncionalidade {
         }
     }
 
+    @Given("a {string} {string} a nenhuma {string}")
+    public void a_ocorrencia_nao_vinculada_a_nenhuma_unidade(String p1, String p2, String p3) {
+        ocorrenciaRequest = new OcorrenciaRequestDTO();
+        ocorrenciaRequest.setDescricao("Ocorrência sem vínculo");
+        ocorrenciaRequest.setUnidadeId(null);
+    }
+
     @When("o síndico solicita a criação da \"ocorrência\"")
     public void o_sindico_solicita_a_criacao_da_ocorrencia() {
         try {
