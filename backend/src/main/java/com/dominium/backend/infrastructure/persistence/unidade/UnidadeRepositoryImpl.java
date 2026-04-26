@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.dominium.backend.domain.unidade.StatusAdimplencia;
 import com.dominium.backend.domain.unidade.Unidade;
+import com.dominium.backend.domain.unidade.UnidadeId; // Importado
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
@@ -34,12 +35,16 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
         @Override
         public Unidade mapRow(ResultSet rs, int rowNum) throws SQLException {
             Unidade u = new Unidade();
-            u.setId(rs.getLong("id"));
+            
+            // Transformando o Long do banco no Value Object UnidadeId
+            u.setId(new UnidadeId(rs.getLong("id")));
+            
             u.setNumero(rs.getString("numero"));
             u.setBloco(rs.getString("bloco"));
             
             Long propId = rs.getLong("proprietario_id");
             if (!rs.wasNull()) {
+                // Se UsuarioId também for VO, aqui precisaria de: new UsuarioId(propId)
                 u.setProprietario(usuarioRepository.findById(propId).orElse(null));
             }
             
@@ -53,8 +58,11 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
                 u.setStatus(StatusAdimplencia.valueOf(statusStr));
             }
             u.setSaldoDevedor(rs.getBigDecimal("saldo_devedor"));
-            if (rs.getTimestamp("created_at") != null) u.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            if (rs.getTimestamp("updated_at") != null) u.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+            
+            if (rs.getTimestamp("created_at") != null) 
+                u.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            if (rs.getTimestamp("updated_at") != null) 
+                u.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
             
             return u;
         }
@@ -62,25 +70,42 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
 
     @Override
     public Unidade save(Unidade unidade) {
-        if (unidade.getId() == null) {
+        // Verificação robusta do Value Object
+        if (unidade.getId() == null || unidade.getId().getValor() == null) {
             String sql = "INSERT INTO unidades(numero, bloco, proprietario_id, inquilino_id, status, saldo_devedor) VALUES (?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
+            
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, unidade.getNumero());
                 ps.setString(2, unidade.getBloco());
+                
+                // Assumindo que Proprietário ainda usa Long. Se for VO, use .getId().getValor()
                 ps.setLong(3, unidade.getProprietario().getId());
+                
                 if (unidade.getInquilino() != null) {
                     ps.setLong(4, unidade.getInquilino().getId());
                 } else {
                     ps.setNull(4, java.sql.Types.BIGINT);
                 }
+                
                 ps.setString(5, unidade.getStatus() != null ? unidade.getStatus().name() : null);
                 ps.setBigDecimal(6, unidade.getSaldoDevedor());
                 return ps;
             }, keyHolder);
-            if (keyHolder.getKey() != null) {
-                unidade.setId(keyHolder.getKey().longValue());
+
+            if (keyHolder.getKeys() != null && !keyHolder.getKeys().isEmpty()) {
+                // Buscamos especificamente pela chave "id" (ou "ID", dependendo do banco)
+                Object generatedId = keyHolder.getKeys().get("id");
+                
+                // Alguns bancos retornam em maiúsculo "ID"
+                if (generatedId == null) {
+                    generatedId = keyHolder.getKeys().get("ID");
+                }
+            
+                if (generatedId instanceof Number number) {
+                    unidade.setId(new UnidadeId(number.longValue()));
+                }
             }
         } else {
             String sql = "UPDATE unidades SET numero = ?, bloco = ?, proprietario_id = ?, inquilino_id = ?, status = ?, saldo_devedor = ? WHERE id = ?";
@@ -91,15 +116,24 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
                 unidade.getInquilino() != null ? unidade.getInquilino().getId() : null, 
                 unidade.getStatus() != null ? unidade.getStatus().name() : null, 
                 unidade.getSaldoDevedor(), 
-                unidade.getId());
+                unidade.getId().getValor()); // Extraindo valor do VO para o WHERE
         }
         return unidade;
     }
 
     @Override
-    public Optional<Unidade> findById(Long id) {
-        List<Unidade> results = jdbcTemplate.query("SELECT * FROM unidades WHERE id = ?", rowMapper, id);
+    public Optional<Unidade> findById(UnidadeId id) { // Assinatura alterada para UnidadeId
+        List<Unidade> results = jdbcTemplate.query(
+            "SELECT * FROM unidades WHERE id = ?", 
+            rowMapper, 
+            id.getValor() // Extraindo valor
+        );
         return results.stream().findFirst();
+    }
+
+    @Override
+    public void deleteById(UnidadeId id) { // Assinatura alterada para UnidadeId
+        jdbcTemplate.update("DELETE FROM unidades WHERE id = ?", id.getValor());
     }
 
     @Override
@@ -111,10 +145,5 @@ public class UnidadeRepositoryImpl implements UnidadeRepository {
     @Override
     public List<Unidade> findAll() {
         return jdbcTemplate.query("SELECT * FROM unidades", rowMapper);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM unidades WHERE id = ?", id);
     }
 }

@@ -53,7 +53,10 @@ public class DespesaRepositoryImpl implements DespesaRepository {
             String sql = "INSERT INTO despesas(descricao, valor, data, categoria, tipo, status, orcamento_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[] { "id" }
+                );
                 ps.setString(1, despesa.getDescricao());
                 ps.setBigDecimal(2, despesa.getValor());
                 ps.setDate(3, java.sql.Date.valueOf(despesa.getData()));

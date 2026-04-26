@@ -8,7 +8,7 @@ public record ReservaResponse(
 ) {
     public static ReservaResponse from(Reserva reserva) {
         return new ReservaResponse(
-                reserva.getReservaId().toString(),
+                reserva.getId().toString(),
                 reserva.getStatus().name()
         );
     }

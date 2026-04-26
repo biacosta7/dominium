@@ -6,8 +6,11 @@ import com.dominium.backend.domain.reservas.*;
 import com.dominium.backend.domain.reservas.repository.ReservaRepository;
 import com.dominium.backend.domain.reservas.service.PoliticaReserva;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class CriarReservaUseCase {
 
     private final ReservaRepository repository;
@@ -24,6 +27,8 @@ public class CriarReservaUseCase {
     public Reserva executar(Reserva reserva) {
 
         AreaComum area = areaComumService.buscarArea(reserva.getAreaComumId());
+
+        areaComumService.validarDisponibilidade(area);
 
         List<Reserva> existentes =
                 repository.buscarAtivasPorPeriodo(

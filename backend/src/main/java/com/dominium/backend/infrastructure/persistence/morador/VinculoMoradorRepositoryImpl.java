@@ -17,6 +17,7 @@ import com.dominium.backend.domain.morador.StatusVinculo;
 import com.dominium.backend.domain.morador.TipoVinculo;
 import com.dominium.backend.domain.morador.VinculoMorador;
 import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
 
@@ -40,7 +41,7 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
             v.setId(rs.getLong("id"));
             
             Long unidId = rs.getLong("unidade_id");
-            v.setUnidade(unidadeRepository.findById(unidId).orElse(null));
+            v.setUnidade(unidadeRepository.findById(new UnidadeId(unidId)).orElse(null));
             
             Long usuId = rs.getLong("usuario_id");
             v.setUsuario(usuarioRepository.findById(usuId).orElse(null));
@@ -61,8 +62,11 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
             String sql = "INSERT INTO vinculos_morador(unidade_id, usuario_id, tipo, status) VALUES (?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, vinculo.getUnidade().getId());
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[] { "id" }
+                );
+                ps.setLong(1, vinculo.getUnidade().getId().getValor());
                 ps.setLong(2, vinculo.getUsuario().getId());
                 ps.setString(3, vinculo.getTipo().name());
                 ps.setString(4, vinculo.getStatus().name());
@@ -73,8 +77,8 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
             }
         } else {
             String sql = "UPDATE vinculos_morador SET unidade_id = ?, usuario_id = ?, tipo = ?, status = ? WHERE id = ?";
-            jdbcTemplate.update(sql, 
-                vinculo.getUnidade().getId(), 
+            jdbcTemplate.update(sql,
+                vinculo.getUnidade().getId().getValor(),
                 vinculo.getUsuario().getId(), 
                 vinculo.getTipo().name(), 
                 vinculo.getStatus().name(), 
@@ -97,6 +101,17 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
     @Override
     public List<VinculoMorador> findByUsuarioIdAndStatus(Long usuarioId, StatusVinculo status) {
         return jdbcTemplate.query("SELECT * FROM vinculos_morador WHERE usuario_id = ? AND status = ?", rowMapper, usuarioId, status.name());
+    }
+
+    @Override
+    public List<VinculoMorador> findByUsuarioAndUnidade(Long usuarioId, Long unidadeId) {
+
+        String sql = """
+        SELECT * FROM vinculos_morador
+        WHERE usuario_id = ? AND unidade_id = ?
+    """;
+
+        return jdbcTemplate.query(sql, rowMapper, usuarioId, unidadeId);
     }
 
     @Override

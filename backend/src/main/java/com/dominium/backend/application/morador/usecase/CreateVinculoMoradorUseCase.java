@@ -12,6 +12,7 @@ import com.dominium.backend.domain.morador.StatusVinculo;
 import com.dominium.backend.domain.morador.VinculoMorador;
 import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
 import com.dominium.backend.domain.unidade.Unidade;
+import com.dominium.backend.domain.unidade.UnidadeId;
 import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
 import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
@@ -40,7 +41,7 @@ public class CreateVinculoMoradorUseCase {
 
     @Transactional
     public VinculoResponseDTO execute(Long unidadeId, VinculoRequestDTO request) {
-        Unidade unidade = unidadeRepository.findById(unidadeId)
+        Unidade unidade = unidadeRepository.findById(new UnidadeId(unidadeId))
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada"));
 
         long currentMoradores = vinculoMoradorRepository.countByUnidadeIdAndStatus(unidadeId, StatusVinculo.ATIVO);
