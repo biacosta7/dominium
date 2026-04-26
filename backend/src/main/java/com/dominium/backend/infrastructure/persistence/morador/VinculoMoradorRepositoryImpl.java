@@ -62,7 +62,10 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
             String sql = "INSERT INTO vinculos_morador(unidade_id, usuario_id, tipo, status) VALUES (?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[] { "id" }
+                );
                 ps.setLong(1, vinculo.getUnidade().getId().getValor());
                 ps.setLong(2, vinculo.getUsuario().getId());
                 ps.setString(3, vinculo.getTipo().name());
@@ -74,7 +77,7 @@ public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {
             }
         } else {
             String sql = "UPDATE vinculos_morador SET unidade_id = ?, usuario_id = ?, tipo = ?, status = ? WHERE id = ?";
-            jdbcTemplate.update(sql, 
+            jdbcTemplate.update(sql,
                 vinculo.getUnidade().getId(), 
                 vinculo.getUsuario().getId(), 
                 vinculo.getTipo().name(), 
