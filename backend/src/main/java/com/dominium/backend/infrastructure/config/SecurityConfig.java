@@ -21,14 +21,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/usuarios/**").permitAll()
-                .requestMatchers("/unidades/**").permitAll()
-                .requestMatchers("/multas/**").permitAll()
-                .requestMatchers("/ocorrencias/**").permitAll()
-                .anyRequest().authenticated()
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/usuarios/**").permitAll()
+                        .requestMatchers("/unidades/**").permitAll()
+                        .requestMatchers("/multas/**").permitAll()
+                        .requestMatchers("/ocorrencias/**").permitAll()
+                        .requestMatchers("/assembleias/**").permitAll()
+                        .anyRequest().authenticated());
         return http.build();
     }
 }

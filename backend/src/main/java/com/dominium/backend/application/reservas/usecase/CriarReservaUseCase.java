@@ -28,6 +28,8 @@ public class CriarReservaUseCase {
 
         AreaComum area = areaComumService.buscarArea(reserva.getAreaComumId());
 
+        areaComumService.validarDisponibilidade(area);
+
         List<Reserva> existentes =
                 repository.buscarAtivasPorPeriodo(
                         reserva.getAreaComumId(),

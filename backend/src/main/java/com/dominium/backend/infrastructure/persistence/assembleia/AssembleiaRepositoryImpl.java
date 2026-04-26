@@ -2,12 +2,15 @@ package com.dominium.backend.infrastructure.persistence.assembleia;
 
 import com.dominium.backend.domain.assembleia.Assembleia;
 import com.dominium.backend.domain.assembleia.AssembleiaId;
-import com.dominium.backend.domain.assembleia.Pauta;
+
+import com.dominium.backend.domain.assembleia.StatusAssembleia;
 import com.dominium.backend.domain.assembleia.repository.AssembleiaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,40 +23,95 @@ public class AssembleiaRepositoryImpl implements AssembleiaRepository {
     }
 
     @Override
-    @Transactional
-    public void salvar(Assembleia assembleia) {
-        String sqlAssembleia = "INSERT INTO assembleia (id, data_hora, local, concluida) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sqlAssembleia,
-                assembleia.getId().getId(),
-                assembleia.getDataHora(),
-                assembleia.getLocal(),
-                assembleia.isConcluida());
+    public Assembleia save(Assembleia assembleia) {
+        boolean existe = Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(
+                        "SELECT COUNT(*) > 0 FROM assembleias WHERE id = ?",
+                        Boolean.class,
+                        assembleia.getId().getValor()));
 
-        String sqlPauta = "INSERT INTO pauta (id, assembleia_id, titulo, descricao, votos_sim, votos_nao, abstencoes) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        assembleia.getPautas().forEach(pauta -> {
-            jdbcTemplate.update(sqlPauta,
-                    pauta.getId(),
-                    assembleia.getId().getId(),
-                    pauta.getTitulo(),
-                    pauta.getDescricao(),
-                    pauta.getVotosSim(),
-                    pauta.getVotosNao(),
-                    pauta.getAbstencoes());
-        });
+        if (!existe) {
+            jdbcTemplate.update(
+                    "INSERT INTO assembleias (id, titulo, data_hora, local, status, sindico_id, data_criacao) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    assembleia.getId().getValor(),
+                    assembleia.getTitulo(),
+                    Timestamp.valueOf(assembleia.getDataHora()),
+                    assembleia.getLocal(),
+                    assembleia.getStatus().name(),
+                    assembleia.getSindicoId(),
+                    Timestamp.valueOf(assembleia.getDataCriacao()));
+            salvarPauta(assembleia);
+        } else {
+            jdbcTemplate.update(
+                    "UPDATE assembleias SET titulo = ?, data_hora = ?, local = ?, status = ? WHERE id = ?",
+                    assembleia.getTitulo(),
+                    Timestamp.valueOf(assembleia.getDataHora()),
+                    assembleia.getLocal(),
+                    assembleia.getStatus().name(),
+                    assembleia.getId().getValor());
+            jdbcTemplate.update("DELETE FROM pauta WHERE assembleia_id = ?", assembleia.getId().getValor());
+            salvarPauta(assembleia);
+        }
+
+        return assembleia;
     }
 
     @Override
-    public Optional<Assembleia> buscarPorId(AssembleiaId id) {
-        return Optional.empty();
+    public Optional<Assembleia> findById(AssembleiaId id) {
+        List<Assembleia> results = jdbcTemplate.query(
+                "SELECT * FROM assembleias WHERE id = ?",
+                (rs, rowNum) -> Assembleia.reconstituir(
+                        new AssembleiaId(rs.getLong("id")),
+                        rs.getString("titulo"),
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getString("local"),
+                        new ArrayList<>(),
+                        StatusAssembleia.valueOf(rs.getString("status")),
+                        rs.getLong("sindico_id"),
+                        rs.getTimestamp("data_criacao").toLocalDateTime()),
+                id.getValor());
+
+        if (results.isEmpty())
+            return Optional.empty();
+
+        Assembleia assembleia = results.get(0);
+        assembleia.setPauta(buscarPauta(assembleia.getId()));
+        return Optional.of(assembleia);
     }
 
     @Override
-    public void registrarVoto(Pauta pauta, String unidadeId, String tipoVoto) {
-        String sql = "UPDATE pauta SET votos_sim = ?, votos_nao = ?, abstencoes = ? WHERE id = ?";
-        jdbcTemplate.update(sql,
-                pauta.getVotosSim(),
-                pauta.getVotosNao(),
-                pauta.getAbstencoes(),
-                pauta.getId());
+    public List<Assembleia> findAll() {
+        List<Assembleia> assembleias = jdbcTemplate.query(
+                "SELECT * FROM assembleias ORDER BY data_hora",
+                (rs, rowNum) -> Assembleia.reconstituir(
+                        new AssembleiaId(rs.getLong("id")),
+                        rs.getString("titulo"),
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getString("local"),
+                        new ArrayList<>(),
+                        StatusAssembleia.valueOf(rs.getString("status")),
+                        rs.getLong("sindico_id"),
+                        rs.getTimestamp("data_criacao").toLocalDateTime()));
+
+        assembleias.forEach(a -> a.setPauta(buscarPauta(a.getId())));
+        return assembleias;
+    }
+
+    private void salvarPauta(Assembleia assembleia) {
+        if (assembleia.getPauta() == null)
+            return;
+        for (String item : assembleia.getPauta()) {
+            jdbcTemplate.update(
+                    "INSERT INTO pauta (assembleia_id, descricao) VALUES (?, ?)",
+                    assembleia.getId().getValor(),
+                    item);
+        }
+    }
+
+    private List<String> buscarPauta(AssembleiaId id) {
+        return jdbcTemplate.query(
+                "SELECT descricao FROM pauta WHERE assembleia_id = ? ORDER BY id",
+                (rs, rowNum) -> rs.getString("descricao"),
+                id.getValor());
     }
 }
