@@ -1,19 +1,19 @@
 Feature: Gestão de Reservas de Áreas Comuns
 
   Scenario: Criar reserva com sucesso
-    Given o "morador" "está" adimplente
+    Given que o "morador" "está" adimplente
       And a "área comum" "não possui" conflito de horário
       And a "unidade" "não atingiu" o limite mensal de reservas
      When o "morador" solicita a criação de uma reserva
      Then o sistema cria a "reserva" com sucesso
 
   Scenario: Criar reserva com unidade inadimplente
-    Given o "morador" "não está" adimplente
+    Given que o "morador" "não está" adimplente
      When o "morador" solicita a criação de uma reserva
      Then o sistema informa que unidade inadimplente não pode reservar
 
   Scenario: Criar reserva com conflito de horário
-    Given o "morador" "está" adimplente
+    Given que o "morador" "está" adimplente
       And a "área comum" "possui" conflito de horário
      When o "morador" solicita a criação de uma reserva
      Then o sistema informa que não pode haver conflito de horário
