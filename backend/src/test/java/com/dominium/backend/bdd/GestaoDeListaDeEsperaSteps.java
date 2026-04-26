@@ -7,7 +7,7 @@ import com.dominium.backend.domain.reservas.Reserva;
 import com.dominium.backend.domain.reservas.ReservaId;
 import com.dominium.backend.domain.reservas.StatusReserva;
 import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.UnidadeId;
+import com.dominium.backend.domain.usuario.Usuario;
 import com.dominium.backend.domain.areacomum.AreaComumId;
 
 import io.cucumber.java.en.Given;
@@ -23,7 +23,7 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
     private static final Long AREA_COMUM_ID = 1L;
 
     private ReservaId reservaCanceladaId;
-    private UnidadeId moradorPromovido;
+    private Long usuarioPromovidoId;
     private String filaEntradaId;
 
     @Given("existe uma {string} cancelada")
@@ -38,25 +38,34 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
         reserva.setDataReserva(LocalDate.now().plusDays(3));
         reserva.setHoraInicio(LocalTime.of(14, 0));
         reserva.setHoraFim(LocalTime.of(16, 0));
-        reserva.setStatus(StatusReserva.CANCELADA);
+        reserva.setStatus(StatusReserva.ATIVA); // Inicia como ATIVA
         reserva = reservaRepository.save(reserva);
         reservaCanceladaId = reserva.getId();
     }
 
     @Given("a {string} {string} moradores aguardando")
     public void a_fila_p2_moradores_aguardando(String p1, String possui) {
-        if ("possui".equals(possui)) {
+        if ("possui".equals(possui) || "possuiConflito".equals(possui)) {
+            Long usuarioFilaId = UUID_RANDOM_LONG();
+            usuarioPromovidoId = usuarioFilaId;
+
             Unidade aguardando = new Unidade();
             aguardando.setNumero("802");
+            // Adiciona inquilino para que o CancelarReservaUseCase encontre a unidade
+            Usuario inquilino = new Usuario();
+            inquilino.setId(usuarioFilaId);
+            aguardando.setInquilino(inquilino);
+
             aguardando = unidadeRepository.save(aguardando);
-            moradorPromovido = aguardando.getId();
 
             FilaDeEspera entrada = new FilaDeEspera();
             entrada.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
-            entrada.setUsuarioId(UUID_RANDOM_LONG());
+            entrada.setUsuarioId(usuarioFilaId);
             entrada.setDataCadastro(LocalDateTime.now().minusHours(1));
-            // FilaDeEspera might not have setInicio/setFim
-            // Let's assume it has what it needs.
+            // Sincronizar a data desejada com a data da reserva para o filtro funcionar
+            entrada.setDataDesejada(LocalDate.now().plusDays(3));
+            entrada.setHoraInicio(LocalTime.of(14, 0));
+            entrada.setHoraFim(LocalTime.of(16, 0));
             entrada = filaDeEsperaRepository.salvar(entrada);
             filaEntradaId = entrada.getId();
         }
@@ -64,18 +73,20 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @When("o sistema processa o cancelamento")
     public void o_sistema_processa_o_cancelamento() {
-        // Simulação de processamento automático
-        assertTrue(true);
+        cancelarReservaUseCase.executar(reservaCanceladaId);
     }
 
     @Then("o sistema promove o próximo {string} da {string} seguindo a ordem cronológica")
     public void o_sistema_promove_o_proximo_morador(String p1, String p2) {
-        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o morador que estava na fila
-        boolean promoveu = reservaRepository.buscarPorUsuario(new com.dominium.backend.domain.usuario.UsuarioId(moradorPromovido.getValor()))
+        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o usuário que estava
+        // na fila
+        boolean promoveu = reservaRepository
+                .buscarPorUsuario(new com.dominium.backend.domain.usuario.UsuarioId(usuarioPromovidoId))
                 .stream()
-                .anyMatch(r -> r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO || r.getStatus() == StatusReserva.ATIVA);
+                .anyMatch(r -> r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO
+                        || r.getStatus() == StatusReserva.ATIVA);
         assertTrue(promoveu, "O morador não foi promovido da fila");
-        
+
         // Verifica se a entrada original foi removida da fila de espera
         if (filaEntradaId != null) {
             assertFalse(filaDeEsperaRepository.buscarPorId(filaEntradaId).isPresent());
@@ -89,13 +100,19 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Given("o {string} foi promovido da {string}")
     public void o_morador_foi_promovido_da_fila(String p1, String p2) {
+        Long userId = UUID_RANDOM_LONG();
+        usuarioPromovidoId = userId;
+
         Unidade unidade = new Unidade();
         unidade.setNumero("803");
+        Usuario inquilino = new Usuario();
+        inquilino.setId(userId);
+        unidade.setInquilino(inquilino);
         unidade = unidadeRepository.save(unidade);
-        moradorPromovido = unidade.getId();
 
         Reserva reserva = new Reserva();
         reserva.setUnidadeId(unidade.getId());
+        reserva.setUsuarioId(new com.dominium.backend.domain.usuario.UsuarioId(userId));
         reserva.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
         reserva.setDataReserva(LocalDate.now().plusDays(5));
         reserva.setStatus(StatusReserva.AGUARDANDO_CONFIRMACAO);
@@ -105,7 +122,8 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @When("o {string} expirar sem resposta")
     public void o_prazo_expirar_sem_resposta(String p1) {
-        assertTrue(true);
+        // Simula o sistema cancelando a reserva por falta de confirmação
+        cancelarReservaUseCase.executar(reservaCanceladaId);
     }
 
     @Then("o sistema cancela a pré-reserva")
