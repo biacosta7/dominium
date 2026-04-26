@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/**").permitAll()
                 .requestMatchers("/unidades/**").permitAll()
                 .requestMatchers("/multas/**").permitAll()
+                .requestMatchers("/ocorrencias/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
