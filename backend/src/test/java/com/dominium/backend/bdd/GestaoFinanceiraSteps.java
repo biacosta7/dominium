@@ -80,7 +80,11 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
     @Then("desconta o valor do saldo disponível do orçamento")
     public void desconta_o_valor_do_saldo_disponivel() {
-        assertTrue(true);
+        Orcamento orcamento = orcamentoRepository.findById(orcamentoId)
+                .orElseThrow(() -> new RuntimeException("Orçamento não encontrado"));
+        
+        BigDecimal saldoEsperado = orcamento.getValorTotal().subtract(despesaRequest.getValor());
+        assertEquals(0, saldoEsperado.compareTo(orcamento.getSaldoDisponivel()));
     }
 
     @Then("classifica a despesa por categoria")

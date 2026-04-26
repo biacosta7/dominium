@@ -70,8 +70,16 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema promove o próximo {string} da {string} seguindo a ordem cronológica")
     public void o_sistema_promove_o_proximo_morador(String p1, String p2) {
-        // Simulado
-        assertTrue(true);
+        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o morador que estava na fila
+        boolean promoveu = reservaRepository.buscarPorUsuario(new com.dominium.backend.domain.usuario.UsuarioId(moradorPromovido.getValor()))
+                .stream()
+                .anyMatch(r -> r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO || r.getStatus() == StatusReserva.ATIVA);
+        assertTrue(promoveu, "O morador não foi promovido da fila");
+        
+        // Verifica se a entrada original foi removida da fila de espera
+        if (filaEntradaId != null) {
+            assertFalse(filaDeEsperaRepository.buscarPorId(filaEntradaId).isPresent());
+        }
     }
 
     @Then("o sistema envia uma {string}")
@@ -102,7 +110,9 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema cancela a pré-reserva")
     public void o_sistema_cancela_a_pre_reserva() {
-        assertTrue(true);
+        Reserva r = reservaRepository.findById(reservaCanceladaId)
+                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+        assertEquals(StatusReserva.CANCELADA, r.getStatus());
     }
 
     @Then("o sistema promove o próximo {string} da {string}")

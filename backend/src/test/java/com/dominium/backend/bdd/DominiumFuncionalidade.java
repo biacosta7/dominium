@@ -599,13 +599,6 @@ public class DominiumFuncionalidade {
                 return Optional.ofNullable(db.get(id.getValor()));
             }
 
-            // Adicionar método save se necessário para os testes
-            public AreaComum save(AreaComum a) {
-                if (a.getId() == null)
-                    a.setId(new AreaComumId(currentId++));
-                db.put(a.getId().getValor(), a);
-                return a;
-            }
         };
     }
 
