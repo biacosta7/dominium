@@ -91,7 +91,8 @@ CREATE TABLE IF NOT EXISTS avaliacoes_funcionario (
     comentario VARCHAR(500),
     data DATE NOT NULL,
     CONSTRAINT fk_avaliacao_funcionario FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
-=======
+);
+
 CREATE TABLE IF NOT EXISTS areas_comuns (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
