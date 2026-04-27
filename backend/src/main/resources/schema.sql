@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
     usuario_id BIGINT NOT NULL,
     notificado_em TIMESTAMP NOT NULL,
     CONSTRAINT fk_notificacao_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id),
-    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    CONSTRAINT fk_notificacao_assembleia_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
 
 CREATE TABLE IF NOT EXISTS ocorrencias (
