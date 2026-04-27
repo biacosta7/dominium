@@ -1,12 +1,15 @@
-package com.dominium.backend.application.reservas.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase;
 
-import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
-import com.dominium.backend.domain.reservas.repository.ReservaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.NotificacaoService;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.UsuarioId;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -62,7 +65,7 @@ public class CancelarReservaUseCase {
                     ReservaId.novo(),
                     fila.getAreaComumId(),
                     unidadeId,
-                    new UsuarioId(fila.getUsuarioId()),
+                    fila.getUsuarioId(),
                     fila.getDataDesejada(),
                     fila.getHoraInicio(),
                     fila.getHoraFim()
@@ -73,7 +76,7 @@ public class CancelarReservaUseCase {
             
             repository.save(novaReserva);
             
-            notificacaoService.enviar(fila.getUsuarioId(), 
+            notificacaoService.enviar(fila.getUsuarioId().getValor(),
                 "Sua reserva para a área " + reserva.getAreaComumId().getValor() + 
                 " foi promovida da fila de espera! Você tem 24h para confirmar.");
         });

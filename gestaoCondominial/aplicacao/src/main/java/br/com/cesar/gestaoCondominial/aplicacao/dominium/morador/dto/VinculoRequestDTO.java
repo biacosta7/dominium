@@ -1,7 +1,7 @@
-package com.dominium.backend.application.morador.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto;
 
-import com.dominium.backend.application.usuario.dto.UsuarioRequestDTO;
-import com.dominium.backend.domain.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.dto.UsuarioRequestDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
 
 import lombok.Data;
 

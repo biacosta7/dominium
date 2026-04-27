@@ -1,17 +1,17 @@
-package com.dominium.backend.application.unidade.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.domain.unidade.HistoricoTitularidade;
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.HistoricoTitularidadeRepository;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.HistoricoTitularidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.HistoricoTitularidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Service
 public class TransferirTitularidadeUseCase {

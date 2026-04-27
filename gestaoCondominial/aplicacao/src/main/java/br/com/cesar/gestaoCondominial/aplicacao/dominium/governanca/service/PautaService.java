@@ -1,7 +1,9 @@
 package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.service;
 
-import com.dominium.backend.domain.governanca.RegraVotacao;
-import com.dominium.backend.domain.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.service.RegraVotacao;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.ResultadoPauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

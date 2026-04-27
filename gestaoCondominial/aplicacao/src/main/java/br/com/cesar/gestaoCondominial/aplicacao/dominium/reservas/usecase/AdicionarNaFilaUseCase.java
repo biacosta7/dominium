@@ -1,10 +1,12 @@
-package com.dominium.backend.application.reservas.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase;
 
-import com.dominium.backend.domain.areacomum.AreaComum;
-import com.dominium.backend.domain.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.areacomum.AreaComumService;
-import com.dominium.backend.domain.reservas.FilaDeEspera;
-import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEsperaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,7 +25,7 @@ public class AdicionarNaFilaUseCase {
 
         AreaComum area = areaComumService.buscarArea(areaId);
 
-        FilaDeEspera fila = FilaDeEspera.criar(areaId, usuarioId, data, inicio, fim);
+        FilaDeEspera fila = FilaDeEspera.criar(new FilaDeEsperaId(), areaId, new UsuarioId(usuarioId), data, inicio, fim);
 
         return repository.salvar(fila);
     }

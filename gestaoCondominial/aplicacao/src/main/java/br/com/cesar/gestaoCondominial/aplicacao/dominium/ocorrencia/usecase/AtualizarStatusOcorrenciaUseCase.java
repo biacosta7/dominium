@@ -1,7 +1,7 @@
-package com.dominium.backend.application.ocorrencia.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase;
 
-import com.dominium.backend.domain.ocorrencia.Ocorrencia;
-import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.repository.OcorrenciaRepository;
 import org.springframework.stereotype.Service;
 
 @Service

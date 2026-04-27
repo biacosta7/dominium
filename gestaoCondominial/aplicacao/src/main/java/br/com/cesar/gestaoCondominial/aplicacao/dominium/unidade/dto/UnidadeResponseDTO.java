@@ -1,10 +1,10 @@
-package com.dominium.backend.application.unidade.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.dominium.backend.domain.unidade.StatusAdimplencia;
-import com.dominium.backend.domain.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
-package com.dominium.backend.application.reservas.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto;
 
-import com.dominium.backend.domain.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
 
 public record ReservaResponse(
         String id,

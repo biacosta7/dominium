@@ -1,12 +1,12 @@
-package com.dominium.backend.application.governanca.pauta.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.usecase;
 
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.service.RegraVotacao;
-import com.dominium.backend.domain.governanca.pauta.Pauta;
-import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.governanca.pauta.PautaRepository;
-import com.dominium.backend.domain.governanca.pauta.ResultadoPauta;
-import com.dominium.backend.domain.governanca.voto.Voto;
-import com.dominium.backend.domain.governanca.voto.VotoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.ResultadoPauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

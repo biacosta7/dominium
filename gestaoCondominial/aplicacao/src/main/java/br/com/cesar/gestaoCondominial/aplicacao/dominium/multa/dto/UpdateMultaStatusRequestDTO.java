@@ -1,6 +1,6 @@
-package com.dominium.backend.application.multa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto;
 
-import com.dominium.backend.domain.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

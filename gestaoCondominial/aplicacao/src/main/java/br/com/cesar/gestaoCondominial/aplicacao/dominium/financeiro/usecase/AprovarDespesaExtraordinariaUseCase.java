@@ -1,17 +1,17 @@
-package com.dominium.backend.application.financeiro.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.financeiro.Orcamento;
-import com.dominium.backend.domain.financeiro.StatusDespesa;
-import com.dominium.backend.domain.financeiro.TipoDespesa;
-import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
-import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.StatusDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.TipoDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.service.RateioService;
-import com.dominium.backend.domain.shared.exceptions.DomainException;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
 
 @Service
 public class AprovarDespesaExtraordinariaUseCase {

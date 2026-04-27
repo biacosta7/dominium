@@ -1,4 +1,4 @@
-package com.dominium.backend.application.security;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.security;
 
 public interface PasswordEncryptor {
     String encode(String rawPassword);

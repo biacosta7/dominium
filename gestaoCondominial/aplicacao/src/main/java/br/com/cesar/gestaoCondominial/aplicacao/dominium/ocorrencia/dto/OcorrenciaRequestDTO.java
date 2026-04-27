@@ -1,4 +1,4 @@
-package com.dominium.backend.application.ocorrencia.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto;
 
 public class OcorrenciaRequestDTO {
     private String descricao;

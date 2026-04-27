@@ -1,11 +1,11 @@
-package com.dominium.backend.application.ocorrencia.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase;
 
-import com.dominium.backend.domain.ocorrencia.Ocorrencia;
-import com.dominium.backend.domain.ocorrencia.TipoPenalidade;
-import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
-import com.dominium.backend.application.multa.usecase.CreateMultaManualUseCase;
-import com.dominium.backend.application.multa.dto.CreateMultaRequestDTO;
-import com.dominium.backend.domain.multa.TipoValorMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.TipoPenalidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.CreateMultaManualUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.CreateMultaRequestDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.TipoValorMulta;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

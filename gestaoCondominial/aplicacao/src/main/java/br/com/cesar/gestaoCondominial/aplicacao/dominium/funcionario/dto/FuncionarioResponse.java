@@ -1,6 +1,6 @@
-package com.dominium.backend.application.funcionario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto;
 
-import com.dominium.backend.domain.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ public record FuncionarioResponse(
 ) {
     public static FuncionarioResponse from(Funcionario f) {
         return new FuncionarioResponse(
-                f.getId().getValor(),
+                f.getId().getValor().toString(),
                 f.getNome(),
                 f.getCpf(),
                 f.getEmail(),

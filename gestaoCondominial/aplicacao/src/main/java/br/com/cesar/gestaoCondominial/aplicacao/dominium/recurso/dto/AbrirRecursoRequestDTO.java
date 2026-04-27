@@ -1,4 +1,4 @@
-package com.dominium.backend.application.recurso.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto;
 
 import lombok.Data;
 import java.util.UUID;

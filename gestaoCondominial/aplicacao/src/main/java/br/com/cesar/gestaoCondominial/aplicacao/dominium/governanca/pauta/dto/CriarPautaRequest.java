@@ -1,7 +1,7 @@
-package com.dominium.backend.application.governanca.pauta.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.dto;
 
-import com.dominium.backend.domain.governanca.pauta.TipoMaioria;
-import com.dominium.backend.domain.governanca.pauta.TipoQuorum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.TipoMaioria;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.TipoQuorum;
 
 public record CriarPautaRequest(
         Long assembleiaId,

@@ -1,4 +1,4 @@
-package com.dominium.backend.application.governanca.pauta.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.dto;
 
 public record PautaResponse(
         Long id,

@@ -1,7 +1,7 @@
-package com.dominium.backend.application.usuario.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase;
 
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

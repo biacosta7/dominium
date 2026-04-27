@@ -1,10 +1,15 @@
-package com.dominium.backend.application.funcionario.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase;
 
-import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
-import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
-import com.dominium.backend.domain.funcionario.Funcionario;
-import com.dominium.backend.domain.funcionario.StatusFuncionario;
-import com.dominium.backend.domain.funcionario.repository.FuncionarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.StatusDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.TipoDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusFuncionario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.FuncionarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

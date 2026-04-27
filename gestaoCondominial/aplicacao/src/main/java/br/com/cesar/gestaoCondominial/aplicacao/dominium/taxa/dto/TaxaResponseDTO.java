@@ -1,6 +1,6 @@
-package com.dominium.backend.application.taxa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto;
 
-import com.dominium.backend.domain.taxa.TaxaCondominial;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaCondominial;
 import lombok.Data;
 
 import java.math.BigDecimal;

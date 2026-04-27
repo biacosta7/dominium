@@ -1,21 +1,21 @@
-package com.dominium.backend.application.morador.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dominium.backend.application.morador.dto.VinculoRequestDTO;
-import com.dominium.backend.application.morador.dto.VinculoResponseDTO;
-import com.dominium.backend.application.usuario.dto.UsuarioResponseDTO;
-import com.dominium.backend.application.usuario.usecase.CreateUsuarioUseCase;
-import com.dominium.backend.domain.morador.StatusVinculo;
-import com.dominium.backend.domain.morador.VinculoMorador;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.dto.UsuarioResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.CreateUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Service
 public class CreateVinculoMoradorUseCase {

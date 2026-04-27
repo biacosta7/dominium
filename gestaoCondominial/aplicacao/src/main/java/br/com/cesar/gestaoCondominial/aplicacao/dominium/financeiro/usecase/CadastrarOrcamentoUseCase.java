@@ -1,12 +1,12 @@
-package com.dominium.backend.application.financeiro.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase;
 
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dominium.backend.domain.financeiro.Orcamento;
-import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
-import com.dominium.backend.domain.shared.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 
 @Service
 public class CadastrarOrcamentoUseCase {

@@ -1,4 +1,4 @@
-package com.dominium.backend.application.reservas.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto;
 
 import lombok.Getter;
 import lombok.Setter;

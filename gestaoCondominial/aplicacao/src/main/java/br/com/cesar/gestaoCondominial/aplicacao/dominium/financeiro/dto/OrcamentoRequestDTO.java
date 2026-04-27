@@ -1,4 +1,4 @@
-package com.dominium.backend.application.financeiro.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto;
 
 import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;

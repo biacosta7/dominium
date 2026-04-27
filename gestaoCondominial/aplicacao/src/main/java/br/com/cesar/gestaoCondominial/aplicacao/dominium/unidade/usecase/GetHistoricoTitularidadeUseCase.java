@@ -1,12 +1,12 @@
-package com.dominium.backend.application.unidade.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.application.unidade.dto.HistoricoTitularidadeResponseDTO;
-import com.dominium.backend.domain.unidade.repository.HistoricoTitularidadeRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.HistoricoTitularidadeResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.HistoricoTitularidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
 
 @Service
 public class GetHistoricoTitularidadeUseCase {

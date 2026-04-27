@@ -1,6 +1,6 @@
-package com.dominium.backend.application.funcionario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto;
 
-import com.dominium.backend.domain.funcionario.OrdemServico;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServico;
 
 import java.time.LocalDate;
 
@@ -14,9 +14,9 @@ public record OrdemServicoResponse(
 ) {
     public static OrdemServicoResponse from(OrdemServico os) {
         return new OrdemServicoResponse(
-                os.getId().getValor(),
+                os.getId().getValor().toString(),
                 os.getDescricao(),
-                os.getFuncionarioId().getValor(),
+                os.getFuncionarioId().getValor().toString(),
                 os.getStatus().name(),
                 os.getDataInicio(),
                 os.getDataFim()

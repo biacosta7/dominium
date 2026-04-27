@@ -1,4 +1,4 @@
-package com.dominium.backend.application.funcionario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto;
 
 public record RegistrarAvaliacaoRequest(
         boolean positiva,

@@ -1,8 +1,8 @@
-package com.dominium.backend.application.multa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto;
 
 import java.math.BigDecimal;
 
-import com.dominium.backend.domain.multa.TipoValorMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.TipoValorMulta;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

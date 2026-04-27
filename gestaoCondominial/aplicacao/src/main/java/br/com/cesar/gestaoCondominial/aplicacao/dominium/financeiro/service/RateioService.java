@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
 
 @Service
 public class RateioService {

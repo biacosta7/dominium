@@ -1,8 +1,8 @@
-package com.dominium.backend.application.reservas.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase;
 
-import com.dominium.backend.domain.reservas.Reserva;
-import com.dominium.backend.domain.reservas.ReservaId;
-import com.dominium.backend.domain.reservas.repository.ReservaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
 
 @Service

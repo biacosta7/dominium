@@ -1,13 +1,13 @@
-package com.dominium.backend.application.multa.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.application.multa.dto.MultaResponseDTO;
-import com.dominium.backend.domain.multa.repository.MultaRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.MultaResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
 
 @Service
 public class ListMultasByUnidadeUseCase {

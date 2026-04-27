@@ -1,15 +1,15 @@
-package com.dominium.backend.application.unidade.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase;
 
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.application.unidade.dto.UnidadeRequestDTO;
-import com.dominium.backend.application.unidade.dto.UnidadeResponseDTO;
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.UnidadeRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.UnidadeResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Service
 public class CreateUnidadeUseCase {

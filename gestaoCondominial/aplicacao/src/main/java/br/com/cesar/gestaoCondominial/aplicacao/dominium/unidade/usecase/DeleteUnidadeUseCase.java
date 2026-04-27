@@ -1,10 +1,10 @@
-package com.dominium.backend.application.unidade.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
 
 @Service
 public class DeleteUnidadeUseCase {

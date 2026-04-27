@@ -1,6 +1,8 @@
 package br.com.cesar.gestaoCondominial.aplicacao.dominium.areacomum;
 
-import gestaoCondominial.
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumRepository;
 import org.springframework.stereotype.Service;
 
 @Service

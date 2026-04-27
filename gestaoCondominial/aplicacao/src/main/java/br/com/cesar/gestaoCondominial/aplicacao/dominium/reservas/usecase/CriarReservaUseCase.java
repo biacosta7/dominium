@@ -1,8 +1,9 @@
-package com.dominium.backend.application.reservas.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase;
 
-import com.dominium.backend.domain.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.areacomum.AreaComumService;
-import com.dominium.backend.domain.reservas.repository.ReservaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.service.PoliticaReserva;
 
 import org.springframework.stereotype.Service;

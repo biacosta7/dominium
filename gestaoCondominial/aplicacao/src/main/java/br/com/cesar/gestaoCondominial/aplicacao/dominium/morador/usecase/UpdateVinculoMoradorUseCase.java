@@ -1,12 +1,12 @@
-package com.dominium.backend.application.morador.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dominium.backend.application.morador.dto.VinculoRequestDTO;
-import com.dominium.backend.application.morador.dto.VinculoResponseDTO;
-import com.dominium.backend.domain.morador.VinculoMorador;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
 
 @Service
 public class UpdateVinculoMoradorUseCase {

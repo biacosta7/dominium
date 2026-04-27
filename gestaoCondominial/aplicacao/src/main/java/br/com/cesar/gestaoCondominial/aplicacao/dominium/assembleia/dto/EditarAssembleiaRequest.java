@@ -1,4 +1,4 @@
-package com.dominium.backend.application.assembleia.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

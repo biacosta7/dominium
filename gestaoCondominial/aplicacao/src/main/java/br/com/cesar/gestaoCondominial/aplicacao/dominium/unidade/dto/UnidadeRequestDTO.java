@@ -1,8 +1,8 @@
-package com.dominium.backend.application.unidade.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto;
 
 import java.math.BigDecimal;
 
-import com.dominium.backend.domain.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

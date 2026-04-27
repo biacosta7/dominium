@@ -1,8 +1,8 @@
-package com.dominium.backend.application.unidade.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto;
 
 import java.time.LocalDateTime;
 
-import com.dominium.backend.domain.unidade.HistoricoTitularidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.HistoricoTitularidade;
 
 import lombok.Data;
 

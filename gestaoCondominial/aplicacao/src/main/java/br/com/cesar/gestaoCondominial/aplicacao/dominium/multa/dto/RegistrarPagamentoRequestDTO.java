@@ -1,4 +1,4 @@
-package com.dominium.backend.application.multa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto;
 
 import java.math.BigDecimal;
 

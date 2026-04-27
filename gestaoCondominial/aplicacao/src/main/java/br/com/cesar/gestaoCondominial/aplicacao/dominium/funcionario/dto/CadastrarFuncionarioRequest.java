@@ -1,6 +1,6 @@
-package com.dominium.backend.application.funcionario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto;
 
-import com.dominium.backend.domain.funcionario.TipoVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.TipoVinculo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

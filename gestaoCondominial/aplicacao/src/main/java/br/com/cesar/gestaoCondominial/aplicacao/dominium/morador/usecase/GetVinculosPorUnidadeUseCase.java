@@ -1,11 +1,11 @@
-package com.dominium.backend.application.morador.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.dominium.backend.application.morador.dto.VinculoResponseDTO;
-import com.dominium.backend.domain.morador.StatusVinculo;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
 
 import org.springframework.stereotype.Service;
 

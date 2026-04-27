@@ -1,6 +1,6 @@
-package com.dominium.backend.application.usuario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.dto;
 
-import com.dominium.backend.domain.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

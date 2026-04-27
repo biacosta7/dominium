@@ -1,16 +1,16 @@
-package com.dominium.backend.application.financeiro.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.domain.financeiro.CategoriaDespesa;
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.financeiro.Orcamento;
-import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
-import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
 
 @Service
 public class ListDespesasPorOrcamentoUseCase {

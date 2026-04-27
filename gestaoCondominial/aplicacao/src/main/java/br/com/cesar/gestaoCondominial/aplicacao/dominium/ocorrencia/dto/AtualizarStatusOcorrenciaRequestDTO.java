@@ -1,4 +1,4 @@
-package com.dominium.backend.application.ocorrencia.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

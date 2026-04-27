@@ -1,4 +1,4 @@
-package com.dominium.backend.application.funcionario.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

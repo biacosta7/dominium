@@ -1,10 +1,10 @@
 package br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.service;
 
-import com.dominium.backend.domain.areacomum.AreaComum;
-import com.dominium.backend.domain.reservas.Reserva;
-import com.dominium.backend.domain.reservas.exception.AreaNaoDisponivelException;
-import com.dominium.backend.domain.reservas.exception.CapacidadeExcedidaException;
-import com.dominium.backend.domain.reservas.exception.ConflitoReservaException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.AreaNaoDisponivelException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.CapacidadeExcedidaException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.ConflitoReservaException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,10 +1,10 @@
-package com.dominium.backend.application.ocorrencia.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase;
 
-import com.dominium.backend.domain.ocorrencia.Ocorrencia;
-import com.dominium.backend.domain.ocorrencia.TipoPenalidade;
-import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.application.ocorrencia.dto.OcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.TipoPenalidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaRequestDTO;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 

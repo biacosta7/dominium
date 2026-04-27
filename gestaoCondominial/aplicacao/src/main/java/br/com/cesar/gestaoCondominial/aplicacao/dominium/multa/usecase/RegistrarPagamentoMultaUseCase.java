@@ -1,15 +1,15 @@
-package com.dominium.backend.application.multa.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase;
 
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.application.multa.dto.MultaResponseDTO;
-import com.dominium.backend.application.multa.dto.RegistrarPagamentoRequestDTO;
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.MultaId;
-import com.dominium.backend.domain.multa.StatusMulta;
-import com.dominium.backend.domain.multa.repository.MultaRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.MultaResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.RegistrarPagamentoRequestDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
 
 @Service
 public class RegistrarPagamentoMultaUseCase {

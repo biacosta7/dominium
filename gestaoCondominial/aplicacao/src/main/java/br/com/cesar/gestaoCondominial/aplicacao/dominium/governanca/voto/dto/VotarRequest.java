@@ -1,6 +1,6 @@
-package com.dominium.backend.application.governanca.voto.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.dto;
 
-import com.dominium.backend.domain.governanca.voto.OpcaoVoto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.OpcaoVoto;
 
 public record VotarRequest(
         Long pautaId,

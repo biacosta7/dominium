@@ -1,9 +1,9 @@
-package com.dominium.backend.application.financeiro.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import com.dominium.backend.domain.financeiro.CategoriaDespesa;
-import com.dominium.backend.domain.financeiro.TipoDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.TipoDespesa;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.dominium.backend.application.recurso.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto;
 
-import com.dominium.backend.domain.recurso.StatusRecurso;
+import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.StatusRecurso;
 import lombok.Data;
 import java.math.BigDecimal;
 

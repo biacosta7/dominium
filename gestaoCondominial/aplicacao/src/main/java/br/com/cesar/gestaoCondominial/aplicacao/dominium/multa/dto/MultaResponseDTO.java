@@ -1,11 +1,11 @@
-package com.dominium.backend.application.multa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.StatusMulta;
-import com.dominium.backend.domain.multa.TipoValorMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.TipoValorMulta;
 
 import lombok.Data;
 

@@ -1,15 +1,15 @@
-package com.dominium.backend.application.morador.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dominium.backend.domain.morador.StatusVinculo;
-import com.dominium.backend.domain.morador.TipoVinculo;
-import com.dominium.backend.domain.morador.VinculoMorador;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
-import com.dominium.backend.domain.usuario.TipoUsuario;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 import java.util.List;
 

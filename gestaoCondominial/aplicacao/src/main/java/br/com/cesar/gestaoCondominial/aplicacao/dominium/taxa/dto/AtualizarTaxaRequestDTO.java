@@ -1,4 +1,4 @@
-package com.dominium.backend.application.taxa.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto;
 
 import lombok.Data;
 import java.math.BigDecimal;

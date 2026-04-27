@@ -1,13 +1,13 @@
-package com.dominium.backend.application.assembleia.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase;
 
-import com.dominium.backend.domain.assembleia.Assembleia;
-import com.dominium.backend.domain.assembleia.AssembleiaId;
-import com.dominium.backend.domain.assembleia.repository.AssembleiaRepository;
-import com.dominium.backend.domain.shared.exceptions.DomainException;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
-import com.dominium.backend.domain.usuario.TipoUsuario;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.repository.AssembleiaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,14 +1,14 @@
-package com.dominium.backend.application.funcionario.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase;
 
-import com.dominium.backend.domain.funcionario.Funcionario;
-import com.dominium.backend.domain.funcionario.FuncionarioId;
-import com.dominium.backend.domain.funcionario.repository.AvaliacaoFuncionarioRepository;
-import com.dominium.backend.domain.funcionario.repository.FuncionarioRepository;
-import com.dominium.backend.domain.shared.exceptions.DomainException;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
-import com.dominium.backend.domain.usuario.TipoUsuario;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.FuncionarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.AvaliacaoFuncionarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.FuncionarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

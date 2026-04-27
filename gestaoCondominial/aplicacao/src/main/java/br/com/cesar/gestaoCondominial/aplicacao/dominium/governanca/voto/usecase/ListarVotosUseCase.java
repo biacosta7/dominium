@@ -1,9 +1,9 @@
-package com.dominium.backend.application.governanca.voto.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase;
 
-import com.dominium.backend.domain.governanca.pauta.Pauta;
-import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.governanca.voto.Voto;
-import com.dominium.backend.domain.governanca.voto.VotoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

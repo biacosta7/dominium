@@ -1,11 +1,11 @@
 package br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.usecase;
 
-import com.dominium.backend.application.recurso.dto.AbrirRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto.AbrirRecursoRequestDTO;
 import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.Recurso;
 import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.repository.RecursoRepository;
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.MultaId;
-import com.dominium.backend.domain.multa.repository.MultaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;

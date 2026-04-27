@@ -1,10 +1,10 @@
-package com.dominium.backend.application.financeiro.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase;
 
 import org.springframework.stereotype.Service;
 
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
 
 @Service
 public class GetDespesaUseCase {

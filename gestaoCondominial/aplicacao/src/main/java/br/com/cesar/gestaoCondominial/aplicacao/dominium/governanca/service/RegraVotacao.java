@@ -1,17 +1,17 @@
 package br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.service;
 
-import com.dominium.backend.domain.governanca.pauta.Pauta;
-import com.dominium.backend.domain.governanca.pauta.ResultadoPauta;
-import com.dominium.backend.domain.governanca.pauta.TipoMaioria;
-import com.dominium.backend.domain.governanca.pauta.TipoQuorum;
-import com.dominium.backend.domain.governanca.voto.OpcaoVoto;
-import com.dominium.backend.domain.governanca.voto.Voto;
-import com.dominium.backend.domain.morador.StatusVinculo;
-import com.dominium.backend.domain.morador.TipoVinculo;
-import com.dominium.backend.domain.morador.VinculoMorador;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.ResultadoPauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.TipoMaioria;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.TipoQuorum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.OpcaoVoto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

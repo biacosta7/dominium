@@ -1,10 +1,10 @@
-package com.dominium.backend.application.taxa.usecase;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase;
 
-import com.dominium.backend.application.taxa.dto.TaxaResponseDTO;
-import com.dominium.backend.domain.shared.exceptions.ResourceNotFoundException;
-import com.dominium.backend.domain.taxa.TaxaCondominial;
-import com.dominium.backend.domain.taxa.TaxaId;
-import com.dominium.backend.domain.taxa.repository.TaxaCondominialRepository;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.TaxaResponseDTO;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaCondominial;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.repository.TaxaCondominialRepository;
 import org.springframework.stereotype.Service;
 
 @Service

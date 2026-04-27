@@ -1,10 +1,10 @@
-package com.dominium.backend.application.financeiro.dto;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto;
 
 import java.math.BigDecimal;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import com.dominium.backend.domain.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
 
 @Data
 @AllArgsConstructor
