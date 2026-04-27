@@ -129,6 +129,16 @@ CREATE TABLE IF NOT EXISTS fila_espera (
     CONSTRAINT fk_fila_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+CREATE TABLE IF NOT EXISTS notificacoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    mensagem VARCHAR(500) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    lida BOOLEAN NOT NULL DEFAULT FALSE,
+    criada_em TIMESTAMP NOT NULL,
+    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
 CREATE TABLE IF NOT EXISTS pauta (
     id BIGSERIAL PRIMARY KEY,
     assembleia_id BIGINT NOT NULL,
