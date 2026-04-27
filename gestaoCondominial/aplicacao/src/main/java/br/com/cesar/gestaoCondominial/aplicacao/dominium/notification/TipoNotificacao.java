@@ -1,4 +1,4 @@
-package com.dominium.backend.domain.shared.notification;
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.notification;
 
 public enum TipoNotificacao {
     NOVA_ASSEMBLEIA,

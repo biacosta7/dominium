@@ -20,11 +20,11 @@ import java.util.List;
 public class RegraVotacao {
 
     private final VinculoMoradorRepository vinculoRepository;
-    private final com.dominium.backend.domain.unidade.repository.UnidadeRepository unidadeRepository;
+    private final br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository unidadeRepository;
 
     public RegraVotacao(
             VinculoMoradorRepository vinculoRepository,
-            com.dominium.backend.domain.unidade.repository.UnidadeRepository unidadeRepository
+            br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository unidadeRepository
     ){
         this.vinculoRepository = vinculoRepository;
         this.unidadeRepository = unidadeRepository;
@@ -49,10 +49,10 @@ public class RegraVotacao {
             throw  new RuntimeException("Vinculo não está ativo");
         }
 
-        com.dominium.backend.domain.unidade.Unidade unidade = unidadeRepository.findById(unidadeId)
+        br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade unidade = unidadeRepository.findById(unidadeId)
                 .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
-        
-        if (unidade.getStatus() != com.dominium.backend.domain.unidade.StatusAdimplencia.ADIMPLENTE) {
+
+        if (unidade.getStatus() != br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia.ADIMPLENTE) {
             throw new RuntimeException("Unidade inadimplente não pode votar");
         }
     }

@@ -77,8 +77,9 @@ public class CancelarReservaUseCase {
             repository.save(novaReserva);
             
             notificacaoService.enviar(fila.getUsuarioId().getValor(),
-                "Sua reserva para a área " + reserva.getAreaComumId().getValor() + 
-                " foi promovida da fila de espera! Você tem 24h para confirmar.");
+                "Sua reserva para a área " + reserva.getAreaComumId().getValor() +
+                " foi promovida da fila de espera! Você tem 24h para confirmar.",
+                br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
         });
     }
 }
