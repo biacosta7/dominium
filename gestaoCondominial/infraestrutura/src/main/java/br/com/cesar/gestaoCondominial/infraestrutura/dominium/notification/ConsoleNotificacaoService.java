@@ -2,7 +2,7 @@ package br.com.cesar.gestaoCondominial.infraestrutura.dominium.notification;
 
 import br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.NotificacaoService;
 import org.springframework.stereotype.Service;
-import com.dominium.backend.domain.shared.notification.TipoNotificacao;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.TipoNotificacao;
 
 @Service
 public class ConsoleNotificacaoService implements NotificacaoService {
