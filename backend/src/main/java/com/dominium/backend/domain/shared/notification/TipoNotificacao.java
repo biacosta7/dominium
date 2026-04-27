@@ -6,5 +6,6 @@ public enum TipoNotificacao {
     APLICACAO_MULTA,
     PROMOCAO_LISTA_ESPERA,
     GERACAO_TAXA,
+    VENCIMENTO_DOCUMENTO,
     GERAL
 }

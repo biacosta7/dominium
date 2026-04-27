@@ -29,7 +29,8 @@ public class NotificarDocumentosVencendoUseCase {
         for (Documento d : vencendo) {
             notificacaoService.enviar(
                 d.getSindicoId(),
-                "O documento \"" + d.getNome() + "\" vence em " + d.getDataValidade() + ". Providencie a renovação."
+                "O documento \"" + d.getNome() + "\" vence em " + d.getDataValidade() + ". Providencie a renovação.",
+                com.dominium.backend.domain.shared.notification.TipoNotificacao.VENCIMENTO_DOCUMENTO
             );
         }
     }

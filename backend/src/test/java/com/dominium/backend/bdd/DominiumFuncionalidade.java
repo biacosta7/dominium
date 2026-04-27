@@ -826,7 +826,7 @@ public class DominiumFuncionalidade {
         julgarRecursoUseCase = new JulgarRecursoUseCase(recursoRepository, multaRepository);
 
         // ── Notificações ────────────────────────────────────────────────────────
-        NotificacaoService notificacaoService = (id, msg) -> {
+        NotificacaoService notificacaoService = (id, msg, tipo) -> {
         }; // no-op em testes
 
         // ── Assembleias ──────────────────────────────────────────────────────────

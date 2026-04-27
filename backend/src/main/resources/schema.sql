@@ -150,6 +150,7 @@ CREATE TABLE IF NOT EXISTS versoes_documento (
     uploadado_em TIMESTAMP NOT NULL,
     CONSTRAINT fk_versao_documento FOREIGN KEY (documento_id) REFERENCES documentos(id),
     CONSTRAINT fk_versao_usuario FOREIGN KEY (uploadado_por) REFERENCES usuarios(id)
+);
 
 CREATE TABLE IF NOT EXISTS notificacoes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
