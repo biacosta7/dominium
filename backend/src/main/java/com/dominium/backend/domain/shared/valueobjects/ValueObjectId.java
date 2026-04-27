@@ -14,9 +14,6 @@ public abstract class ValueObjectId<T> {
     private final T valor;
     
     protected ValueObjectId(T valor) {
-        if (valor == null) {
-            throw new DomainException("Valor do ID não pode ser nulo");
-        }
         if (valor instanceof Integer integer && integer < 0) {
             throw new DomainException("ID não pode ser negativo");
         }

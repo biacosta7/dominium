@@ -1,11 +1,14 @@
 package com.dominium.backend.presentation.unidade;
 
+import com.dominium.backend.application.unidade.dto.HistoricoTitularidadeResponseDTO;
 import com.dominium.backend.application.unidade.dto.UnidadeRequestDTO;
 import com.dominium.backend.application.unidade.dto.UnidadeResponseDTO;
 import com.dominium.backend.application.unidade.usecase.CreateUnidadeUseCase;
 import com.dominium.backend.application.unidade.usecase.DeleteUnidadeUseCase;
+import com.dominium.backend.application.unidade.usecase.GetHistoricoTitularidadeUseCase;
 import com.dominium.backend.application.unidade.usecase.GetUnidadeUseCase;
-
+import com.dominium.backend.application.unidade.usecase.TransferirTitularidadeUseCase;
+import com.dominium.backend.application.unidade.usecase.UpdateUnidadeUseCase;
 // import com.dominium.backend.application.unidade.usecase.GetUnidadeUseCase;
 // import com.dominium.backend.application.unidade.usecase.UpdateUnidadeUseCase;
 import com.dominium.backend.domain.shared.exceptions.ExceptionHandler;
@@ -20,14 +23,19 @@ import org.springframework.web.bind.annotation.*;
 public class UnidadeController {
     private final CreateUnidadeUseCase createUnidadeUseCase;
     private final GetUnidadeUseCase getUnidadeUseCase;
-//     private final UpdateUnidadeUseCase updateUnidadeUseCase;
+    private final UpdateUnidadeUseCase updateUnidadeUseCase;
     private final DeleteUnidadeUseCase deleteUnidadeUseCase;
+    private final TransferirTitularidadeUseCase transferirTitularidadeUseCase;
+    private final GetHistoricoTitularidadeUseCase getHistoricoTitularidadeUseCase;
     private final ExceptionHandler exceptionHandler;
 
-    public UnidadeController(CreateUnidadeUseCase createUnidadeUseCase, DeleteUnidadeUseCase deleteUnidadeUseCase, GetUnidadeUseCase getUnidadeUseCase, ExceptionHandler exceptionHandler){
+    public UnidadeController(CreateUnidadeUseCase createUnidadeUseCase, DeleteUnidadeUseCase deleteUnidadeUseCase, GetUnidadeUseCase getUnidadeUseCase, UpdateUnidadeUseCase updateUnidadeUseCase, TransferirTitularidadeUseCase transferirTitularidadeUseCase, GetHistoricoTitularidadeUseCase getHistoricoTitularidadeUseCase, ExceptionHandler exceptionHandler){
         this.createUnidadeUseCase = createUnidadeUseCase;
         this.deleteUnidadeUseCase = deleteUnidadeUseCase;
         this.getUnidadeUseCase = getUnidadeUseCase;
+        this.updateUnidadeUseCase = updateUnidadeUseCase;
+        this.transferirTitularidadeUseCase = transferirTitularidadeUseCase;
+        this.getHistoricoTitularidadeUseCase = getHistoricoTitularidadeUseCase;
         this.exceptionHandler = exceptionHandler;
     }
 
@@ -54,6 +62,31 @@ public class UnidadeController {
     @GetMapping
     public ResponseEntity<?> findAll(){
         return exceptionHandler.withHandler(() -> ResponseEntity.ok(getUnidadeUseCase.findAll()));
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<UnidadeResponseDTO> update(
+            @PathVariable Long id,
+            @RequestBody @Valid UnidadeRequestDTO request) {
+
+        UnidadeResponseDTO response = updateUnidadeUseCase.execute(id, request);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/{id}/transferir-titularidade")
+    public ResponseEntity<Void> transferir(
+            @PathVariable Long id,
+            @RequestParam Long novoProprietarioId) {
+
+        transferirTitularidadeUseCase.execute(id, novoProprietarioId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<HistoricoTitularidadeResponseDTO>> getHistorico(@PathVariable Long id) {
+        
+        List<HistoricoTitularidadeResponseDTO> response =
+                getHistoricoTitularidadeUseCase.execute(id);
+
+        return ResponseEntity.ok(response);
     }
 }
 

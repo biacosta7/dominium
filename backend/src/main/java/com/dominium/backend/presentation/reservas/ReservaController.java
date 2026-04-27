@@ -34,8 +34,7 @@ public class ReservaController {
             ListarReservaUseCase listarReservaUseCase,
             AdicionarNaFilaUseCase adicionarNaFilaUseCase,
             ConfirmarReservaPromovidaUseCase confirmarReservaPromovidaUseCase,
-            ExceptionHandler exceptionHandler
-    ) {
+            ExceptionHandler exceptionHandler) {
         this.atualizarReservaUseCase = atualizarReservaUseCase;
         this.cancelarReservaUseCase = cancelarReservaUseCase;
         this.criarReservaUseCase = criarReservaUseCase;
@@ -55,8 +54,7 @@ public class ReservaController {
                     new UsuarioId(request.usuarioId()),
                     request.data(),
                     request.horaInicio(),
-                    request.horaFim()
-            );
+                    request.horaFim());
 
             Reserva salva = criarReservaUseCase.executar(reserva);
             return ResponseEntity.ok(ReservaResponse.from(salva));
@@ -71,8 +69,7 @@ public class ReservaController {
                     request.usuarioId(),
                     request.data(),
                     request.horaInicio(),
-                    request.horaFim()
-            );
+                    request.horaFim());
             return ResponseEntity.ok(fila);
         });
     }
@@ -98,15 +95,13 @@ public class ReservaController {
             @PathVariable String id,
             @RequestParam LocalDate data,
             @RequestParam LocalTime horaInicio,
-            @RequestParam LocalTime horaFim
-    ) {
+            @RequestParam LocalTime horaFim) {
         return exceptionHandler.withHandler(() -> {
             Reserva atualizada = atualizarReservaUseCase.executar(
                     ReservaId.de(id),
                     data,
                     horaInicio,
-                    horaFim
-            );
+                    horaFim);
             return ResponseEntity.ok(ReservaResponse.from(atualizada));
         });
     }

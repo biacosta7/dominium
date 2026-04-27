@@ -19,7 +19,8 @@ public class EndVinculoMoradorUseCase {
     private final VinculoMoradorRepository vinculoMoradorRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public EndVinculoMoradorUseCase(VinculoMoradorRepository vinculoMoradorRepository, UsuarioRepository usuarioRepository) {
+    public EndVinculoMoradorUseCase(VinculoMoradorRepository vinculoMoradorRepository,
+            UsuarioRepository usuarioRepository) {
         this.vinculoMoradorRepository = vinculoMoradorRepository;
         this.usuarioRepository = usuarioRepository;
     }
@@ -35,12 +36,13 @@ public class EndVinculoMoradorUseCase {
         // Se for síndico, tem permissão total
         if (requester.getTipo() != TipoUsuario.SINDICO) {
             // Se não for síndico, verifica se o solicitante é titular da mesma unidade
-            Long unidadeId = vinculoParaRemover.getUnidade().getId();
-            
-            List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId, StatusVinculo.ATIVO);
+
+            List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId,
+                    StatusVinculo.ATIVO);
             boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()
-                    .anyMatch(v -> v.getUnidade().getId().equals(unidadeId) && v.getTipo() == TipoVinculo.TITULAR);
-            
+                    .anyMatch(v -> v.getTipo() == TipoVinculo.TITULAR &&
+                            v.getUnidade().equals(vinculoParaRemover.getUnidade()));
+
             if (!isTitularDaMesmaUnidade) {
                 throw new IllegalStateException("Apenas o titular da unidade ou o síndico podem remover um morador");
             }
