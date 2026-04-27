@@ -646,6 +646,12 @@ public class DominiumFuncionalidade {
             public Optional<AreaComum> findById(AreaComumId id) {
                 return Optional.ofNullable(areaComumDb.get(id.getValor()));
             }
+
+            @Override
+            public AreaComum save(AreaComum area) {
+                areaComumDb.put(area.getId().getValor(), area);
+                return area;
+            }
         };
 
         funcionarioRepository = new FuncionarioRepository() {
