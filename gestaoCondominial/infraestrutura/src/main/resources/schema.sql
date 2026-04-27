@@ -129,6 +129,39 @@ CREATE TABLE IF NOT EXISTS fila_espera (
     CONSTRAINT fk_fila_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+CREATE TABLE IF NOT EXISTS documentos (
+    id VARCHAR(36) PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    data_validade DATE,
+    sindico_id BIGINT NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
+    CONSTRAINT fk_documento_sindico FOREIGN KEY (sindico_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS versoes_documento (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    documento_id VARCHAR(36) NOT NULL,
+    numero_versao INT NOT NULL,
+    nome_arquivo VARCHAR(255) NOT NULL,
+    caminho_arquivo VARCHAR(500) NOT NULL,
+    uploadado_por BIGINT NOT NULL,
+    uploadado_em TIMESTAMP NOT NULL,
+    CONSTRAINT fk_versao_documento FOREIGN KEY (documento_id) REFERENCES documentos(id),
+    CONSTRAINT fk_versao_usuario FOREIGN KEY (uploadado_por) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS notificacoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    mensagem VARCHAR(500) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    lida BOOLEAN NOT NULL DEFAULT FALSE,
+    criada_em TIMESTAMP NOT NULL,
+    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
 CREATE TABLE IF NOT EXISTS pauta (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     assembleia_id BIGINT NOT NULL,
@@ -169,7 +202,7 @@ CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
     usuario_id BIGINT NOT NULL,
     notificado_em TIMESTAMP NOT NULL,
     CONSTRAINT fk_notificacao_assembleia FOREIGN KEY (assembleia_id) REFERENCES assembleias(id),
-    CONSTRAINT fk_notificacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    CONSTRAINT fk_notificacao_assembleia_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     );
 
 CREATE TABLE IF NOT EXISTS ocorrencias (

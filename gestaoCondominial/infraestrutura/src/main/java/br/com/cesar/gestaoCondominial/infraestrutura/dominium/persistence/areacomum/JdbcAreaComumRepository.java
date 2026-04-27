@@ -33,4 +33,17 @@ public class JdbcAreaComumRepository implements AreaComumRepository {
         String sql = "SELECT * FROM areas_comuns WHERE id = ?";
         return jdbcTemplate.query(sql, rowMapper, id.getValor()).stream().findFirst();
     }
+
+    @Override
+    public AreaComum save(AreaComum area) {
+        if (area.getId() == null) {
+            String sql = "INSERT INTO areas_comuns (nome, capacidade_maxima, status) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, area.getNome(), area.getCapacidadeMaxima(), area.getStatus().name());
+        } else {
+            String sql = "UPDATE areas_comuns SET nome = ?, capacidade_maxima = ?, status = ? WHERE id = ?";
+            jdbcTemplate.update(sql, area.getNome(), area.getCapacidadeMaxima(), area.getStatus().name(),
+                    area.getId().getValor());
+        }
+        return area;
+    }
 }

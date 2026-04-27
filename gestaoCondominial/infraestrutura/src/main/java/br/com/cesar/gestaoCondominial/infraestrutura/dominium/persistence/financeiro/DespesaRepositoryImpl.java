@@ -34,14 +34,18 @@ public class DespesaRepositoryImpl implements DespesaRepository {
             d.setId(rs.getLong("id"));
             d.setDescricao(rs.getString("descricao"));
             d.setValor(rs.getBigDecimal("valor"));
-            if (rs.getDate("data") != null) d.setData(rs.getDate("data").toLocalDate());
+            if (rs.getDate("data") != null)
+                d.setData(rs.getDate("data").toLocalDate());
             d.setCategoria(CategoriaDespesa.valueOf(rs.getString("categoria")));
             d.setTipo(TipoDespesa.valueOf(rs.getString("tipo")));
             d.setStatus(StatusDespesa.valueOf(rs.getString("status")));
             d.setOrcamentoId(rs.getLong("orcamento_id"));
-            if (rs.wasNull()) d.setOrcamentoId(null);
-            if (rs.getTimestamp("created_at") != null) d.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            if (rs.getTimestamp("updated_at") != null) d.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+            if (rs.wasNull())
+                d.setOrcamentoId(null);
+            if (rs.getTimestamp("created_at") != null)
+                d.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            if (rs.getTimestamp("updated_at") != null)
+                d.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
             return d;
         }
     };
@@ -54,8 +58,7 @@ public class DespesaRepositoryImpl implements DespesaRepository {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(
                         sql,
-                        new String[] { "id" }
-                );
+                        new String[] { "id" });
                 ps.setString(1, despesa.getDescricao());
                 ps.setBigDecimal(2, despesa.getValor());
                 ps.setDate(3, java.sql.Date.valueOf(despesa.getData()));
@@ -74,15 +77,15 @@ public class DespesaRepositoryImpl implements DespesaRepository {
             }
         } else {
             String sql = "UPDATE despesas SET descricao = ?, valor = ?, data = ?, categoria = ?, tipo = ?, status = ?, orcamento_id = ? WHERE id = ?";
-            jdbcTemplate.update(sql, 
-                despesa.getDescricao(), 
-                despesa.getValor(), 
-                java.sql.Date.valueOf(despesa.getData()), 
-                despesa.getCategoria().name(), 
-                despesa.getTipo().name(), 
-                despesa.getStatus().name(), 
-                despesa.getOrcamentoId(), 
-                despesa.getId());
+            jdbcTemplate.update(sql,
+                    despesa.getDescricao(),
+                    despesa.getValor(),
+                    java.sql.Date.valueOf(despesa.getData()),
+                    despesa.getCategoria().name(),
+                    despesa.getTipo().name(),
+                    despesa.getStatus().name(),
+                    despesa.getOrcamentoId(),
+                    despesa.getId());
         }
         return despesa;
     }
