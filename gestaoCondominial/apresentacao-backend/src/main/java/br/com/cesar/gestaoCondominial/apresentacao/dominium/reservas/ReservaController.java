@@ -1,11 +1,20 @@
-package com.dominium.backend.presentation.reservas;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.reservas;
 
-import com.dominium.backend.application.reservas.dto.CriarReservaRequest;
-import com.dominium.backend.application.reservas.dto.ReservaResponse;
-import com.dominium.backend.domain.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.AdicionarNaFilaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.AtualizarReservaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.CancelarReservaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.ConfirmarReservaPromovidaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.CriarReservaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.ListarReservaUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto.CriarReservaRequest;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto.ReservaResponse;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
-import com.dominium.backend.domain.usuario.UsuarioId;
-import com.dominium.backend.domain.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

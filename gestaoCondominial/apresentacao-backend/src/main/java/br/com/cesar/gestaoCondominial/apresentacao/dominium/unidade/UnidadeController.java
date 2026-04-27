@@ -1,16 +1,16 @@
-package com.dominium.backend.presentation.unidade;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.unidade;
 
-import com.dominium.backend.application.unidade.dto.HistoricoTitularidadeResponseDTO;
-import com.dominium.backend.application.unidade.dto.UnidadeRequestDTO;
-import com.dominium.backend.application.unidade.dto.UnidadeResponseDTO;
-import com.dominium.backend.application.unidade.usecase.CreateUnidadeUseCase;
-import com.dominium.backend.application.unidade.usecase.DeleteUnidadeUseCase;
-import com.dominium.backend.application.unidade.usecase.GetHistoricoTitularidadeUseCase;
-import com.dominium.backend.application.unidade.usecase.GetUnidadeUseCase;
-import com.dominium.backend.application.unidade.usecase.TransferirTitularidadeUseCase;
-import com.dominium.backend.application.unidade.usecase.UpdateUnidadeUseCase;
-// import com.dominium.backend.application.unidade.usecase.GetUnidadeUseCase;
-// import com.dominium.backend.application.unidade.usecase.UpdateUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.HistoricoTitularidadeResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.UnidadeRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.dto.UnidadeResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.CreateUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.DeleteUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.GetHistoricoTitularidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.GetUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.TransferirTitularidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.UpdateUnidadeUseCase;
+// import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.GetUnidadeUseCase;
+// import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.UpdateUnidadeUseCase;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import jakarta.validation.Valid;
 import java.util.List;

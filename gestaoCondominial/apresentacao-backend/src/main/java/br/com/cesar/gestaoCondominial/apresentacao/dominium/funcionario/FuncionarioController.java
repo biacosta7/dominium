@@ -1,6 +1,13 @@
-package com.dominium.backend.presentation.funcionario;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.funcionario;
 
-import com.dominium.backend.domain.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto.CadastrarFuncionarioRequest;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto.FuncionarioResponse;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto.RegistrarAvaliacaoRequest;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.dto.RenovarContratoRequest;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase.CadastrarFuncionarioUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase.RegistrarAvaliacaoUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase.RenovarContratoUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

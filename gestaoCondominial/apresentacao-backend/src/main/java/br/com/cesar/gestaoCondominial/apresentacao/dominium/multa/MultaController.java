@@ -1,15 +1,15 @@
-package com.dominium.backend.presentation.multa;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.multa;
 
-import com.dominium.backend.application.multa.dto.ContestarMultaRequestDTO;
-import com.dominium.backend.application.multa.dto.CreateMultaRequestDTO;
-import com.dominium.backend.application.multa.dto.MultaResponseDTO;
-import com.dominium.backend.application.multa.dto.RegistrarPagamentoRequestDTO;
-import com.dominium.backend.application.multa.dto.UpdateMultaStatusRequestDTO;
-import com.dominium.backend.application.multa.usecase.ContestarMultaUseCase;
-import com.dominium.backend.application.multa.usecase.CreateMultaManualUseCase;
-import com.dominium.backend.application.multa.usecase.ListMultasByUnidadeUseCase;
-import com.dominium.backend.application.multa.usecase.RegistrarPagamentoMultaUseCase;
-import com.dominium.backend.application.multa.usecase.UpdateMultaStatusUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.ContestarMultaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.CreateMultaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.MultaResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.RegistrarPagamentoRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.UpdateMultaStatusRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.ContestarMultaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.CreateMultaManualUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.ListMultasByUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.RegistrarPagamentoMultaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.UpdateMultaStatusUseCase;
 
 import jakarta.validation.Valid;
 

@@ -1,13 +1,13 @@
-package com.dominium.backend.presentation.ocorrencia;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.ocorrencia;
 
-import com.dominium.backend.application.ocorrencia.dto.AtualizarStatusOcorrenciaRequestDTO;
-import com.dominium.backend.application.ocorrencia.dto.EncerrarOcorrenciaRequestDTO;
-import com.dominium.backend.application.ocorrencia.dto.OcorrenciaRequestDTO;
-import com.dominium.backend.application.ocorrencia.dto.OcorrenciaResponseDTO;
-import com.dominium.backend.application.ocorrencia.usecase.AtualizarStatusOcorrenciaUseCase;
-import com.dominium.backend.application.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
-import com.dominium.backend.application.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
-import com.dominium.backend.domain.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.AtualizarStatusOcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.EncerrarOcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.AtualizarStatusOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

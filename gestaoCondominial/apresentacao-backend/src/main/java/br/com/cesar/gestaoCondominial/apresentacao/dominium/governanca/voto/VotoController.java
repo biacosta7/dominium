@@ -1,13 +1,13 @@
-package com.dominium.backend.presentation.governanca.voto;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.governanca.voto;
 
-import com.dominium.backend.application.governanca.voto.dto.VotarRequest;
-import com.dominium.backend.application.governanca.voto.dto.VotoResponse;
-import com.dominium.backend.application.governanca.voto.usecase.ListarVotosUseCase;
-import com.dominium.backend.application.governanca.voto.usecase.VotarUseCase;
-import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.governanca.voto.Voto;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.dto.VotarRequest;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.dto.VotoResponse;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase.ListarVotosUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase.VotarUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

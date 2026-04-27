@@ -1,4 +1,4 @@
-package com.dominium.backend.presentation.financeiro;
+package br.com.cesar.gestaoCondominial.apresentacao.dominium.financeiro;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dominium.backend.domain.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
 
-import com.dominium.backend.application.financeiro.dto.DespesaRequestDTO;
-import com.dominium.backend.application.financeiro.dto.DespesaResponseDTO;
-import com.dominium.backend.application.financeiro.dto.OrcamentoRequestDTO;
-import com.dominium.backend.application.financeiro.dto.OrcamentoResponseDTO;
-import com.dominium.backend.application.financeiro.usecase.AprovarDespesaExtraordinariaUseCase;
-import com.dominium.backend.application.financeiro.usecase.CadastrarOrcamentoUseCase;
-import com.dominium.backend.application.financeiro.usecase.ConsultarSaldoUseCase;
-import com.dominium.backend.application.financeiro.usecase.RegistrarDespesaUseCase;
-import com.dominium.backend.application.financeiro.usecase.GetOrcamentoPorAnoUseCase;
-import com.dominium.backend.application.financeiro.usecase.ListOrcamentosUseCase;
-import com.dominium.backend.application.financeiro.usecase.ListDespesasPorOrcamentoUseCase;
-import com.dominium.backend.application.financeiro.usecase.GetDespesaUseCase;
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto.DespesaRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto.DespesaResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto.OrcamentoRequestDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto.OrcamentoResponseDTO;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.AprovarDespesaExtraordinariaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.CadastrarOrcamentoUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.ConsultarSaldoUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.RegistrarDespesaUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.GetOrcamentoPorAnoUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.ListOrcamentosUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.ListDespesasPorOrcamentoUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.GetDespesaUseCase;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 
 import jakarta.validation.Valid;
