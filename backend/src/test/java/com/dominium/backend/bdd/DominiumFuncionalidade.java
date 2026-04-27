@@ -6,7 +6,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.dominium.backend.application.assembleia.usecase.*;
+import com.dominium.backend.application.documento.storage.ArmazenamentoDocumento;
+import com.dominium.backend.application.documento.usecase.*;
 import com.dominium.backend.application.financeiro.usecase.*;
+
 import com.dominium.backend.application.funcionario.usecase.*;
 import com.dominium.backend.application.governanca.pauta.usecase.*;
 import com.dominium.backend.application.governanca.voto.usecase.*;
@@ -29,6 +32,9 @@ import com.dominium.backend.domain.assembleia.Assembleia;
 import com.dominium.backend.domain.assembleia.AssembleiaId;
 import com.dominium.backend.domain.assembleia.repository.AssembleiaRepository;
 import com.dominium.backend.domain.assembleia.service.ServicoNotificacaoAssembleia;
+import com.dominium.backend.domain.documento.*;
+import com.dominium.backend.domain.documento.repository.DocumentoRepository;
+import com.dominium.backend.domain.documento.repository.VersaoDocumentoRepository;
 import com.dominium.backend.domain.financeiro.Despesa;
 import com.dominium.backend.domain.financeiro.Orcamento;
 import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
@@ -107,6 +113,8 @@ public class DominiumFuncionalidade {
     protected AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepository;
     protected OrdemServicoRepository ordemServicoRepository;
     protected TaxaCondominialRepository taxaCondominialRepository;
+    protected DocumentoRepository documentoRepository;
+    protected VersaoDocumentoRepository versaoDocumentoRepository;
 
     // ── Use Cases: Unidades ──────────────────────────────────────────────────────
     protected CreateUnidadeUseCase createUnidadeUseCase;
@@ -181,6 +189,13 @@ public class DominiumFuncionalidade {
     protected RenovarContratoUseCase renovarContratoUseCase;
     protected GerarDespesasMensaisUseCase gerarDespesasMensaisUseCase;
     
+    // ── Use Cases: Documentos ────────────────────────────────────────────────────
+    protected CadastrarDocumentoUseCase cadastrarDocumentoUseCase;
+    protected AtualizarDocumentoUseCase atualizarDocumentoUseCase;
+    protected InativarDocumentoUseCase inativarDocumentoUseCase;
+    protected ListarDocumentosUseCase listarDocumentosUseCase;
+    protected NotificarDocumentosVencendoUseCase notificarDocumentosVencendoUseCase;
+
     // ── Use Cases: Taxas ─────────────────────────────────────────────────────────
     protected GerarTaxaMensalUseCase gerarTaxaMensalUseCase;
     protected AtualizarValorTaxaUseCase atualizarValorTaxaUseCase;
@@ -760,6 +775,73 @@ public class DominiumFuncionalidade {
                         .anyMatch(t -> t.getUnidadeId().equals(unidadeId) && t.getStatus().name().equals("ATRASADA"));
             }
         };
+
+        documentoRepository = new DocumentoRepository() {
+            private final Map<DocumentoId, Documento> db = new HashMap<>();
+
+            @Override
+            public Documento save(Documento d) {
+                if (d.getId() == null)
+                    d.setId(DocumentoId.novo());
+                db.put(d.getId(), d);
+                return d;
+            }
+
+            @Override
+            public Optional<Documento> findById(DocumentoId id) {
+                return Optional.ofNullable(db.get(id));
+            }
+
+            @Override
+            public List<Documento> findAll() {
+                return new ArrayList<>(db.values());
+            }
+
+            @Override
+            public List<Documento> findAtivos() {
+                return db.values().stream().filter(Documento::isAtivo).collect(Collectors.toList());
+            }
+
+            @Override
+            public List<Documento> findVencendoAte(LocalDate limite) {
+                return db.values().stream()
+                        .filter(d -> d.getDataValidade() != null && !d.getDataValidade().isAfter(limite) && d.isAtivo())
+                        .collect(Collectors.toList());
+            }
+        };
+
+        versaoDocumentoRepository = new VersaoDocumentoRepository() {
+            private final Map<Long, VersaoDocumento> db = new HashMap<>();
+
+            @Override
+            public VersaoDocumento save(VersaoDocumento v) {
+                if (v.getId() == null)
+                    v.setId(currentId++);
+                db.put(v.getId(), v);
+                return v;
+            }
+
+            @Override
+            public List<VersaoDocumento> findByDocumentoId(DocumentoId documentoId) {
+                return db.values().stream()
+                        .filter(v -> v.getDocumentoId().equals(documentoId))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public Optional<VersaoDocumento> findUltimaVersao(DocumentoId id) {
+                return db.values().stream()
+                        .filter(v -> v.getDocumentoId().equals(id))
+                        .max(Comparator.comparingInt(VersaoDocumento::getNumeroVersao));
+            }
+
+            @Override
+            public int contarVersoes(DocumentoId id) {
+                return (int) db.values().stream()
+                        .filter(v -> v.getDocumentoId().equals(id))
+                        .count();
+            }
+        };
     }
 
     // ────────────────────────────────────────────────────────────────────────────
@@ -879,5 +961,27 @@ public class DominiumFuncionalidade {
                 usuarioRepository);
         gerarDespesasMensaisUseCase = new GerarDespesasMensaisUseCase(funcionarioRepository, despesaRepository,
                 orcamentoRepository);
+
+        // ── Documentos ───────────────────────────────────────────────────────────
+        ArmazenamentoDocumento armazenamento = new ArmazenamentoDocumento() {
+            @Override
+            public String salvar(String documentoId, int versao, String nomeOriginal, byte[] conteudo) {
+                return "path/to/" + nomeOriginal;
+            }
+
+            @Override
+            public byte[] carregar(String caminho) {
+                return new byte[0];
+            }
+        };
+
+        cadastrarDocumentoUseCase = new CadastrarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
+                armazenamento, usuarioRepository);
+        atualizarDocumentoUseCase = new AtualizarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
+                armazenamento, usuarioRepository);
+        inativarDocumentoUseCase = new InativarDocumentoUseCase(documentoRepository, usuarioRepository);
+        listarDocumentosUseCase = new ListarDocumentosUseCase(documentoRepository);
+        notificarDocumentosVencendoUseCase = new NotificarDocumentosVencendoUseCase(documentoRepository,
+                notificacaoService);
     }
 }
