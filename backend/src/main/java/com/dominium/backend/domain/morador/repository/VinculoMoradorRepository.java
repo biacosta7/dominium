@@ -11,6 +11,7 @@ public interface VinculoMoradorRepository {
     Optional<VinculoMorador> findById(Long id);
     List<VinculoMorador> findByUnidadeIdAndStatus(Long unidadeId, StatusVinculo status);
     List<VinculoMorador> findByUsuarioIdAndStatus(Long usuarioId, StatusVinculo status);
+    List<VinculoMorador> findByUsuarioAndUnidade(Long usuarioId, Long unidadeId);
     long countByUnidadeIdAndStatus(Long unidadeId, StatusVinculo status);
     void deleteById(Long id);
 }

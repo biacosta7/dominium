@@ -27,7 +27,7 @@ public class UnidadeResponseDTO {
     public static UnidadeResponseDTO fromEntity(Unidade unidade) {
         UnidadeResponseDTO dto = new UnidadeResponseDTO();
 
-        dto.setId(unidade.getId());
+        dto.setId(unidade.getId() != null ? unidade.getId().getValor() : null);
         dto.setNumero(unidade.getNumero());
         dto.setBloco(unidade.getBloco());
 

@@ -56,7 +56,7 @@ public class CancelarReservaUseCase {
 
             UnidadeId unidadeId = unidadeRepository.findAll().stream()
                     .filter(u -> u.getInquilino() != null && u.getInquilino().getId().equals(fila.getUsuarioId()))
-                    .map(u -> new UnidadeId(u.getId()))
+                    .map(u -> u.getId())
                     .findFirst()
                     .orElse(null);
 

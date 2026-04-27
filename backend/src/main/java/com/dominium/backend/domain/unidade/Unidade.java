@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id")
 public class Unidade {
 
-    private Long id;
+    private UnidadeId id;
 
     private String numero;
 

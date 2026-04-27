@@ -26,6 +26,23 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/**").permitAll()
                 .requestMatchers("/unidades/**").permitAll()
                 .requestMatchers("/notificacoes/**").permitAll()
+                .requestMatchers("/funcionarios/**").permitAll()
+                .requestMatchers("/ordens-servico/**").permitAll()
+                .requestMatchers("/assembleias/**").permitAll()
+                .requestMatchers("/multas/**").permitAll()
+                .requestMatchers("/ocorrencias/**").permitAll()
+                .requestMatchers("/reservas/**").permitAll()
+                .requestMatchers("/pautas/**").permitAll()
+                .requestMatchers("/votos/**").permitAll()
+                .requestMatchers("/api/fila/**").permitAll()
+                .requestMatchers("/api/unidades/**").permitAll()
+                .requestMatchers("/api/moradores/**").permitAll()
+                .requestMatchers("/financeiro/**").permitAll()
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html"
+                ).permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();

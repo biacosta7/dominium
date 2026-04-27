@@ -3,7 +3,6 @@ package com.dominium.backend.infrastructure.persistence.financeiro;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +32,10 @@ public class OrcamentoRepositoryImpl implements OrcamentoRepository {
             o.setAno(rs.getInt("ano"));
             o.setValorTotal(rs.getBigDecimal("valor_total"));
             o.setValorGasto(rs.getBigDecimal("valor_gasto"));
-            if (rs.getTimestamp("created_at") != null) o.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            if (rs.getTimestamp("updated_at") != null) o.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+            if (rs.getTimestamp("created_at") != null)
+                o.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            if (rs.getTimestamp("updated_at") != null)
+                o.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
             return o;
         }
     };
@@ -45,7 +46,9 @@ public class OrcamentoRepositoryImpl implements OrcamentoRepository {
             String sql = "INSERT INTO orcamentos(ano, valor_total, valor_gasto) VALUES (?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[] { "id" });
                 ps.setInt(1, orcamento.getAno());
                 ps.setBigDecimal(2, orcamento.getValorTotal());
                 ps.setBigDecimal(3, orcamento.getValorGasto());
@@ -56,11 +59,11 @@ public class OrcamentoRepositoryImpl implements OrcamentoRepository {
             }
         } else {
             String sql = "UPDATE orcamentos SET ano = ?, valor_total = ?, valor_gasto = ? WHERE id = ?";
-            jdbcTemplate.update(sql, 
-                orcamento.getAno(), 
-                orcamento.getValorTotal(), 
-                orcamento.getValorGasto(), 
-                orcamento.getId());
+            jdbcTemplate.update(sql,
+                    orcamento.getAno(),
+                    orcamento.getValorTotal(),
+                    orcamento.getValorGasto(),
+                    orcamento.getId());
         }
         return orcamento;
     }
