@@ -4,7 +4,7 @@ Este repositório contém o projeto **Dominium**, um sistema robusto para gestã
 
 ### Descrição do Domínio e Linguagem Onipresente
 A documentação detalhada do domínio, incluindo o dicionário de termos da linguagem onipresente, pode ser acessada no link abaixo:
-* [Documentação do Domínio (Google Docs/Wiki)](https://docs.google.com/document/d/1aWK6FDDeQgYQenl1TC0TvFRtFSu0mYm-PGoDvy8YANo/edit?usp=sharing)
+* [Documentação do Domínio (Google Docs)](https://docs.google.com/document/d/1aWK6FDDeQgYQenl1TC0TvFRtFSu0mYm-PGoDvy8YANo/edit?usp=sharing)
 
 ### Mapa de Histórias do Usuário (User Story Map)
 O mapeamento das jornadas dos usuários e a estruturação das funcionalidades em épicos e histórias estão disponíveis no seguinte arquivo:
