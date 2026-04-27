@@ -1,7 +1,7 @@
 package br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto;
 
-import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
 
 import java.util.List;
 import java.util.Optional;

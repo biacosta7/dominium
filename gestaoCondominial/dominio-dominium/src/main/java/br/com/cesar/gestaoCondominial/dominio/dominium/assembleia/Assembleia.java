@@ -1,6 +1,6 @@
 package br.com.cesar.gestaoCondominial.dominio.dominium.assembleia;
 
-import com.dominium.backend.domain.shared.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 import lombok.*;
 
 import java.time.LocalDateTime;

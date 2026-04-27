@@ -1,6 +1,6 @@
 package br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta;
 
-import com.dominium.backend.domain.shared.valueobjects.ValueObjectId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.valueobjects.ValueObjectId;
 
 public class PautaId extends ValueObjectId<Long> {
 

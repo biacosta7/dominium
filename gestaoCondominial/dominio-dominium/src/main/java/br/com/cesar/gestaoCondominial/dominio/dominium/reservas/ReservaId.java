@@ -1,14 +1,15 @@
 package br.com.cesar.gestaoCondominial.dominio.dominium.reservas;
 
 import java.util.UUID;
-import com.dominium.backend.domain.shared.valueobjects.ValueObjectId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.valueobjects.ValueObjectId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 
 public class ReservaId extends ValueObjectId<String> {
 
     private ReservaId(String valor) {
         super(valor);
         if (valor.isBlank()) {
-            throw new com.dominium.backend.domain.shared.exceptions.DomainException("ID da reserva não pode ser vazio");
+            throw new DomainException("ID da reserva não pode ser vazio");
         }
     }
 
