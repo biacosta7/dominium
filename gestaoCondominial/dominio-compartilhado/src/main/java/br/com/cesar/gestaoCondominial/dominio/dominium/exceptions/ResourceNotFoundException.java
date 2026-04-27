@@ -1,4 +1,4 @@
-package com.dominium.backend.domain.shared.exceptions;
+package br.com.cesar.gestaoCondominial.dominio.dominium.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     

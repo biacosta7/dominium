@@ -1,7 +1,7 @@
 package br.com.cesar.gestaoCondominial.dominio.dominium.valueobjects;
 
 import java.util.Objects;
-import com.dominium.backend.domain.shared.exceptions.DomainException;
+import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 import lombok.Getter;
 
 /**
