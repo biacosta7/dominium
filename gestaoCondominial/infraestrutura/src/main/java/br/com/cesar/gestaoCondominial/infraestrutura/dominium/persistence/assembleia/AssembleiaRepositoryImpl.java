@@ -5,8 +5,12 @@ import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
 import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.StatusAssembleia;
 import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.repository.AssembleiaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,25 +27,24 @@ public class AssembleiaRepositoryImpl implements AssembleiaRepository {
 
     @Override
     public Assembleia save(Assembleia assembleia) {
-        boolean existe = Boolean.TRUE.equals(
-            jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) > 0 FROM assembleias WHERE id = ?",
-                Boolean.class,
-                assembleia.getId().getValor()
-            )
-        );
+        boolean isNew = assembleia.getId().getValor() == null;
 
-        if (!existe) {
-            jdbcTemplate.update(
-                "INSERT INTO assembleias (id, titulo, data_hora, local, status, sindico_id, data_criacao) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                assembleia.getId().getValor(),
-                assembleia.getTitulo(),
-                Timestamp.valueOf(assembleia.getDataHora()),
-                assembleia.getLocal(),
-                assembleia.getStatus().name(),
-                assembleia.getSindicoId(),
-                Timestamp.valueOf(assembleia.getDataCriacao())
-            );
+        if (isNew) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO assembleias (titulo, data_hora, local, status, sindico_id, data_criacao) VALUES (?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, assembleia.getTitulo());
+                ps.setTimestamp(2, Timestamp.valueOf(assembleia.getDataHora()));
+                ps.setString(3, assembleia.getLocal());
+                ps.setString(4, assembleia.getStatus().name());
+                ps.setLong(5, assembleia.getSindicoId());
+                ps.setTimestamp(6, Timestamp.valueOf(assembleia.getDataCriacao()));
+                return ps;
+            }, keyHolder);
+            assembleia.setId(new AssembleiaId(keyHolder.getKey().longValue()));
             salvarPauta(assembleia);
         } else {
             jdbcTemplate.update(
@@ -107,9 +110,14 @@ public class AssembleiaRepositoryImpl implements AssembleiaRepository {
         if (assembleia.getPauta() == null) return;
         for (String item : assembleia.getPauta()) {
             jdbcTemplate.update(
-                "INSERT INTO pauta (assembleia_id, descricao) VALUES (?, ?)",
+                "INSERT INTO pauta (assembleia_id, titulo, descricao, tipo_quorum, tipo_maioria, status, resultado) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 assembleia.getId().getValor(),
-                item
+                item,
+                item,
+                "SIMPLES",
+                "SIMPLES",
+                "ABERTA",
+                "EM_ANDAMENTO"
             );
         }
     }
