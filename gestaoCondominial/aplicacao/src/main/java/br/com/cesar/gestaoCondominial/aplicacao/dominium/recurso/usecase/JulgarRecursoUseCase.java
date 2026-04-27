@@ -8,9 +8,11 @@ import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.repository.Recurs
 import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
 import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import java.util.UUID;
 import java.math.BigDecimal;
 
+@Service
 @RequiredArgsConstructor
 public class JulgarRecursoUseCase {
 

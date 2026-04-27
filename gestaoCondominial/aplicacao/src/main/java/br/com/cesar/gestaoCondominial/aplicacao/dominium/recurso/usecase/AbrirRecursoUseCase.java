@@ -7,9 +7,11 @@ import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
 import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
 import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Service
 @RequiredArgsConstructor
 public class AbrirRecursoUseCase {
 
