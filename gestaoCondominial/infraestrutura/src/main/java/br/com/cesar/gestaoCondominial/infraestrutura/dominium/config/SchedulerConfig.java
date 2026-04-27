@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.config;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

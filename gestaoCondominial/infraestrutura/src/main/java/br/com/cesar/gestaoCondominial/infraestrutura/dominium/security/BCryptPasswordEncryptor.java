@@ -1,6 +1,6 @@
-package com.dominium.backend.infrastructure.security;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.security;
 
-import com.dominium.backend.application.security.PasswordEncryptor;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.security.PasswordEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

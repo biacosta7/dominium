@@ -1,9 +1,9 @@
-package com.dominium.backend.infrastructure.persistence.areacomum;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.areacomum;
 
-import com.dominium.backend.domain.areacomum.AreaComum;
-import com.dominium.backend.domain.areacomum.AreaComumId;
-import com.dominium.backend.domain.areacomum.AreaComumRepository;
-import com.dominium.backend.domain.areacomum.StatusArea;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.StatusArea;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

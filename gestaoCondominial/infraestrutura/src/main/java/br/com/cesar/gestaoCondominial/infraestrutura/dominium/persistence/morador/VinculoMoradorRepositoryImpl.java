@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.morador;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.morador;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,13 +12,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.morador.StatusVinculo;
-import com.dominium.backend.domain.morador.TipoVinculo;
-import com.dominium.backend.domain.morador.VinculoMorador;
-import com.dominium.backend.domain.morador.repository.VinculoMoradorRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Repository
 public class VinculoMoradorRepositoryImpl implements VinculoMoradorRepository {

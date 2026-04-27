@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.unidade;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.unidade;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,10 +12,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.unidade.HistoricoTitularidade;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.unidade.repository.HistoricoTitularidadeRepository;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.HistoricoTitularidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.HistoricoTitularidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Repository
 public class HistoricoTitularidadeRepositoryImpl implements HistoricoTitularidadeRepository {

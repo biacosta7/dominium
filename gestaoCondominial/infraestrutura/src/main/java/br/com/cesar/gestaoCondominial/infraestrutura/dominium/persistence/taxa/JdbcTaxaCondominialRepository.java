@@ -1,10 +1,10 @@
-package com.dominium.backend.infrastructure.persistence.taxa;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.taxa;
 
-import com.dominium.backend.domain.taxa.StatusTaxa;
-import com.dominium.backend.domain.taxa.TaxaCondominial;
-import com.dominium.backend.domain.taxa.TaxaId;
-import com.dominium.backend.domain.taxa.repository.TaxaCondominialRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.StatusTaxa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaCondominial;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.repository.TaxaCondominialRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

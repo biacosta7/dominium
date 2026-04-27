@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.multa;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.multa;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,13 +14,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.multa.Multa;
-import com.dominium.backend.domain.multa.MultaId; // Importado
-import com.dominium.backend.domain.unidade.UnidadeId; // Importado
-import com.dominium.backend.domain.multa.StatusMulta;
-import com.dominium.backend.domain.multa.TipoValorMulta;
-import com.dominium.backend.domain.multa.repository.MultaRepository;
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId; // Importado
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId; // Importado
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.TipoValorMulta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
 
 @Repository
 public class MultaRepositoryImpl implements MultaRepository {

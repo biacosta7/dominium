@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.usuario;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.usuario;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +9,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.usuario.TipoUsuario;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 

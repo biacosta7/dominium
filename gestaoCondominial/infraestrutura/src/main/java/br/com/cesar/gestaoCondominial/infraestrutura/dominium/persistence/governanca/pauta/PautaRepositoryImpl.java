@@ -1,6 +1,6 @@
 package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.governanca.pauta;
 
-import com.dominium.backend.domain.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,9 +8,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.*;
-import com.dominium.backend.domain.governanca.pauta.PautaRepository;
-import com.dominium.backend.domain.governanca.pauta.Pauta;
-import com.dominium.backend.domain.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;

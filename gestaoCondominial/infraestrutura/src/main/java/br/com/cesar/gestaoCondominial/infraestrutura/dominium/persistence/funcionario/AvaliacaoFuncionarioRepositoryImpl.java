@@ -1,8 +1,8 @@
-package com.dominium.backend.infrastructure.persistence.funcionario;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.funcionario;
 
-import com.dominium.backend.domain.funcionario.AvaliacaoFuncionario;
-import com.dominium.backend.domain.funcionario.FuncionarioId;
-import com.dominium.backend.domain.funcionario.repository.AvaliacaoFuncionarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.AvaliacaoFuncionario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.FuncionarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.AvaliacaoFuncionarioRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,7 +39,7 @@ public class AvaliacaoFuncionarioRepositoryImpl implements AvaliacaoFuncionarioR
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, avaliacao.getFuncionarioId().getValor());
+            ps.setString(1, avaliacao.getFuncionarioId().getValor().toString());
             ps.setBoolean(2, avaliacao.isPositiva());
             ps.setString(3, avaliacao.getComentario());
             ps.setDate(4, Date.valueOf(avaliacao.getData()));

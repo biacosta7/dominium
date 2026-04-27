@@ -1,8 +1,10 @@
-package com.dominium.backend.infrastructure.persistence.reservas;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.reservas;
 
-import com.dominium.backend.domain.areacomum.AreaComumId;
-import com.dominium.backend.domain.reservas.FilaDeEspera;
-import com.dominium.backend.domain.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEsperaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -27,9 +29,9 @@ public class JdbcFilaDeEsperaRepository implements FilaDeEsperaRepository {
         @Override
         public FilaDeEspera mapRow(ResultSet rs, int rowNum) throws SQLException {
             FilaDeEspera f = new FilaDeEspera();
-            f.setId(rs.getString("id"));
+            f.setId(FilaDeEsperaId.de(rs.getString("id")));
             f.setAreaComumId(new AreaComumId(rs.getLong("area_comum_id")));
-            f.setUsuarioId(rs.getLong("usuario_id"));
+            f.setUsuarioId(new UsuarioId(rs.getLong("usuario_id")));
             f.setDataDesejada(rs.getDate("data_desejada").toLocalDate());
             f.setHoraInicio(rs.getTime("hora_inicio").toLocalTime());
             f.setHoraFim(rs.getTime("hora_fim").toLocalTime());
@@ -41,11 +43,11 @@ public class JdbcFilaDeEsperaRepository implements FilaDeEsperaRepository {
 
     @Override
     public FilaDeEspera salvar(FilaDeEspera fila) {
-        Optional<FilaDeEspera> existente = buscarPorId(fila.getId());
+        Optional<FilaDeEspera> existente = buscarPorId(fila.getId().getValor());
         if (existente.isEmpty()) {
             String sql = "INSERT INTO fila_espera (id, area_comum_id, usuario_id, data_desejada, hora_inicio, hora_fim, data_cadastro, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql,
-                fila.getId(),
+                fila.getId().getValor(),
                 fila.getAreaComumId().getValor(),
                 fila.getUsuarioId(),
                 fila.getDataDesejada(),
@@ -56,7 +58,7 @@ public class JdbcFilaDeEsperaRepository implements FilaDeEsperaRepository {
             );
         } else {
             String sql = "UPDATE fila_espera SET status = ? WHERE id = ?";
-            jdbcTemplate.update(sql, fila.getStatus().name(), fila.getId());
+            jdbcTemplate.update(sql, fila.getStatus().name(), fila.getId().getValor());
         }
         return fila;
     }

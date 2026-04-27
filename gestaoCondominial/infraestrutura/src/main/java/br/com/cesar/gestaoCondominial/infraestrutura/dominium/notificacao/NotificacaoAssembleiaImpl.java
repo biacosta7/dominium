@@ -1,7 +1,7 @@
-package com.dominium.backend.infrastructure.notificacao;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.notificacao;
 
-import com.dominium.backend.domain.assembleia.Assembleia;
-import com.dominium.backend.domain.assembleia.service.ServicoNotificacaoAssembleia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.service.ServicoNotificacaoAssembleia;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 

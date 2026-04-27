@@ -1,6 +1,6 @@
-package com.dominium.backend.infrastructure.scheduler;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.scheduler;
 
-import com.dominium.backend.application.funcionario.usecase.GerarDespesasMensaisUseCase;
+import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase.GerarDespesasMensaisUseCase;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

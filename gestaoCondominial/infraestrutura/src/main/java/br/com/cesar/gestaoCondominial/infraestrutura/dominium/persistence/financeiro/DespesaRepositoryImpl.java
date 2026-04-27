@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.financeiro;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.financeiro;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,11 +12,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.financeiro.Despesa;
-import com.dominium.backend.domain.financeiro.CategoriaDespesa;
-import com.dominium.backend.domain.financeiro.TipoDespesa;
-import com.dominium.backend.domain.financeiro.StatusDespesa;
-import com.dominium.backend.domain.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.TipoDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.StatusDespesa;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
 
 @Repository
 public class DespesaRepositoryImpl implements DespesaRepository {

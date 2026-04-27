@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.financeiro;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.financeiro;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +12,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.financeiro.Orcamento;
-import com.dominium.backend.domain.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
 
 @Repository
 public class OrcamentoRepositoryImpl implements OrcamentoRepository {

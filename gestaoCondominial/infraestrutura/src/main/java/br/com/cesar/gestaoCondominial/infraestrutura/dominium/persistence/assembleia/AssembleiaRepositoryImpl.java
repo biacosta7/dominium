@@ -1,9 +1,9 @@
-package com.dominium.backend.infrastructure.persistence.assembleia;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.assembleia;
 
-import com.dominium.backend.domain.assembleia.Assembleia;
-import com.dominium.backend.domain.assembleia.AssembleiaId;
-import com.dominium.backend.domain.assembleia.StatusAssembleia;
-import com.dominium.backend.domain.assembleia.repository.AssembleiaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.StatusAssembleia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.repository.AssembleiaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

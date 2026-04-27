@@ -1,4 +1,4 @@
-package com.dominium.backend.infrastructure.persistence.unidade;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.unidade;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +13,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.dominium.backend.domain.unidade.StatusAdimplencia;
-import com.dominium.backend.domain.unidade.Unidade;
-import com.dominium.backend.domain.unidade.UnidadeId; // Importado
-import com.dominium.backend.domain.unidade.repository.UnidadeRepository;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId; // Importado
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 
 @Repository
 public class UnidadeRepositoryImpl implements UnidadeRepository {

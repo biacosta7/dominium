@@ -1,12 +1,12 @@
-package com.dominium.backend.infrastructure.persistence.governanca.voto;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.governanca.voto;
 
-import com.dominium.backend.domain.governanca.pauta.PautaId;
-import com.dominium.backend.domain.governanca.voto.OpcaoVoto;
-import com.dominium.backend.domain.governanca.voto.Voto;
-import com.dominium.backend.domain.governanca.voto.VotoId;
-import com.dominium.backend.domain.governanca.voto.VotoRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.OpcaoVoto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

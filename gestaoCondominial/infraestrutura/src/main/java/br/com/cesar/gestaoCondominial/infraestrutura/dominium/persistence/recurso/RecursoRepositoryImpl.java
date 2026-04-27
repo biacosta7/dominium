@@ -1,9 +1,9 @@
 package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.recurso;
 
-import com.dominium.backend.domain.multa.MultaId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
 import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.Recurso;
 import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.RecursoId;
-import com.dominium.backend.domain.recurso.StatusRecurso;
+import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.StatusRecurso;
 import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.repository.RecursoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

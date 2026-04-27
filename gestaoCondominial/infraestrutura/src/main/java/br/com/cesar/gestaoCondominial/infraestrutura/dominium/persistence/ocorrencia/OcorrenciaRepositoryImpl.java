@@ -1,12 +1,12 @@
-package com.dominium.backend.infrastructure.persistence.ocorrencia;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.ocorrencia;
 
-import com.dominium.backend.domain.ocorrencia.Ocorrencia;
-import com.dominium.backend.domain.ocorrencia.Ocorrencia.StatusOcorrencia;
-import com.dominium.backend.domain.ocorrencia.TipoPenalidade;
-import com.dominium.backend.domain.ocorrencia.repository.OcorrenciaRepository;
-import com.dominium.backend.domain.unidade.UnidadeId;
-import com.dominium.backend.domain.usuario.Usuario;
-import com.dominium.backend.domain.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia.StatusOcorrencia;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.TipoPenalidade;
+import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

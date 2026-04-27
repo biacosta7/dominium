@@ -1,6 +1,10 @@
-package com.dominium.backend.infrastructure.persistence.funcionario;
+package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.funcionario;
 
-import com.dominium.backend.domain.funcionario.repository.OrdemServicoRepository;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.FuncionarioId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServico;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServicoId;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusOrdemServico;
+import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.OrdemServicoRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
