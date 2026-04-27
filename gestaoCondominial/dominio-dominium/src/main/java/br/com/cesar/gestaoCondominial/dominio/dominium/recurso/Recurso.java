@@ -23,7 +23,7 @@ public class Recurso {
             throw new IllegalArgumentException("O motivo do recurso é obrigatório.");
         }
         return new Recurso(
-                new RecursoId(null),
+                new RecursoId(UUID.randomUUID()),
                 multaId,
                 moradorId,
                 motivo,
