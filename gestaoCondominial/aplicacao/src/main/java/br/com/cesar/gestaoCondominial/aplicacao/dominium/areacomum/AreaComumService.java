@@ -1,0 +1,26 @@
+package br.com.cesar.gestaoCondominial.aplicacao.dominium.areacomum;
+
+import gestaoCondominial.
+import org.springframework.stereotype.Service;
+
+@Service
+public class AreaComumService {
+
+    private final AreaComumRepository repository;
+
+    public AreaComumService(AreaComumRepository repository){
+        this.repository = repository;
+    }
+
+    public AreaComum buscarArea(AreaComumId id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Área comum não encontrada"));
+    }
+
+    public void validarDisponibilidade(AreaComum area) {
+        if (!area.estaDisponivel()) {
+            throw new RuntimeException("Área não está disponível");
+        }
+    }
+
+}

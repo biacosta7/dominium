@@ -1,0 +1,3 @@
+com/dominium/backend/domain/shared/exceptions/DomainException.class
+com/dominium/backend/domain/shared/exceptions/ResourceNotFoundException.class
+com/dominium/backend/domain/shared/valueobjects/ValueObjectId.class
