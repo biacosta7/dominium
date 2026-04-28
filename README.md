@@ -25,7 +25,7 @@ Os cenários de aceitação foram escritos utilizando a sintaxe Gherkin para gar
 #### Funcionalidades Mapeadas:
 - Gestão de Assembleias
 - Gestão de Pautas e Votações
-- Gestão de Comunicados
+- Gestão de Comunicados Internos
 - Gestão de Recursos
 - Gestão de Funcionários
 - Gestão de Reservas
@@ -35,6 +35,8 @@ Os cenários de aceitação foram escritos utilizando a sintaxe Gherkin para gar
 - Gestão de Unidades
 - Gestão de Multas
 - Gestão Financeira
+- Gestão de Notificação
+- Gestão de Documentos
 
 ### Automação dos Cenários BDD (Cucumber)
 Os cenários BDD estão automatizados utilizando Cucumber integrado ao JUnit no backend.
