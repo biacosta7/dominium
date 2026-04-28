@@ -8,3 +8,16 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Java build
+*.class
+**/target/
+**/bin/
+*.jar
+*.war
+*.ear
+
+# Frontend
+node_modules/
+dist/
+.angular/

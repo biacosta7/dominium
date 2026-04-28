@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: .
+      target: backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+
+  testes:
+    build:
+      context: .
+      target: test
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2

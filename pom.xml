@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>br.com.cesar</groupId>
+	<artifactId>gestaoCondominial-modulos</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>gestaoCondominial-modulos</name>
+	<description>Gestão Condominial — Agregador Maven</description>
+
+	<modules>
+		<module>pai</module>
+		<module>dominio-compartilhado</module>
+		<module>subdominio-moradores</module>
+		<module>subdominio-financeiro</module>
+		<module>subdominio-espacos-condominio</module>
+		<module>subdominio-governanca</module>
+		<module>subdominio-operacional</module>
+		<module>subdominio-comunicacao</module>
+		<module>infraestrutura</module>
+		<module>apresentacao-frontend</module>
+		<module>apresentacao-backend</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+</project>
