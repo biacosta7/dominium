@@ -9,6 +9,7 @@
         <groupId>br.com.cesar</groupId>
         <artifactId>gestaoCondominial-pai</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pai/pom.xml</relativePath>
     </parent>
 
     <artifactId>gestaoCondominial-apresentacao-frontend</artifactId>

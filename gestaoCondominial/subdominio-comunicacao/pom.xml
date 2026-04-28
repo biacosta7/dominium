@@ -8,6 +8,7 @@
         <groupId>br.com.cesar</groupId>
         <artifactId>gestaoCondominial-pai</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pai/pom.xml</relativePath>
     </parent>
 
     <artifactId>gestaoCondominial-subdominio-comunicacao</artifactId>
@@ -75,21 +76,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
