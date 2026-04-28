@@ -2,12 +2,12 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaRequestDTO;
-import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.TipoPenalidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.OcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.TipoPenalidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

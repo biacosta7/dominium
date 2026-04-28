@@ -2,13 +2,13 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.StatusAssembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.StatusPauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.StatusAssembleia;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.StatusPauta;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

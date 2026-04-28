@@ -2,10 +2,10 @@ package br.com.cesar.gestaoCondominial.apresentacao.dominium.exception;
 
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.AreaNaoDisponivelException;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.CapacidadeExcedidaException;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.ConflitoReservaException;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.exception.ReservaException;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.exception.AreaNaoDisponivelException;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.exception.CapacidadeExcedidaException;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.exception.ConflitoReservaException;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.exception.ReservaException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

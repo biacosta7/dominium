@@ -2,15 +2,15 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.StatusArea;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.StatusReserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.StatusArea;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.StatusReserva;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

@@ -2,20 +2,20 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.StatusAssembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.StatusPauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.OpcaoVoto;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.StatusAssembleia;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.StatusPauta;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.OpcaoVoto;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

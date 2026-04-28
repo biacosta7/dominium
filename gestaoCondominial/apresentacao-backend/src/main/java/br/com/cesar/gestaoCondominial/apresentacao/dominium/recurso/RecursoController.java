@@ -1,9 +1,9 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.recurso;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto.AbrirRecursoRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto.JulgarRecursoRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.usecase.AbrirRecursoUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.usecase.JulgarRecursoUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.dto.AbrirRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.dto.JulgarRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.usecase.AbrirRecursoUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.usecase.JulgarRecursoUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

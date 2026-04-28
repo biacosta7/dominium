@@ -8,10 +8,13 @@ import org.junit.platform.suite.api.IncludeEngines;
 import org.junit.platform.suite.api.SelectClasspathResource;
 import org.junit.platform.suite.api.Suite;
 
+import static io.cucumber.junit.platform.engine.Constants.FEATURES_PROPERTY_NAME;
+
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "br.com.cesar.gestaoCondominial.apresentacao.bdd")
+@ConfigurationParameter(key = FEATURES_PROPERTY_NAME, value = "classpath:features")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class RunCucumberTest {
 }

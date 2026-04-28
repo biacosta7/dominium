@@ -5,85 +5,84 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.funcionario.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.security.PasswordEncryptor;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.unidade.usecase.*;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.*;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.*;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.financeiro.usecase.*;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.*;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.usecase.*;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.voto.usecase.*;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.usecase.*;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.*;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.*;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.usecase.*;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.*;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.security.PasswordEncryptor;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.*;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.unidade.usecase.*;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComum;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumRepository;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.areacomum.AreaComumService;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComum;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumRepository;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.areacomum.AreaComumService;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.repository.AssembleiaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.service.ServicoNotificacaoAssembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.DespesaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.repository.OrcamentoRepository;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.service.RateioService;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.AvaliacaoFuncionario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.FuncionarioId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServico;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServicoId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusFuncionario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusOrdemServico;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.AvaliacaoFuncionarioRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.FuncionarioRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.repository.OrdemServicoRepository;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.service.RegraVotacao;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.VotoRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.repository.VinculoMoradorRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.repository.MultaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.repository.OcorrenciaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaCondominial;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.repository.TaxaCondominialRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.Recurso;
-import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.RecursoId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.repository.RecursoRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEsperaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.StatusReserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.FilaDeEsperaRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.repository.ReservaRepository;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.service.PoliticaReserva;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.NotificacaoService;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.notification.TipoNotificacao;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.HistoricoTitularidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.HistoricoTitularidadeRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.repository.UnidadeRepository;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.repository.AssembleiaRepository;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.service.ServicoNotificacaoAssembleia;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.repository.DespesaRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.repository.OrcamentoRepository;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.financeiro.service.RateioService;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.AvaliacaoFuncionario;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.FuncionarioId;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.OrdemServico;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.OrdemServicoId;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.StatusFuncionario;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.StatusOrdemServico;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.repository.AvaliacaoFuncionarioRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.repository.FuncionarioRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.repository.OrdemServicoRepository;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.service.RegraVotacao;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaRepository;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.VotoId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.VotoRepository;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaCondominial;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.repository.TaxaCondominialRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.Recurso;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.RecursoId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.repository.RecursoRepository;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEsperaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.StatusReserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.FilaDeEsperaRepository;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
+import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.HistoricoTitularidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.HistoricoTitularidadeRepository;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.UnidadeRepository;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.repository.UsuarioRepository;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -196,7 +195,9 @@ public class DominiumFuncionalidade {
     // ── Mapa auxiliar de AreaComum (interface não expõe save) ─────────────────
     protected final Map<Long, AreaComum> areaComumDb = new HashMap<>();
 
-    /** Persiste uma AreaComum no repositório em memória (interface não expõe save). */
+    /**
+     * Persiste uma AreaComum no repositório em memória (interface não expõe save).
+     */
     protected AreaComum salvarAreaComum(AreaComum area) {
         if (area.getId() == null)
             area.setId(new AreaComumId(currentId++));
@@ -232,7 +233,8 @@ public class DominiumFuncionalidade {
 
             @Override
             public Optional<Unidade> findByNumeroAndBloco(String numero, String bloco) {
-                return db.values().stream().filter(u -> u.getNumero().equals(numero) && u.getBloco() != null && u.getBloco().equals(bloco))
+                return db.values().stream()
+                        .filter(u -> u.getNumero().equals(numero) && u.getBloco() != null && u.getBloco().equals(bloco))
                         .findFirst();
             }
 
@@ -305,7 +307,8 @@ public class DominiumFuncionalidade {
             @Override
             public List<VinculoMorador> findByUsuarioIdAndStatus(Long usuarioId, StatusVinculo status) {
                 return db.values().stream()
-                        .filter(v -> v.getUsuario() != null && v.getUsuario().getId().equals(usuarioId) && v.getStatus() == status)
+                        .filter(v -> v.getUsuario() != null && v.getUsuario().getId().equals(usuarioId)
+                                && v.getStatus() == status)
                         .collect(Collectors.toList());
             }
 

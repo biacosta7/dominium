@@ -1,13 +1,13 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.governanca.voto;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.dto.VotarRequest;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.dto.VotoResponse;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase.ListarVotosUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.voto.usecase.VotarUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.voto.Voto;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.voto.dto.VotarRequest;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.voto.dto.VotoResponse;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.voto.usecase.ListarVotosUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.voto.usecase.VotarUseCase;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

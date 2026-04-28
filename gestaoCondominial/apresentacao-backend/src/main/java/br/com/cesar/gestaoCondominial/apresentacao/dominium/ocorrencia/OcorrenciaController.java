@@ -1,13 +1,13 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.ocorrencia;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.AtualizarStatusOcorrenciaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.EncerrarOcorrenciaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.dto.OcorrenciaResponseDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.AtualizarStatusOcorrenciaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.AtualizarStatusOcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.EncerrarOcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.OcorrenciaRequestDTO;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.OcorrenciaResponseDTO;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.AtualizarStatusOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

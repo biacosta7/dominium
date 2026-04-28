@@ -20,11 +20,14 @@
     
     <modules>
 		<module>dominio-compartilhado</module>
-        <module>dominio-dominium</module>
-        <module>aplicacao</module>
-        <module>infraestrutura</module>
         <module>apresentacao-frontend</module>
         <module>apresentacao-backend</module>
+        <module>subdominio-moradores</module>
+        <module>subdominio-financeiro</module>
+        <module>subdominio-espacos-condominio</module>
+        <module>subdominio-governanca</module>
+        <module>subdominio-operacional</module>
+        <module>subdominio-comunicacao</module>
     </modules>
 
 	<properties>

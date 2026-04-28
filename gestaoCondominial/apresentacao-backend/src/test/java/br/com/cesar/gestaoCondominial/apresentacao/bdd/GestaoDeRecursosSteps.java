@@ -2,13 +2,13 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto.AbrirRecursoRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.recurso.dto.JulgarRecursoRequestDTO;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.Multa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.MultaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.multa.StatusMulta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.recurso.StatusRecurso;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.dto.AbrirRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.dto.JulgarRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.StatusRecurso;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

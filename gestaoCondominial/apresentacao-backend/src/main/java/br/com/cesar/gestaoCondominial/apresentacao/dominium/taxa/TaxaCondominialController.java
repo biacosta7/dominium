@@ -1,12 +1,12 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.taxa;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase.AtualizarValorTaxaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase.ConsultarHistoricoTaxasUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase.GerarTaxaMensalUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.usecase.RegistrarPagamentoTaxaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.AtualizarTaxaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.TaxaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.TaxaResponseDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.AtualizarValorTaxaUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.ConsultarHistoricoTaxasUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.GerarTaxaMensalUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.RegistrarPagamentoTaxaUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.AtualizarTaxaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

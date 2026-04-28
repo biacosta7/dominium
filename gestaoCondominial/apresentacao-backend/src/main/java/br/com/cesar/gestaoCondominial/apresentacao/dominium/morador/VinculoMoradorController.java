@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoResponseDTO;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.dto.VinculoRequestDTO;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.dto.VinculoResponseDTO;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase.CreateVinculoMoradorUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase.EndVinculoMoradorUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase.UpdateVinculoMoradorUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.usecase.GetVinculosPorUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.usecase.CreateVinculoMoradorUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.usecase.EndVinculoMoradorUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.usecase.UpdateVinculoMoradorUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.usecase.GetVinculosPorUnidadeUseCase;
 
 @RestController
 @RequestMapping("/api")

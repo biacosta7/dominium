@@ -1,20 +1,20 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.reservas;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.AdicionarNaFilaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.AtualizarReservaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.CancelarReservaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.ConfirmarReservaPromovidaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.CriarReservaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.ListarReservaUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto.CriarReservaRequest;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto.ReservaResponse;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.AdicionarNaFilaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.AtualizarReservaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.CancelarReservaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.ConfirmarReservaPromovidaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.CriarReservaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.ListarReservaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.dto.CriarReservaRequest;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.dto.ReservaResponse;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

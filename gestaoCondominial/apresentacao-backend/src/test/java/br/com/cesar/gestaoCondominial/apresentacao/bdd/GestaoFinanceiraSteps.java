@@ -2,10 +2,10 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.financeiro.dto.DespesaRequestDTO;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.TipoDespesa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.financeiro.dto.DespesaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.TipoDespesa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.CategoriaDespesa;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

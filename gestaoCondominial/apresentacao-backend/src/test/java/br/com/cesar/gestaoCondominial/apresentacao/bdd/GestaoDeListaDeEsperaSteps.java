@@ -2,15 +2,14 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEsperaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.Reserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.ReservaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.StatusReserva;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.UsuarioId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.StatusReserva;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -19,7 +18,6 @@ import io.cucumber.java.en.When;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
@@ -82,7 +80,8 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema promove o próximo {string} da {string} seguindo a ordem cronológica")
     public void o_sistema_promove_o_proximo_morador(String p1, String p2) {
-        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o usuário que estava na fila
+        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o usuário que estava
+        // na fila
         boolean promoveu = reservaRepository
                 .buscarPorUsuario(new UsuarioId(usuarioPromovidoId))
                 .stream()

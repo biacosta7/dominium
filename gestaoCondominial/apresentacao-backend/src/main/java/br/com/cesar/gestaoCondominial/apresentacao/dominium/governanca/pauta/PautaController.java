@@ -1,13 +1,13 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.governanca.pauta;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.dto.CriarPautaRequest;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.dto.PautaResponse;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.usecase.AbrirPautaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.usecase.EncerrarPautaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.governanca.pauta.usecase.ListarPautasUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.AssembleiaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.Pauta;
-import br.com.cesar.gestaoCondominial.dominio.dominium.governanca.pauta.PautaId;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.dto.CriarPautaRequest;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.dto.PautaResponse;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.usecase.AbrirPautaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.usecase.EncerrarPautaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.pauta.usecase.ListarPautasUseCase;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

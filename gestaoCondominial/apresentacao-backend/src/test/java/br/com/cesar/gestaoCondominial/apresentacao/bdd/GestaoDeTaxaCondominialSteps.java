@@ -2,15 +2,15 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.AtualizarTaxaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.TaxaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.taxa.dto.TaxaResponseDTO;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.StatusTaxa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaCondominial;
-import br.com.cesar.gestaoCondominial.dominio.dominium.taxa.TaxaId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.StatusAdimplencia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.AtualizarTaxaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaResponseDTO;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.StatusTaxa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaCondominial;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.StatusAdimplencia;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

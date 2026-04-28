@@ -1,13 +1,13 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.assembleia;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.dto.AssembleiaResponse;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.dto.CriarAssembleiaRequest;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.dto.EditarAssembleiaRequest;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase.CancelarAssembleiaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase.CriarAssembleiaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase.EditarAssembleiaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.assembleia.usecase.EncerrarAssembleiaUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.dto.AssembleiaResponse;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.dto.CriarAssembleiaRequest;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.dto.EditarAssembleiaRequest;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.CancelarAssembleiaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.CriarAssembleiaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.EditarAssembleiaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.EncerrarAssembleiaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

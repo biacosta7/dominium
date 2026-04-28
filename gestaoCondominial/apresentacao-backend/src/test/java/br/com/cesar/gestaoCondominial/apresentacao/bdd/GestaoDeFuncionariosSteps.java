@@ -2,18 +2,18 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.CategoriaDespesa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Despesa;
-import br.com.cesar.gestaoCondominial.dominio.dominium.financeiro.Orcamento;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.Funcionario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.FuncionarioId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServico;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.OrdemServicoId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusFuncionario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.StatusOrdemServico;
-import br.com.cesar.gestaoCondominial.dominio.dominium.funcionario.TipoVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.TipoUsuario;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.CategoriaDespesa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.Despesa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.Orcamento;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.Funcionario;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.FuncionarioId;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.OrdemServico;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.OrdemServicoId;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.StatusFuncionario;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.StatusOrdemServico;
+import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.TipoVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

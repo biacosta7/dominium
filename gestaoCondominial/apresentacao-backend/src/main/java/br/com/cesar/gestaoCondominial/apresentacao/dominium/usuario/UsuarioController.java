@@ -1,11 +1,11 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.usuario;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.dto.UsuarioRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.dto.UsuarioResponseDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.CreateUsuarioUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.DeleteUsuarioUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.GetUsuarioUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.usuario.usecase.UpdateUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.dto.UsuarioRequestDTO;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.dto.UsuarioResponseDTO;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.CreateUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.DeleteUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.GetUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.UpdateUsuarioUseCase;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

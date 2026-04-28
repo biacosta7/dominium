@@ -13,19 +13,23 @@
 
     <artifactId>gestaoCondominial-apresentacao-backend</artifactId>
     
-<!--	<profiles>-->
-<!--		<profile>-->
-<!--			<id>dockerBuild</id>-->
-<!--			<build>-->
-<!--				<plugins>-->
-<!--					<plugin>-->
-<!--						<groupId>com.google.cloud.tools</groupId>-->
-<!--						<artifactId>jib-maven-plugin</artifactId>-->
-<!--					</plugin>-->
-<!--				</plugins>-->
-<!--			</build>			-->
-<!--		</profile>-->
-<!--	</profiles>    -->
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>    
 
     <dependencies>
         <dependency>
@@ -35,21 +39,38 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gestaoCondominial-aplicacao</artifactId>
+            <artifactId>gestaoCondominial-subdominio-moradores</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-subdominio-financeiro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-subdominio-espacos-condominio</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-subdominio-governanca</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-subdominio-operacional</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-subdominio-comunicacao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gestaoCondominial-apresentacao-frontend</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>br.com.cesar</groupId>
-            <artifactId>gestaoCondominial-infraestrutura</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
         
 		<dependency>
@@ -85,6 +106,12 @@
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-suite</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
 

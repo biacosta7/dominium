@@ -1,9 +1,9 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.reservas;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.dto.FilaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.reservas.usecase.AdicionarNaFilaUseCase;
-import br.com.cesar.gestaoCondominial.dominio.dominium.areacomum.AreaComumId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.dto.FilaRequestDTO;
+import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.AdicionarNaFilaUseCase;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEspera;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

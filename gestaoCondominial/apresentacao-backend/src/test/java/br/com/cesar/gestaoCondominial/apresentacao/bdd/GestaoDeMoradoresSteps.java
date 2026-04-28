@@ -2,13 +2,13 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.morador.dto.VinculoRequestDTO;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.StatusVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.TipoVinculo;
-import br.com.cesar.gestaoCondominial.dominio.dominium.morador.VinculoMorador;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.dominio.dominium.unidade.UnidadeId;
-import br.com.cesar.gestaoCondominial.dominio.dominium.usuario.Usuario;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.dto.VinculoRequestDTO;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.VinculoMorador;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

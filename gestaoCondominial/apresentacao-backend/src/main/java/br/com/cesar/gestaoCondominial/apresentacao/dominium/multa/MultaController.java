@@ -1,15 +1,15 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.multa;
 
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.ContestarMultaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.CreateMultaRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.MultaResponseDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.RegistrarPagamentoRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.dto.UpdateMultaStatusRequestDTO;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.ContestarMultaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.CreateMultaManualUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.ListMultasByUnidadeUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.RegistrarPagamentoMultaUseCase;
-import br.com.cesar.gestaoCondominial.aplicacao.dominium.multa.usecase.UpdateMultaStatusUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.ContestarMultaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.CreateMultaRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.MultaResponseDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.RegistrarPagamentoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.UpdateMultaStatusRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.ContestarMultaUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.CreateMultaManualUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.ListMultasByUnidadeUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.RegistrarPagamentoMultaUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.UpdateMultaStatusUseCase;
 
 import jakarta.validation.Valid;
 
