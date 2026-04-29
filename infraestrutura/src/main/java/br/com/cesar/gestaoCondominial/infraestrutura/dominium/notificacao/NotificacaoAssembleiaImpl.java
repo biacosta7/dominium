@@ -8,11 +8,8 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.Assembleia;
-import br.com.cesar.gestaoCondominial.dominio.dominium.assembleia.service.ServicoNotificacaoAssembleia;
-
 @Service
-public class NotificacaoAssembleiaImpl implements ServicoNotificacaoAssembleia {
+public class NotificacaoAssembleiaImpl {
 
     private final JdbcTemplate jdbcTemplate;
 
