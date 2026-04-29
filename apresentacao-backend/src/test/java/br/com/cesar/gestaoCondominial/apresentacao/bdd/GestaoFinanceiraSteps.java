@@ -53,9 +53,8 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
     @Given("o valor {string} acima do limite")
     public void o_valor_p1_acima_do_limite(String estado) {
-        despesaRequest.setValor(new BigDecimal("5000.01")); // Valor que dispara a regra de assembleia
-        
-        // GARANTIA: Se não houver orçamento criado por outro step, cria um aqui
+        despesaRequest.setValor(new BigDecimal("5000.01"));
+
         Orcamento orcamento = orcamentoRepository.findByAno(LocalDate.now().getYear())
                 .orElseGet(() -> {
                     Orcamento novo = new Orcamento();
@@ -64,7 +63,7 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
                     novo.setValorGasto(BigDecimal.ZERO);
                     return orcamentoRepository.save(novo);
                 });
-        
+
         this.orcamentoId = orcamento.getId();
     }
 
@@ -89,7 +88,13 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
     @Then("o sistema registra a despesa")
     public void o_sistema_registra_a_despesa() {
-        assertNull(this.excecao);
+        assertNull(this.excecao, "A despesa não deveria ter gerado erro.");
+
+        boolean existe = despesaRepository.findAll().stream()
+                .anyMatch(d -> d.getDescricao().equals(despesaRequest.getDescricao())
+                        && d.getValor().compareTo(despesaRequest.getValor()) == 0);
+
+        assertTrue(existe, "A despesa deveria estar persistida no repositório.");
     }
 
     @Then("desconta o valor do saldo disponível do orçamento")
@@ -103,14 +108,13 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
     @Then("classifica a despesa por categoria")
     public void classifica_a_despesa_por_categoria() {
-        // Verifica se a despesa salva no banco tem a categoria correta
         Despesa despesaSalva = despesaRepository.findAll().stream()
                 .filter(d -> d.getDescricao().equals(despesaRequest.getDescricao()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Despesa não encontrada no repositório"));
 
-        assertEquals(despesaRequest.getCategoria(), despesaSalva.getCategoria(), 
-            "A categoria da despesa gravada deve ser a mesma solicitada no cadastro.");
+        assertEquals(despesaRequest.getCategoria(), despesaSalva.getCategoria(),
+                "A categoria da despesa gravada deve ser a mesma solicitada no cadastro.");
     }
 
     @Then("o sistema bloqueia a despesa para impedir o estouro do orçamento")
@@ -120,28 +124,26 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
     @Then("o sistema exige aprovação em assembleia para a despesa")
     public void o_sistema_exige_aprovacao_em_assembleia() {
-        // Se houve erro antes mesmo de salvar, o teste deve falhar aqui
         if (this.excecao != null) {
             fail("O sistema lançou um erro inesperado: " + this.excecao.getMessage());
         }
 
-        // Busca a despesa para conferir o status
         Despesa despesa = despesaRepository.findAll().stream()
                 .filter(d -> d.getTipo() == TipoDespesa.EXTRAORDINARIA)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("ERRO: A despesa extraordinária deveria ter sido salva como PENDENTE, mas não foi encontrada no banco."));
+                .orElseThrow(() -> new RuntimeException(
+                        "ERRO: A despesa extraordinária deveria ter sido salva como PENDENTE, mas não foi encontrada no banco."));
 
-        assertEquals(StatusDespesa.PENDENTE, despesa.getStatus(), 
-            "Despesas extraordinárias acima do limite devem nascer com status PENDENTE.");
+        assertEquals(StatusDespesa.PENDENTE, despesa.getStatus(),
+                "Despesas extraordinárias acima do limite devem nascer com status PENDENTE.");
     }
 
     @Then("a despesa aguarda rateio automático após aprovada")
     public void a_despesa_aguarda_rateio_automatico() {
-        // Verifica se o gasto NÃO foi computado no orçamento ainda (pois está pendente)
         Orcamento orcamento = orcamentoRepository.findById(orcamentoId)
                 .orElseThrow(() -> new RuntimeException("Orçamento não encontrado"));
-        
+
         assertEquals(0, BigDecimal.ZERO.compareTo(orcamento.getValorGasto()),
-            "O orçamento não deve ser impactado enquanto a despesa estiver pendente de aprovação.");
+                "O orçamento não deve ser impactado enquanto a despesa estiver pendente de aprovação.");
     }
 }

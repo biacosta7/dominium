@@ -19,6 +19,12 @@
             <artifactId>gestaoCondominial-subdominio-moradores</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>gestaoCondominial-subdominio-financeiro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>br.com.cesar</groupId>
