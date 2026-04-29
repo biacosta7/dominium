@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notificacao.usecase.MarcarComoLidaUseCase;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
-import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 
@@ -13,9 +11,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
@@ -23,35 +19,27 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
     private Long notificacaoIdContexto;
     private Long usuarioIdContexto;
     private String tipoEventoContexto;
-    private NotificacaoRepository notificacaoRepository;
-    private NotificacaoService notificacaoService;
 
     @Given("que ocorre um {string} do tipo {string}")
     public void que_ocorre_um_evento_do_tipo(String algo, String tipoEvento) {
         this.tipoEventoContexto = tipoEvento;
-        // Criar usuário (morador) para receber a notificação
         Usuario morador = new Usuario();
         morador.setNome("Morador Teste");
         morador.setEmail("morador@teste.com");
         morador = usuarioRepository.save(morador);
         usuarioIdContexto = morador.getId();
-
-        // Inicializar repositório de notificações se necessário
-        if (notificacaoRepository == null) {
-            initNotificacaoRepository();
-        }
     }
 
     @When("o sistema processa o {string}")
     public void o_sistema_processa_o_evento(String algo) {
         try {
-            // Mapear tipo de evento para tipo de notificação
             TipoNotificacao tipoNotificacao = mapearTipoEvento(this.tipoEventoContexto);
             String mensagem = gerarMensagem(this.tipoEventoContexto);
 
             // Usar o serviço de notificação para criar a notificação
             notificacaoService.enviar(usuarioIdContexto, mensagem,
-                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.valueOf(tipoNotificacao.name()));
+                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao
+                            .valueOf(tipoNotificacao.name()));
 
             // Buscar a notificação criada
             List<Notificacao> notificacoes = notificacaoRepository.findByUsuarioId(usuarioIdContexto);
@@ -82,19 +70,12 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
 
     @Given("existe uma \"notificação\" com \"status\" \"não lida\" para um \"morador\"")
     public void existe_uma_notificacao_com_status_nao_lida_para_um_morador() {
-        // Criar usuário (morador)
         Usuario morador = new Usuario();
         morador.setNome("Morador Teste");
         morador.setEmail("morador@teste.com");
         morador = usuarioRepository.save(morador);
         usuarioIdContexto = morador.getId();
 
-        // Inicializar repositório de notificações se necessário
-        if (notificacaoRepository == null) {
-            initNotificacaoRepository();
-        }
-
-        // Criar notificação com status não lida (boolean = false)
         Notificacao notificacao = new Notificacao();
         notificacao.setUsuarioId(usuarioIdContexto);
         notificacao.setMensagem("Notificação de teste");
@@ -108,7 +89,6 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
     @When("o \"morador\" solicita marcar a \"notificação\" como \"lida\"")
     public void o_morador_solicita_marcar_a_notificacao_como_lida() {
         try {
-            // Usar o UseCase para marcar como lida
             MarcarComoLidaUseCase marcarComoLidaUseCase = new MarcarComoLidaUseCase(notificacaoRepository);
             marcarComoLidaUseCase.executar(notificacaoIdContexto, usuarioIdContexto);
         } catch (RuntimeException e) {
@@ -132,7 +112,6 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
         List<Notificacao> notificacoes = notificacaoRepository.findByUsuarioId(usuarioIdContexto);
         assertFalse(notificacoes.isEmpty());
 
-        // Verificar que a notificação ainda existe
         boolean encontrada = notificacoes.stream()
                 .anyMatch(n -> n.getId().equals(notificacaoIdContexto));
         assertTrue(encontrada);
@@ -140,19 +119,12 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
 
     @Given("existe uma \"notificação\" vinculada a um \"morador\"")
     public void existe_uma_notificacao_vinculada_a_um_morador() {
-        // Criar usuário (morador)
         Usuario morador = new Usuario();
         morador.setNome("Morador Teste");
         morador.setEmail("morador@teste.com");
         morador = usuarioRepository.save(morador);
         usuarioIdContexto = morador.getId();
 
-        // Inicializar repositório de notificações se necessário
-        if (notificacaoRepository == null) {
-            initNotificacaoRepository();
-        }
-
-        // Criar notificação
         Notificacao notificacao = new Notificacao();
         notificacao.setUsuarioId(usuarioIdContexto);
         notificacao.setMensagem("Notificação de teste");
@@ -166,12 +138,8 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
     @When("o \"morador\" tenta realizar a exclusão da \"notificação\"")
     public void o_morador_tenta_realizar_a_exclusao_da_notificacao() {
         try {
-            // Tentar excluir a notificação - o sistema deve rejeitar
-            // Como não existe um caso de uso de exclusão, verificamos que a notificação não pode ser excluída
             Notificacao notificacao = notificacaoRepository.findById(notificacaoIdContexto)
                     .orElseThrow(() -> new RuntimeException("Notificação não encontrada"));
-
-            // O sistema deve rejeitar a exclusão - verificamos que a notificação ainda existe
             if (notificacao != null) {
                 throw new RuntimeException("Notificações não podem ser excluídas pelo morador");
             }
@@ -191,7 +159,6 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
     public void a_notificacao_deve_ser_mantida_no_historico_do_sistema_para_fins_de_auditoria() {
         assertNotNull(notificacaoIdContexto);
 
-        // Verificar que a notificação ainda existe no banco
         Optional<Notificacao> notificacao = notificacaoRepository.findById(notificacaoIdContexto);
         assertTrue(notificacao.isPresent(), "Notificação deve ser mantida para auditoria");
     }
@@ -218,42 +185,4 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
         };
     }
 
-    private static long currentId = 1L;
-
-    private void initNotificacaoRepository() {
-        notificacaoRepository = new NotificacaoRepository() {
-            private final Map<Long, Notificacao> db = new HashMap<>();
-
-            @Override
-            public Notificacao save(Notificacao n) {
-                if (n.getId() == null)
-                    n.setId(currentId++);
-                db.put(n.getId(), n);
-                return n;
-            }
-
-            @Override
-            public Optional<Notificacao> findById(Long id) {
-                return Optional.ofNullable(db.get(id));
-            }
-
-            @Override
-            public List<Notificacao> findByUsuarioId(Long usuarioId) {
-                return db.values().stream()
-                        .filter(n -> n.getUsuarioId().equals(usuarioId))
-                        .collect(java.util.stream.Collectors.toList());
-            }
-        };
-
-        // Inicializar o serviço de notificação com o repositório
-        notificacaoService = new NotificacaoService() {
-            @Override
-            public void enviar(Long usuarioId, String mensagem, br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao tipo) {
-                // Converting application enum to domain enum
-                TipoNotificacao domainTipo = TipoNotificacao.valueOf(tipo.name());
-                Notificacao n = Notificacao.criar(usuarioId, mensagem, domainTipo);
-                notificacaoRepository.save(n);
-            }
-        };
-    }
 }
