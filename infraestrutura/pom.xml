@@ -16,8 +16,31 @@
 
     <dependencies>
         <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>gestaoCondominial-subdominio-moradores</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>gestaoCondominial-subdominio-comunicacao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>gestaoCondominial-dominio-compartilhado</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>
@@ -26,10 +49,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.h2database</groupId>

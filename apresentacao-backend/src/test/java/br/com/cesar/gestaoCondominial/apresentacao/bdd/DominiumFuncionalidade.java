@@ -75,6 +75,13 @@ import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.reposit
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
+import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
+import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.storage.ArmazenamentoDocumento;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.Documento;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.DocumentoId;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.VersaoDocumento;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.repository.DocumentoRepository;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.repository.VersaoDocumentoRepository;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.HistoricoTitularidade;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
@@ -108,6 +115,15 @@ public class DominiumFuncionalidade {
     protected AvaliacaoFuncionarioRepository avaliacaoFuncionarioRepository;
     protected OrdemServicoRepository ordemServicoRepository;
     protected TaxaCondominialRepository taxaCondominialRepository;
+    protected DocumentoRepository documentoRepository;
+    protected VersaoDocumentoRepository versaoDocumentoRepository;
+
+    // ── Use Cases: Documentos ────────────────────────────────────────────────────
+    protected CadastrarDocumentoUseCase cadastrarDocumentoUseCase;
+    protected AtualizarDocumentoUseCase atualizarDocumentoUseCase;
+    protected ListarDocumentosUseCase listarDocumentosUseCase;
+    protected InativarDocumentoUseCase inativarDocumentoUseCase;
+    protected NotificarDocumentosVencendoUseCase notificarDocumentosVencendoUseCase;
 
     // ── Use Cases: Unidades ──────────────────────────────────────────────────────
     protected CreateUnidadeUseCase createUnidadeUseCase;
@@ -743,6 +759,42 @@ public class DominiumFuncionalidade {
             }
         };
 
+        documentoRepository = new DocumentoRepository() {
+            private final Map<String, Documento> db = new HashMap<>();
+            @Override
+            public void save(Documento d) { db.put(d.getId().getValor(), d); }
+            @Override
+            public Optional<Documento> findById(DocumentoId id) { return Optional.ofNullable(db.get(id.getValor())); }
+            @Override
+            public List<Documento> findAll() { return List.copyOf(db.values()); }
+            @Override
+            public List<Documento> findAtivos() {
+                return db.values().stream().filter(Documento::isAtivo).collect(Collectors.toList());
+            }
+        };
+
+        versaoDocumentoRepository = new VersaoDocumentoRepository() {
+            private final Map<Long, VersaoDocumento> db = new HashMap<>();
+            @Override
+            public void save(VersaoDocumento v) {
+                if (v.getId() == null) v.setId(currentId++);
+                db.put(v.getId(), v);
+            }
+            @Override
+            public Optional<VersaoDocumento> findUltimaVersao(DocumentoId documentoId) {
+                return db.values().stream()
+                        .filter(v -> v.getDocumentoId().equals(documentoId))
+                        .max(Comparator.comparingInt(VersaoDocumento::getVersao));
+            }
+            @Override
+            public List<VersaoDocumento> findHistorico(DocumentoId documentoId) {
+                return db.values().stream()
+                        .filter(v -> v.getDocumentoId().equals(documentoId))
+                        .sorted(Comparator.comparingInt(VersaoDocumento::getVersao))
+                        .collect(Collectors.toList());
+            }
+        };
+
         taxaCondominialRepository = new TaxaCondominialRepository() {
             private final Map<Long, TaxaCondominial> db = new HashMap<>();
 
@@ -848,6 +900,21 @@ public class DominiumFuncionalidade {
         // ── Notificações ────────────────────────────────────────────────────────
         NotificacaoService notificacaoService = (id, msg, tipo) -> {
         }; // no-op em testes
+
+        // ── Documentos ───────────────────────────────────────────────────────────
+        ArmazenamentoDocumento armazenamentoDocumento = new ArmazenamentoDocumento() {
+            @Override
+            public String salvar(String documentoId, int versao, String nomeOriginal, byte[] conteudo) {
+                return "uploads/" + documentoId + "/v" + versao + "/" + nomeOriginal;
+            }
+            @Override
+            public byte[] carregar(String caminho) { return new byte[0]; }
+        };
+        cadastrarDocumentoUseCase = new CadastrarDocumentoUseCase(documentoRepository, versaoDocumentoRepository, armazenamentoDocumento, usuarioRepository);
+        atualizarDocumentoUseCase = new AtualizarDocumentoUseCase(documentoRepository, versaoDocumentoRepository, armazenamentoDocumento, usuarioRepository);
+        listarDocumentosUseCase = new ListarDocumentosUseCase(documentoRepository);
+        inativarDocumentoUseCase = new InativarDocumentoUseCase(documentoRepository, usuarioRepository);
+        notificarDocumentosVencendoUseCase = new NotificarDocumentosVencendoUseCase(documentoRepository, notificacaoService);
 
         // ── Assembleias ──────────────────────────────────────────────────────────
         ServicoNotificacaoAssembleia servicoNotificacao = assembleia -> {
