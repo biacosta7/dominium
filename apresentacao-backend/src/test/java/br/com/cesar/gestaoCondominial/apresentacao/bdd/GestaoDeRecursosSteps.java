@@ -59,8 +59,14 @@ public class GestaoDeRecursosSteps extends DominiumFuncionalidade {
 
     @Then("o sistema abre o {string} contra a {string}")
     public void o_sistema_abre_o_recurso_contra_a_multa(String p1, String p2) {
-        assertNull(this.excecao);
-        assertNotNull(recursoIdContexto);
+        assertNull(this.excecao, "A abertura do recurso não deveria ter falhado.");
+        assertNotNull(recursoIdContexto, "O ID do recurso deveria ter sido gerado.");
+
+        boolean existeRecurso = recursoRepository
+                .buscarPorId(new br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.RecursoId(recursoIdContexto))
+                .isPresent();
+
+        assertTrue(existeRecurso, "O recurso deveria estar salvo no repositório.");
     }
 
     @Then("o sistema bloqueia a abertura do {string} informando que o prazo expirou")
@@ -105,6 +111,11 @@ public class GestaoDeRecursosSteps extends DominiumFuncionalidade {
 
     @Then("o {string} da decisão é armazenado")
     public void o_historico_da_decisao_e_armazenado(String p1) {
-        assertTrue(true);
+        br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.Recurso recurso = recursoRepository
+                .buscarPorId(new br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.RecursoId(recursoIdContexto))
+                .orElseThrow(() -> new RuntimeException("Recurso não encontrado"));
+
+        assertEquals(StatusRecurso.DEFERIDO, recurso.getStatus(), "O status do recurso deve ser DEFERIDO.");
+        assertNotNull(recurso.getJustificativaSindico(), "A justificativa da decisão deve estar armazenada.");
     }
 }
