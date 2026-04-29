@@ -50,7 +50,8 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
             String mensagem = gerarMensagem(this.tipoEventoContexto);
 
             // Usar o serviço de notificação para criar a notificação
-            notificacaoService.enviar(usuarioIdContexto, mensagem, tipoNotificacao);
+            notificacaoService.enviar(usuarioIdContexto, mensagem,
+                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.valueOf(tipoNotificacao.name()));
 
             // Buscar a notificação criada
             List<Notificacao> notificacoes = notificacaoRepository.findByUsuarioId(usuarioIdContexto);

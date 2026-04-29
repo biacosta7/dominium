@@ -37,7 +37,7 @@ public class VersaoDocumentoRepositoryImpl implements VersaoDocumentoRepository 
     };
 
     @Override
-    public VersaoDocumento save(VersaoDocumento v) {
+    public void save(VersaoDocumento v) {
         String sql = "INSERT INTO versoes_documento (documento_id, numero_versao, nome_arquivo, caminho_arquivo, uploadado_por, uploadado_em) VALUES (?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -53,11 +53,10 @@ public class VersaoDocumentoRepositoryImpl implements VersaoDocumentoRepository 
         if (keyHolder.getKey() != null) {
             v.setId(keyHolder.getKey().longValue());
         }
-        return v;
     }
 
     @Override
-    public List<VersaoDocumento> findByDocumentoId(DocumentoId documentoId) {
+    public List<VersaoDocumento> findHistorico(DocumentoId documentoId) {
         return jdbcTemplate.query(
             "SELECT * FROM versoes_documento WHERE documento_id = ? ORDER BY numero_versao",
             rowMapper, documentoId.getValor()
@@ -73,7 +72,6 @@ public class VersaoDocumentoRepositoryImpl implements VersaoDocumentoRepository 
         return results.stream().findFirst();
     }
 
-    @Override
     public int contarVersoes(DocumentoId documentoId) {
         Integer count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM versoes_documento WHERE documento_id = ?",

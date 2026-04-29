@@ -1,6 +1,9 @@
 package br.com.cesar.gestaoCondominial.infraestrutura.dominium.persistence.documento;
 
-import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.*;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.CategoriaDocumento;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.Documento;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.DocumentoId;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.StatusDocumento;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.repository.DocumentoRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,7 +38,7 @@ public class DocumentoRepositoryImpl implements DocumentoRepository {
     };
 
     @Override
-    public Documento save(Documento d) {
+    public void save(Documento d) {
         boolean existe = Boolean.TRUE.equals(
             jdbcTemplate.queryForObject("SELECT COUNT(*) > 0 FROM documentos WHERE id = ?", Boolean.class, d.getId().getValor())
         );
@@ -55,7 +58,6 @@ public class DocumentoRepositoryImpl implements DocumentoRepository {
                 d.getId().getValor()
             );
         }
-        return d;
     }
 
     @Override
@@ -76,7 +78,6 @@ public class DocumentoRepositoryImpl implements DocumentoRepository {
         return jdbcTemplate.query("SELECT * FROM documentos ORDER BY nome", rowMapper);
     }
 
-    @Override
     public List<Documento> findVencendoAte(LocalDate limite) {
         return jdbcTemplate.query(
             "SELECT * FROM documentos WHERE status = 'ATIVO' AND data_validade IS NOT NULL AND data_validade <= ?",
