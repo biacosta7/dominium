@@ -20,7 +20,7 @@ Feature: Gestão de Reservas de Áreas Comuns
       And o sistema permite ativar a "lista de espera" automaticamente
 
   Scenario: Criar reserva excedendo o limite mensal
-    Given o "morador" "está" adimplente
+    Given que o "morador" "está" adimplente
       And a "unidade" "atingiu" o limite mensal de reservas
      When o "morador" solicita a criação de uma reserva
      Then o sistema informa que o limite mensal de reservas foi atingido
