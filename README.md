@@ -8,7 +8,7 @@ A documentação detalhada do domínio, incluindo o dicionário de termos da lin
 
 ### Mapa de Histórias do Usuário (User Story Map)
 O mapeamento das jornadas dos usuários e a estruturação das funcionalidades em épicos e histórias estão disponíveis no seguinte arquivo:
-* [Dominium-Mapa.pdf](./Dominium-Mapa.pdf)
+* [UserStoryMap.pdf](./UserStoryMap.pdf)
 
 ### Protótipos de Alta Fidelidade
 O design da interface foi projetado no Figma:
@@ -16,16 +16,16 @@ O design da interface foi projetado no Figma:
 
 ### Context Mapper
 O modelo tático e estratégico desenvolvido com a ferramenta Context Mapper (arquivo CML) descreve os Bounded Contexts e seus relacionamentos:
-* [dominium.cml](./dominium.cml)
+* [Dominium.cml](./Dominium.cml)
 
 ### Cenários de Teste BDD
 Os cenários de aceitação foram escritos utilizando a sintaxe Gherkin para garantir que o comportamento do sistema atenda aos requisitos de negócio. Os arquivos `.feature` encontram-se em:
-* `backend/src/test/resources/features/`
+* `apresentacao-backend/src/test/resources/features/`
 
 #### Funcionalidades Mapeadas:
 - Gestão de Assembleias
 - Gestão de Pautas e Votações
-- Gestão de Comunicados
+- Gestão de Comunicados Internos
 - Gestão de Recursos
 - Gestão de Funcionários
 - Gestão de Reservas
@@ -35,10 +35,12 @@ Os cenários de aceitação foram escritos utilizando a sintaxe Gherkin para gar
 - Gestão de Unidades
 - Gestão de Multas
 - Gestão Financeira
+- Gestão de Notificação
+- Gestão de Documentos
 
 ### Automação dos Cenários BDD (Cucumber)
 Os cenários BDD estão automatizados utilizando Cucumber integrado ao JUnit no backend.
-- **Step Definitions**: `backend/src/test/java/com/dominium/backend/bdd/`
+- **Step Definitions**: `apresentacao-backend/src/test/java/br/com/cesar/gestaoCondominial/apresentacao/bdd/`
 - **Runner**: `RunCucumberTest.java`
 
 ## Requisitos
@@ -56,17 +58,12 @@ Os cenários BDD estão automatizados utilizando Cucumber integrado ao JUnit no 
 ## Como Executar o Projeto
 
 ### 1. Via Docker (Recomendado)
-Navegue até a pasta do projeto e utilize o Docker Compose:
+Utilize o Docker Compose na raiz do projeto:
 ```bash
-cd gestaoCondominial
 docker-compose up --build
 ```
 
 ### 2. Execução Tradicional (Local)
-Navegue até a pasta `gestaoCondominial`:
-```bash
-cd gestaoCondominial
-```
 
 #### Backend
 Para compilar e rodar o servidor:
@@ -78,8 +75,7 @@ Para compilar e rodar o servidor:
 #### Testes
 Para rodar os testes de aceitação (Cucumber):
 ```bash
-cd apresentacao-backend
-../mvnw test -Dtest=RunCucumberTest
+./mvnw test -pl apresentacao-backend -Dtest=RunCucumberTest
 ```
 
 ## Documentação da API (Swagger)
