@@ -15,6 +15,6 @@ import static io.cucumber.junit.platform.engine.Constants.FEATURES_PROPERTY_NAME
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "br.com.cesar.gestaoCondominial.apresentacao.bdd")
 @ConfigurationParameter(key = FEATURES_PROPERTY_NAME, value = "classpath:features")
-@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
+@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-reports.html, json:target/cucumber-reports.json, junit:target/cucumber-reports.xml")
 public class RunCucumberTest {
 }
