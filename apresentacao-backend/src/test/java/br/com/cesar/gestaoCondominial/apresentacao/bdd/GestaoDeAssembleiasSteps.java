@@ -64,12 +64,17 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
 
     @Then("o sistema notifica os {string}")
     public void o_sistema_notifica_os_moradores(String p1) {
-        assertTrue(true);
+        boolean notificacoesEnviadas = listarTodasNotificacoes().stream()
+                .anyMatch(n -> n.getMensagem().toLowerCase().contains("assembleia agendada"));
+
+        assertTrue(notificacoesEnviadas, "O sistema deveria ter notificado os moradores sobre a nova assembleia.");
     }
 
     @Then("o sistema bloqueia a criação informando a antecedência mínima obrigatória")
     public void o_sistema_bloqueia_criacao_antecedencia() {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter bloqueado o agendamento com antecedência insuficiente.");
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("antecedência"),
+                "A mensagem de erro deve informar sobre a antecedência mínima.");
     }
 
     @Given("a {string} {string} pautas cadastradas")
@@ -84,7 +89,7 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
 
         if ("possui".equals(possuiPautas)) {
             assembleia.setPauta(java.util.List.of("Pauta 1"));
-            assembleiaRepository.save(assembleia); // Update the entity with the pauta
+            assembleiaRepository.save(assembleia);
 
             Pauta pauta = new Pauta();
             pauta.setAssembleiaId(assembleiaIdContexto);
@@ -122,6 +127,8 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
 
     @Then("o sistema bloqueia o encerramento informando que não há pauta")
     public void o_sistema_bloqueia_encerramento_sem_pauta() {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter impedido o encerramento de assembleia sem pautas.");
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("pauta"),
+                "A mensagem de erro deve informar que a assembleia não possui pautas para encerramento.");
     }
 }
