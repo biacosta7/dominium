@@ -75,6 +75,8 @@ import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.reposit
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.storage.ArmazenamentoDocumento;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.Documento;
@@ -117,6 +119,8 @@ public class DominiumFuncionalidade {
     protected TaxaCondominialRepository taxaCondominialRepository;
     protected DocumentoRepository documentoRepository;
     protected VersaoDocumentoRepository versaoDocumentoRepository;
+    protected NotificacaoRepository notificacaoRepository;
+    protected NotificacaoService notificacaoService;
 
     // ── Use Cases: Documentos ────────────────────────────────────────────────────
     protected CadastrarDocumentoUseCase cadastrarDocumentoUseCase;
@@ -206,14 +210,14 @@ public class DominiumFuncionalidade {
     // ── Captura de exceção ───────────────────────────────────────────────────────
     protected RuntimeException excecao;
 
+    protected List<Notificacao> listarTodasNotificacoes() {
+        return notificacaoRepository.findByUsuarioId(-1L);
+    }
+
     protected long currentId = 1L;
 
-    // ── Mapa auxiliar de AreaComum (interface não expõe save) ─────────────────
     protected final Map<Long, AreaComum> areaComumDb = new HashMap<>();
 
-    /**
-     * Persiste uma AreaComum no repositório em memória (interface não expõe save).
-     */
     protected AreaComum salvarAreaComum(AreaComum area) {
         if (area.getId() == null)
             area.setId(new AreaComumId(currentId++));
@@ -226,10 +230,44 @@ public class DominiumFuncionalidade {
         initUseCases();
     }
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // Repositórios em Memória
-    // ────────────────────────────────────────────────────────────────────────────
     private void initRepositories() {
+        notificacaoRepository = new NotificacaoRepository() {
+            private final Map<Long, Notificacao> db = new HashMap<>();
+
+            @Override
+            public Notificacao save(Notificacao n) {
+                if (n.getId() == null)
+                    n.setId(currentId++);
+                db.put(n.getId(), n);
+                return n;
+            }
+
+            @Override
+            public Optional<Notificacao> findById(Long id) {
+                return Optional.ofNullable(db.get(id));
+            }
+
+            @Override
+            public List<Notificacao> findByUsuarioId(Long usuarioId) {
+                if (usuarioId != null && usuarioId == -1L) {
+                    return List.copyOf(db.values());
+                }
+                return db.values().stream()
+                        .filter(n -> n.getUsuarioId().equals(usuarioId))
+                        .collect(Collectors.toList());
+            }
+        };
+
+        notificacaoService = new NotificacaoService() {
+            @Override
+            public void enviar(Long usuarioId, String mensagem,
+                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao tipo) {
+                br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao domainTipo = br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao
+                        .valueOf(tipo.name());
+                Notificacao n = Notificacao.criar(usuarioId, mensagem, domainTipo);
+                notificacaoRepository.save(n);
+            }
+        };
 
         unidadeRepository = new UnidadeRepository() {
             private final Map<Long, Unidade> db = new HashMap<>();
@@ -761,12 +799,22 @@ public class DominiumFuncionalidade {
 
         documentoRepository = new DocumentoRepository() {
             private final Map<String, Documento> db = new HashMap<>();
+
             @Override
-            public void save(Documento d) { db.put(d.getId().getValor(), d); }
+            public void save(Documento d) {
+                db.put(d.getId().getValor(), d);
+            }
+
             @Override
-            public Optional<Documento> findById(DocumentoId id) { return Optional.ofNullable(db.get(id.getValor())); }
+            public Optional<Documento> findById(DocumentoId id) {
+                return Optional.ofNullable(db.get(id.getValor()));
+            }
+
             @Override
-            public List<Documento> findAll() { return List.copyOf(db.values()); }
+            public List<Documento> findAll() {
+                return List.copyOf(db.values());
+            }
+
             @Override
             public List<Documento> findAtivos() {
                 return db.values().stream().filter(Documento::isAtivo).collect(Collectors.toList());
@@ -775,17 +823,21 @@ public class DominiumFuncionalidade {
 
         versaoDocumentoRepository = new VersaoDocumentoRepository() {
             private final Map<Long, VersaoDocumento> db = new HashMap<>();
+
             @Override
             public void save(VersaoDocumento v) {
-                if (v.getId() == null) v.setId(currentId++);
+                if (v.getId() == null)
+                    v.setId(currentId++);
                 db.put(v.getId(), v);
             }
+
             @Override
             public Optional<VersaoDocumento> findUltimaVersao(DocumentoId documentoId) {
                 return db.values().stream()
                         .filter(v -> v.getDocumentoId().equals(documentoId))
                         .max(Comparator.comparingInt(VersaoDocumento::getVersao));
             }
+
             @Override
             public List<VersaoDocumento> findHistorico(DocumentoId documentoId) {
                 return db.values().stream()
@@ -897,27 +949,32 @@ public class DominiumFuncionalidade {
         abrirRecursoUseCase = new AbrirRecursoUseCase(recursoRepository, multaRepository);
         julgarRecursoUseCase = new JulgarRecursoUseCase(recursoRepository, multaRepository);
 
-        // ── Notificações ────────────────────────────────────────────────────────
-        NotificacaoService notificacaoService = (id, msg, tipo) -> {
-        }; // no-op em testes
-
         // ── Documentos ───────────────────────────────────────────────────────────
         ArmazenamentoDocumento armazenamentoDocumento = new ArmazenamentoDocumento() {
             @Override
             public String salvar(String documentoId, int versao, String nomeOriginal, byte[] conteudo) {
                 return "uploads/" + documentoId + "/v" + versao + "/" + nomeOriginal;
             }
+
             @Override
-            public byte[] carregar(String caminho) { return new byte[0]; }
+            public byte[] carregar(String caminho) {
+                return new byte[0];
+            }
         };
-        cadastrarDocumentoUseCase = new CadastrarDocumentoUseCase(documentoRepository, versaoDocumentoRepository, armazenamentoDocumento, usuarioRepository);
-        atualizarDocumentoUseCase = new AtualizarDocumentoUseCase(documentoRepository, versaoDocumentoRepository, armazenamentoDocumento, usuarioRepository);
+        cadastrarDocumentoUseCase = new CadastrarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
+                armazenamentoDocumento, usuarioRepository);
+        atualizarDocumentoUseCase = new AtualizarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
+                armazenamentoDocumento, usuarioRepository);
         listarDocumentosUseCase = new ListarDocumentosUseCase(documentoRepository);
         inativarDocumentoUseCase = new InativarDocumentoUseCase(documentoRepository, usuarioRepository);
-        notificarDocumentosVencendoUseCase = new NotificarDocumentosVencendoUseCase(documentoRepository, notificacaoService);
+        notificarDocumentosVencendoUseCase = new NotificarDocumentosVencendoUseCase(documentoRepository,
+                notificacaoService);
 
         // ── Assembleias ──────────────────────────────────────────────────────────
         ServicoNotificacaoAssembleia servicoNotificacao = assembleia -> {
+            this.notificacaoService.enviar(assembleia.getSindicoId(),
+                    "Nova assembleia agendada: " + assembleia.getTitulo(),
+                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.NOVA_ASSEMBLEIA);
         };
         criarAssembleiaUseCase = new CriarAssembleiaUseCase(assembleiaRepository, usuarioRepository,
                 servicoNotificacao);
@@ -942,9 +999,10 @@ public class DominiumFuncionalidade {
         atualizarValorTaxaUseCase = new AtualizarValorTaxaUseCase(taxaCondominialRepository);
         registrarPagamentoTaxaUseCase = new RegistrarPagamentoTaxaUseCase(taxaCondominialRepository);
         consultarHistoricoTaxasUseCase = new ConsultarHistoricoTaxasUseCase(taxaCondominialRepository);
-        criarReservaUseCase = new CriarReservaUseCase(reservaRepository, politicaReserva, areaComumService);
+        criarReservaUseCase = new CriarReservaUseCase(reservaRepository, politicaReserva, areaComumService,
+                unidadeRepository);
         cancelarReservaUseCase = new CancelarReservaUseCase(reservaRepository, filaDeEsperaRepository,
-                notificacaoService, unidadeRepository, usuarioRepository);
+                notificacaoService, unidadeRepository, multaRepository);
         atualizarReservaUseCase = new AtualizarReservaUseCase(reservaRepository, politicaReserva, areaComumService);
         listarReservaUseCase = new ListarReservaUseCase(reservaRepository);
         adicionarNaFilaUseCase = new AdicionarNaFilaUseCase(filaDeEsperaRepository, areaComumService);

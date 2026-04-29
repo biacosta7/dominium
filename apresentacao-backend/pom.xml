@@ -56,6 +56,11 @@
             <artifactId>gestaoCondominial-apresentacao-frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gestaoCondominial-dominio-compartilhado</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
 		<dependency>
 		    <groupId>com.h2database</groupId>
