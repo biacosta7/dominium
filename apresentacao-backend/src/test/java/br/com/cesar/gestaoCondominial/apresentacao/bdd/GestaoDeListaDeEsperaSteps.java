@@ -39,7 +39,7 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
         reserva.setDataReserva(LocalDate.now().plusDays(3));
         reserva.setHoraInicio(LocalTime.of(14, 0));
         reserva.setHoraFim(LocalTime.of(16, 0));
-        reserva.setStatus(StatusReserva.ATIVA); // Inicia como ATIVA
+        reserva.setStatus(StatusReserva.ATIVA);
         reserva = reservaRepository.save(reserva);
         reservaCanceladaId = reserva.getId();
     }
@@ -52,7 +52,6 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
             Unidade aguardando = new Unidade();
             aguardando.setNumero("802");
-            // Adiciona inquilino para que o CancelarReservaUseCase encontre a unidade
             Usuario inquilino = new Usuario();
             inquilino.setId(usuarioFilaId);
             aguardando.setInquilino(inquilino);
@@ -63,7 +62,6 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
             entrada.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
             entrada.setUsuarioId(new UsuarioId(usuarioFilaId));
             entrada.setDataCadastro(LocalDateTime.now().minusHours(1));
-            // Sincronizar a data desejada com a data da reserva para o filtro funcionar
             entrada.setDataDesejada(LocalDate.now().plusDays(3));
             entrada.setHoraInicio(LocalTime.of(14, 0));
             entrada.setHoraFim(LocalTime.of(16, 0));
@@ -80,8 +78,6 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema promove o próximo {string} da {string} seguindo a ordem cronológica")
     public void o_sistema_promove_o_proximo_morador(String p1, String p2) {
-        // Verifica se existe uma reserva ATIVA ou AGUARDANDO para o usuário que estava
-        // na fila
         boolean promoveu = reservaRepository
                 .buscarPorUsuario(new UsuarioId(usuarioPromovidoId))
                 .stream()
@@ -89,7 +85,6 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
                         || r.getStatus() == StatusReserva.ATIVA);
         assertTrue(promoveu, "O morador não foi promovido da fila");
 
-        // Verifica se a entrada original foi removida da fila de espera
         if (filaEntradaId != null) {
             assertFalse(filaDeEsperaRepository.buscarPorId(filaEntradaId)
                     .filter(f -> f.getStatus() == FilaDeEspera.StatusFila.AGUARDANDO)
@@ -99,7 +94,11 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema envia uma {string}")
     public void o_sistema_envia_uma_notificacao_obrigatoria(String p1) {
-        assertTrue(true);
+        boolean notificacaoEnviada = listarTodasNotificacoes().stream()
+                .anyMatch(n -> n.getUsuarioId().equals(usuarioPromovidoId)
+                        && n.getMensagem().toLowerCase().contains("promovid"));
+
+        assertTrue(notificacaoEnviada, "O morador promovido deveria ter recebido uma notificação.");
     }
 
     @Given("o {string} foi promovido da {string}")
@@ -119,9 +118,31 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
         reserva.setUsuarioId(new UsuarioId(userId));
         reserva.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
         reserva.setDataReserva(LocalDate.now().plusDays(5));
+        reserva.setHoraInicio(LocalTime.of(10, 0));
+        reserva.setHoraFim(LocalTime.of(12, 0));
         reserva.setStatus(StatusReserva.AGUARDANDO_CONFIRMACAO);
         reserva = reservaRepository.save(reserva);
         reservaCanceladaId = reserva.getId();
+
+        Long proximoFilaId = UUID_RANDOM_LONG();
+        usuarioPromovidoId = proximoFilaId;
+
+        Unidade unidadeFila = new Unidade();
+        unidadeFila.setNumero("804");
+        Usuario inquilinoFila = new Usuario();
+        inquilinoFila.setId(proximoFilaId);
+        unidadeFila.setInquilino(inquilinoFila);
+        unidadeRepository.save(unidadeFila);
+
+        FilaDeEspera entrada = new FilaDeEspera();
+        entrada.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
+        entrada.setUsuarioId(new UsuarioId(proximoFilaId));
+        entrada.setDataCadastro(LocalDateTime.now().plusSeconds(1));
+        entrada.setDataDesejada(LocalDate.now().plus(5, java.time.temporal.ChronoUnit.DAYS));
+        entrada.setHoraInicio(LocalTime.of(10, 0));
+        entrada.setHoraFim(LocalTime.of(12, 0));
+        entrada.setStatus(FilaDeEspera.StatusFila.AGUARDANDO);
+        filaDeEsperaRepository.salvar(entrada);
     }
 
     @When("o {string} expirar sem resposta")
@@ -139,7 +160,18 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema promove o próximo {string} da {string}")
     public void o_sistema_promove_o_proximo_da_fila(String p1, String p2) {
-        assertTrue(true);
+        Reserva reservaAnterior = reservaRepository.findById(reservaCanceladaId)
+                .orElseThrow(() -> new AssertionError("Reserva original não encontrada"));
+        assertEquals(StatusReserva.CANCELADA, reservaAnterior.getStatus(), "A reserva expirada deve estar cancelada.");
+
+        boolean novaReservaCriada = reservaRepository.buscarPorUsuario(new UsuarioId(usuarioPromovidoId))
+                .stream()
+                .anyMatch(r -> r.getAreaComumId().equals(new AreaComumId(AREA_COMUM_ID))
+                        && (r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO
+                                || r.getStatus() == StatusReserva.ATIVA));
+
+        assertTrue(novaReservaCriada, "O próximo morador da fila deveria ter sido promovido com uma nova reserva.");
+        assertNull(this.excecao, "Não deve haver erro no processo de promoção em cadeia.");
     }
 
     private Long UUID_RANDOM_LONG() {
