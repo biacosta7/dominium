@@ -8,10 +8,10 @@ import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.reposit
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.UnidadeRepository;
-import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
-import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -21,18 +21,18 @@ public class CancelarReservaUseCase {
     private final FilaDeEsperaRepository filaRepository;
     private final NotificacaoService notificacaoService;
     private final UnidadeRepository unidadeRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final MultaRepository multaRepository;
 
-    public CancelarReservaUseCase(ReservaRepository repository, 
-                                  FilaDeEsperaRepository filaRepository, 
-                                  NotificacaoService notificacaoService,
-                                  UnidadeRepository unidadeRepository,
-                                  UsuarioRepository usuarioRepository) {
+    public CancelarReservaUseCase(ReservaRepository repository,
+            FilaDeEsperaRepository filaRepository,
+            NotificacaoService notificacaoService,
+            UnidadeRepository unidadeRepository,
+            MultaRepository multaRepository) {
         this.repository = repository;
         this.filaRepository = filaRepository;
         this.notificacaoService = notificacaoService;
         this.unidadeRepository = unidadeRepository;
-        this.usuarioRepository = usuarioRepository;
+        this.multaRepository = multaRepository;
     }
 
     public void executar(ReservaId id) {
@@ -40,16 +40,30 @@ public class CancelarReservaUseCase {
         Reserva reserva = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
 
+        LocalDateTime dataHoraReserva = LocalDateTime.of(reserva.getDataReserva(), reserva.getHoraInicio());
+        if (LocalDateTime.now().plusHours(24).isAfter(dataHoraReserva)) {
+            br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa multa = new br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa();
+
+            br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade unidade = unidadeRepository
+                    .findById(reserva.getUnidadeId())
+                    .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
+
+            multa.setUnidade(unidade);
+            multa.setValor(new java.math.BigDecimal("50.00"));
+            multa.setDescricao("Multa por cancelamento tardio de reserva");
+            multa.setDataCriacao(LocalDateTime.now());
+
+            multaRepository.save(multa);
+        }
+
         reserva.cancelar();
         repository.save(reserva);
 
-        // Promoção automática
         Optional<FilaDeEspera> proximo = filaRepository.buscarProximoNaFila(
-                reserva.getAreaComumId(), 
-                reserva.getDataReserva(), 
-                reserva.getHoraInicio(), 
-                reserva.getHoraFim()
-        );
+                reserva.getAreaComumId(),
+                reserva.getDataReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFim());
 
         proximo.ifPresent(fila -> {
             fila.setStatus(FilaDeEspera.StatusFila.PROMOVIDO);
@@ -68,18 +82,14 @@ public class CancelarReservaUseCase {
                     fila.getUsuarioId(),
                     fila.getDataDesejada(),
                     fila.getHoraInicio(),
-                    fila.getHoraFim()
-            );
-            
-            // Nota: a busca da unidade acima é simplificada. Em um sistema real, a fila deveria guardar a UnidadeId.
-            // Para este exercício, vamos assumir que conseguimos recuperar.
-            
+                    fila.getHoraFim());
+
             repository.save(novaReserva);
-            
+
             notificacaoService.enviar(fila.getUsuarioId().getValor(),
-                "Sua reserva para a área " + reserva.getAreaComumId().getValor() +
-                " foi promovida da fila de espera! Você tem 24h para confirmar.",
-                br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
+                    "Sua reserva para a área " + reserva.getAreaComumId().getValor() +
+                            " foi promovida da fila de espera! Você tem 24h para confirmar.",
+                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
         });
     }
 }
