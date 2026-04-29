@@ -70,7 +70,9 @@ public class GestaoDeOcorrenciasSteps extends DominiumFuncionalidade {
 
     @Then("o sistema informa que a ocorrência deve estar vinculada a uma unidade")
     public void o_sistema_informa_ocorrencia_deve_estar_vinculada() {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter exigido o vínculo com uma unidade.");
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("vinculada") || this.excecao.getMessage().toLowerCase().contains("unidade"), 
+            "A mensagem de erro deve informar sobre a necessidade de vínculo com unidade.");
     }
 
     @Given("a {string} {string} aberta")
@@ -127,6 +129,8 @@ public class GestaoDeOcorrenciasSteps extends DominiumFuncionalidade {
 
     @Then("o sistema bloqueia a ação garantindo que o histórico não pode ser apagado")
     public void o_sistema_bloqueia_apagar_historico() {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter bloqueado a exclusão do histórico.");
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("histórico") || this.excecao.getMessage().toLowerCase().contains("apagado"), 
+            "A mensagem deve informar que o histórico de ocorrências é imutável.");
     }
 }

@@ -78,14 +78,17 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
     public void o_sistema_aplica_o_valor_da_p1(String p1) {
         assertNull(this.excecao);
         Multa multa = multaRepository.findById(multaIdContexto).orElseThrow();
-        // Se houver reincidência, valor deve ser >= 150 (base definida no use case como 150)
         assertTrue(multa.getValor().compareTo(new BigDecimal("150.00")) >= 0);
     }
 
     @Then("o sistema integra o valor com a taxa mensal")
     public void o_sistema_integra_o_valor_com_a_taxa_mensal() {
-        // Simulação de integração
-        assertTrue(true);
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto)
+                .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
+
+        Multa multa = multaRepository.findById(multaIdContexto).orElseThrow();
+
+        assertEquals(unidade.getId(), multa.getUnidade().getId(), "A multa deve estar vinculada à unidade correta.");
     }
 
     // ── Criar multa manual ───────────────────────────────────────────────────────
