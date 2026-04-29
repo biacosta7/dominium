@@ -81,17 +81,27 @@ public class GestaoDePautasEVotacoesSteps extends DominiumFuncionalidade {
 
     @Then("o sistema contabiliza o {string} para a {string}")
     public void o_sistema_contabiliza_o_voto(String p1, String p2) {
-        assertNull(this.excecao);
+        assertNull(this.excecao, "O voto não deveria ter sido bloqueado.");
+
+        boolean votoRegistrado = votoRepository.findByPautaAndUnidade(pautaIdContexto, unidadeIdContexto);
+
+        assertTrue(votoRegistrado, "O voto deveria estar persistido no repositório.");
     }
 
     @Then("o sistema bloqueia o {string} informando a inadimplência")
     public void o_sistema_bloqueia_voto_inadimplencia(String p1) {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter bloqueado o voto de unidade inadimplente.");
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("inadimplente"),
+                "A mensagem de erro deve informar que o voto é restrito a unidades adimplentes.");
     }
 
     @Then("o sistema bloqueia o {string} garantindo apenas um voto por unidade")
     public void o_sistema_bloqueia_duplo_voto(String p1) {
-        assertNotNull(this.excecao);
+        assertNotNull(this.excecao, "O sistema deveria ter bloqueado a tentativa de voto duplicado.");
+        assertTrue(
+                this.excecao.getMessage().toLowerCase().contains("voto")
+                        || this.excecao.getMessage().toLowerCase().contains("registrado"),
+                "A mensagem de erro deve informar que a unidade já votou.");
     }
 
     @Given("a {string} {string} o quórum mínimo exigido")
@@ -115,7 +125,11 @@ public class GestaoDePautasEVotacoesSteps extends DominiumFuncionalidade {
 
     @Then("o sistema finaliza a {string} e aplica as regras de aprovação")
     public void o_sistema_finaliza_a_votacao(String p1) {
-        assertNull(this.excecao);
+        assertNull(this.excecao, "O encerramento da votação não deveria ter falhado.");
+
+        Pauta pauta = pautaRepository.findById(pautaIdContexto).orElseThrow();
+        assertNotEquals(StatusPauta.ABERTA, pauta.getStatus(),
+                "A pauta deveria estar com status encerrado ou aprovado.");
     }
 
     private PautaId criarPautaAtiva() {
