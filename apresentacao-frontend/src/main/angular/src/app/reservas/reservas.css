@@ -1,0 +1,240 @@
+/* ──────────────────────────────────────────
+   Variáveis de cor (mesmas do design)
+────────────────────────────────────────── */
+:host {
+    --azul-escuro: #3B30D4;
+    --azul-claro:  #D6D3F8;
+    --azul-texto:  #3B30D4;
+    --borda:       rgba(0, 0, 0, 0.1);
+    --texto-pri:   #1a1a1a;
+    --texto-sec:   #6b6b6b;
+    --texto-hint:  #c0c0c0;
+    --bg-card:     #ffffff;
+    --bg-hover:    #f5f4fe;
+    --radius-md:   8px;
+    --radius-lg:   14px;
+  
+    display: block;
+  }
+  
+  /* ── Container ────────────────────────── */
+  .cal-container {
+    background: var(--bg-card);
+    border: 0.5px solid var(--borda);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    max-width: 560px;
+    font-family: 'Outfit', 'DM Sans', sans-serif;
+  }
+  
+  /* ── Cabeçalho ────────────────────────── */
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+  
+  .cal-titulo {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--texto-pri);
+    letter-spacing: -0.3px;
+  }
+  
+  .cal-nav {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--borda);
+    background: var(--bg-card);
+    color: var(--texto-sec);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  
+  .nav-btn:hover {
+    background: var(--bg-hover);
+    color: var(--azul-escuro);
+  }
+  
+  /* ── Grade ────────────────────────────── */
+  .cal-grade {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  
+  /* Rótulos da semana */
+  .dia-rotulo {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--texto-sec);
+    padding: 6px 0 10px;
+  }
+  
+  /* Células */
+  .dia-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--texto-pri);
+    position: relative;
+    transition: background 0.15s;
+    gap: 3px;
+  }
+  
+  .dia-cell.outro-mes {
+    color: var(--texto-hint);
+  }
+  
+  .dia-cell.clicavel {
+    cursor: pointer;
+  }
+  
+  .dia-cell.clicavel:hover {
+    background: var(--bg-hover);
+  }
+  
+  /* Dia com reserva — azul clarinho */
+  .dia-cell.tem-reserva {
+    background: var(--azul-claro);
+    color: var(--azul-texto);
+    font-weight: 600;
+  }
+  
+  /* Dia atual — azul escuro */
+  .dia-cell.hoje {
+    background: var(--azul-escuro);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  
+  /* Selecionado */
+  .dia-cell.selecionado {
+    outline: 2px solid var(--azul-escuro);
+    outline-offset: 1px;
+  }
+  
+  .dia-numero {
+    line-height: 1;
+  }
+  
+  /* Ponto indicador de reserva */
+  .dia-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--azul-escuro);
+    opacity: 0.6;
+  }
+  
+  .dia-cell.hoje .dia-dot {
+    background: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* ── Detalhe do dia ───────────────────── */
+  .detalhe {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--borda);
+    animation: fadeIn 0.2s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  .detalhe-titulo {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-sec);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .reserva-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--borda);
+    font-size: 14px;
+  }
+  
+  .reserva-item:last-child {
+    border-bottom: none;
+  }
+  
+  .reserva-hora {
+    color: var(--texto-pri);
+    font-weight: 500;
+  }
+  
+  .reserva-status {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  
+  .status-ativa        { background: #d4f0d4; color: #1a6b1a; }
+  .status-pendente     { background: #fff3d4; color: #7a5200; }
+  .status-cancelada    { background: #f5d4d4; color: #8b1a1a; }
+  .status-concluida    { background: #e0e0e0; color: #444444; }
+  .status-aguardando_confirmacao { background: #dde8fc; color: #1a3d8b; }
+  
+  /* ── Legenda ──────────────────────────── */
+  .legenda {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid var(--borda);
+  }
+  
+  .legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--texto-sec);
+  }
+  
+  .legenda-cor {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+  
+  .reserva-cor {
+    background: var(--azul-claro);
+    border: 0.5px solid #a9a4e8;
+  }
+  
+  .hoje-cor {
+    background: var(--azul-escuro);
+  }

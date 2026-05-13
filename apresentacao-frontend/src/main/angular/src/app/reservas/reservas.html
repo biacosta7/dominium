@@ -1,0 +1,70 @@
+<div class="cal-container">
+
+    <!-- Cabeçalho -->
+    <div class="cal-header">
+      <span class="cal-titulo">{{ tituloMes }}</span>
+      <div class="cal-nav">
+        <button class="nav-btn" (click)="mesAnterior()" aria-label="Mês anterior">
+          &#8249;
+        </button>
+        <button class="nav-btn" (click)="proximoMes()" aria-label="Próximo mês">
+          &#8250;
+        </button>
+      </div>
+    </div>
+  
+    <!-- Grade -->
+    <div class="cal-grade">
+  
+      <!-- Rótulos dos dias da semana -->
+      <div class="dia-rotulo" *ngFor="let d of DIAS_SEMANA">{{ d }}</div>
+  
+      <!-- Células dos dias -->
+      <ng-container *ngFor="let semana of semanas">
+        <div
+          *ngFor="let dia of semana"
+          class="dia-cell"
+          [class.outro-mes]="!dia.mesAtual"
+          [class.hoje]="dia.ehHoje"
+          [class.tem-reserva]="dia.mesAtual && !dia.ehHoje && dia.reservas.length > 0"
+          [class.clicavel]="dia.mesAtual && dia.reservas.length > 0"
+          [class.selecionado]="diaSelecionado?.dia === dia.dia && dia.mesAtual"
+          (click)="selecionarDia(dia)"
+        >
+          <span class="dia-dia">{{ dia.dia }}</span>
+          <span
+            *ngIf="dia.mesAtual && dia.reservas.length > 0"
+            class="dia-dot"
+          ></span>
+        </div>
+      </ng-container>
+  
+    </div>
+  
+    <!-- Detalhe do dia selecionado -->
+    <div class="detalhe" *ngIf="diaSelecionado">
+      <p class="detalhe-titulo">
+        Reservas em {{ diaSelecionado.dia }}/{{ mesAtual + 1 }}/{{ anoAtual }}
+      </p>
+      <div class="reserva-item" *ngFor="let r of diaSelecionado.reservas">
+        <span class="reserva-hora">{{ r.horaInicio }} – {{ r.horaFim }}</span>
+        <span class="reserva-status" [class]="'status-' + r.status.toLowerCase()">
+          {{ r.status }}
+        </span>
+      </div>
+    </div>
+  
+    <!-- Legenda -->
+    <div class="legenda">
+      <div class="legenda-item">
+        <span class="legenda-cor reserva-cor"></span>
+        Sua reserva
+      </div>
+      <div class="legenda-item">
+        <span class="legenda-cor hoje-cor"></span>
+        Hoje
+      </div>
+    </div>
+  
+  </div>
+  
