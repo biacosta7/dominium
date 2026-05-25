@@ -1,70 +1,161 @@
-<div class="cal-container">
+<div class="content" id="page-reservas">
+  <div class="toast" *ngIf="mensagem" role="status">{{ mensagem }}</div>
 
-    <!-- Cabeçalho -->
-    <div class="cal-header">
-      <span class="cal-titulo">{{ tituloMes }}</span>
-      <div class="cal-nav">
-        <button class="nav-btn" (click)="mesAnterior()" aria-label="Mês anterior">
-          &#8249;
-        </button>
-        <button class="nav-btn" (click)="proximoMes()" aria-label="Próximo mês">
-          &#8250;
-        </button>
-      </div>
-    </div>
-  
-    <!-- Grade -->
-    <div class="cal-grade">
-  
-      <!-- Rótulos dos dias da semana -->
-      <div class="dia-rotulo" *ngFor="let d of DIAS_SEMANA">{{ d }}</div>
-  
-      <!-- Células dos dias -->
-      <ng-container *ngFor="let semana of semanas">
-        <div
-          *ngFor="let dia of semana"
-          class="dia-cell"
-          [class.outro-mes]="!dia.mesAtual"
-          [class.hoje]="dia.ehHoje"
-          [class.tem-reserva]="dia.mesAtual && !dia.ehHoje && dia.reservas.length > 0"
-          [class.clicavel]="dia.mesAtual && dia.reservas.length > 0"
-          [class.selecionado]="diaSelecionado?.dia === dia.dia && dia.mesAtual"
-          (click)="selecionarDia(dia)"
-        >
-          <span class="dia-dia">{{ dia.dia }}</span>
-          <span
-            *ngIf="dia.mesAtual && dia.reservas.length > 0"
-            class="dia-dot"
-          ></span>
-        </div>
-      </ng-container>
-  
-    </div>
-  
-    <!-- Detalhe do dia selecionado -->
-    <div class="detalhe" *ngIf="diaSelecionado">
-      <p class="detalhe-titulo">
-        Reservas em {{ diaSelecionado.dia }}/{{ mesAtual + 1 }}/{{ anoAtual }}
-      </p>
-      <div class="reserva-item" *ngFor="let r of diaSelecionado.reservas">
-        <span class="reserva-hora">{{ r.horaInicio }} – {{ r.horaFim }}</span>
-        <span class="reserva-status" [class]="'status-' + r.status.toLowerCase()">
-          {{ r.status }}
-        </span>
-      </div>
-    </div>
-  
-    <!-- Legenda -->
-    <div class="legenda">
-      <div class="legenda-item">
-        <span class="legenda-cor reserva-cor"></span>
-        Sua reserva
-      </div>
-      <div class="legenda-item">
-        <span class="legenda-cor hoje-cor"></span>
-        Hoje
-      </div>
-    </div>
-  
+  <div class="page-header">
+    <div class="page-title">Reservas de Áreas Comuns</div>
+    <div class="page-sub">Agende e acompanhe o uso dos espaços do condomínio</div>
   </div>
-  
+
+  <div class="reservas-grid">
+    <div class="col-calendario">
+      <div class="card card-calendario">
+        <div class="cal-nav-row">
+          <div class="cal-month-title">{{ tituloMes }}</div>
+          <div class="cal-nav-btns">
+            <button type="button" class="btn btn-outline btn-sm" (click)="mesAnterior()" aria-label="Mês anterior">&#8249;</button>
+            <button type="button" class="btn btn-outline btn-sm" (click)="proximoMes()" aria-label="Próximo mês">&#8250;</button>
+          </div>
+        </div>
+
+        <div class="cal-grid">
+          <div class="dia-rotulo" *ngFor="let d of DIAS_SEMANA">{{ d }}</div>
+
+          <ng-container *ngFor="let semana of semanas">
+            <div
+              *ngFor="let dia of semana"
+              class="dia-cell"
+              [class.outro-mes]="!dia.mesAtual"
+              [class.hoje]="dia.ehHoje"
+              [class.tem-reserva]="dia.mesAtual && !dia.ehHoje && dia.reservas.length > 0"
+              [class.clicavel]="dia.mesAtual && dia.reservas.length > 0"
+              [class.selecionado]="diaSelecionado?.dia === dia.dia && dia.mesAtual"
+              (click)="selecionarDia(dia)"
+            >
+              <span class="dia-numero">{{ dia.dia }}</span>
+              <span *ngIf="dia.mesAtual && dia.reservas.length > 0" class="dia-dot"></span>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="detalhe" *ngIf="diaSelecionado">
+          <p class="detalhe-titulo">
+            Reservas em {{ diaSelecionado.dia }}/{{ mesAtual + 1 }}/{{ anoAtual }}
+          </p>
+          <div class="reserva-item" *ngFor="let r of diaSelecionado.reservas">
+            <div class="reserva-item-info">
+              <span class="reserva-area">{{ r.nomeArea }}</span>
+              <span class="reserva-hora">{{ formatarHorario(r.horaInicio, r.horaFim) }}</span>
+            </div>
+            <span class="reserva-status" [ngClass]="classeStatus(r.status)">
+              {{ rotuloStatus(r.status) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="legenda">
+          <div class="legenda-item">
+            <span class="legenda-cor reserva-cor"></span>
+            Sua reserva
+          </div>
+          <div class="legenda-item">
+            <span class="legenda-cor hoje-cor"></span>
+            Hoje
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lista">
+      <div class="card">
+        <div class="card-title-row">
+          <span class="card-title">Minhas Reservas</span>
+          <button type="button" class="btn btn-primary btn-sm" (click)="abrirModalReserva()">+ Nova Reserva</button>
+        </div>
+
+        <p class="lista-vazia" *ngIf="reservasUsuario.length === 0">Nenhuma reserva encontrada.</p>
+
+        <div class="res-card" *ngFor="let r of reservasUsuario">
+          <div class="res-color-bar"></div>
+          <div class="res-info">
+            <div class="res-title">{{ r.nomeArea }}</div>
+            <div class="res-meta">
+              {{ formatarData(r.data) }} · {{ formatarHorario(r.horaInicio, r.horaFim) }}
+            </div>
+          </div>
+          <div class="res-actions">
+            <span class="reserva-status" [ngClass]="classeStatus(r.status)">
+              {{ rotuloStatus(r.status) }}
+            </span>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              *ngIf="podeCancelar(r)"
+              (click)="cancelar(r.reservaId)"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-disponibilidade">
+      <div class="card">
+        <div class="card-title">Disponibilidade de Hoje</div>
+        <div class="espacos-list">
+          <div
+            class="espaco-item"
+            *ngFor="let item of disponibilidadeHoje"
+            [class.res-indisponivel]="item.ocupada"
+            (click)="!item.ocupada && abrirModalReserva(item.area.id)"
+          >
+            <div class="espaco-icon">{{ item.area.icone }}</div>
+            <div class="espaco-texto">
+              <div class="espaco-name">{{ item.area.nome }}</div>
+              <div class="espaco-cap" [class.ocupada]="item.ocupada">{{ item.detalhe }}</div>
+            </div>
+            <span class="badge" [ngClass]="item.badgeClass">{{ item.badgeLabel }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="modalAberto" (click)="fecharModal()">
+  <div class="modal" role="dialog" aria-labelledby="modal-reserva-titulo" (click)="$event.stopPropagation()">
+    <h2 id="modal-reserva-titulo" class="modal-titulo">Nova Reserva</h2>
+
+    <form class="modal-form" (ngSubmit)="criarReserva()">
+      <label class="form-label">
+        Área comum
+        <select class="form-input" name="areaComumId" [(ngModel)]="novaReserva.areaComumId" required>
+          <option *ngFor="let area of AREAS" [ngValue]="area.id">{{ area.nome }}</option>
+        </select>
+      </label>
+
+      <label class="form-label">
+        Data
+        <input class="form-input" type="date" name="data" [(ngModel)]="novaReserva.data" required />
+      </label>
+
+      <div class="form-row">
+        <label class="form-label">
+          Início
+          <input class="form-input" type="time" name="horaInicio" [(ngModel)]="novaReserva.horaInicio" required />
+        </label>
+        <label class="form-label">
+          Fim
+          <input class="form-input" type="time" name="horaFim" [(ngModel)]="novaReserva.horaFim" required />
+        </label>
+      </div>
+
+      <div class="modal-acoes">
+        <button type="button" class="btn btn-outline" (click)="fecharModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="salvando">
+          {{ salvando ? 'Salvando…' : 'Confirmar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
