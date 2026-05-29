@@ -54,7 +54,9 @@ import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.VotoRep
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.VinculoMorador;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.repository.VinculoMoradorRepository;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.observer.*;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaEventPublisher;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
@@ -939,9 +941,11 @@ public class DominiumFuncionalidade {
         getDespesaUseCase = new GetDespesaUseCase(despesaRepository);
 
         // ── Multas ───────────────────────────────────────────────────────────────
-        createMultaManualUseCase = new CreateMultaManualUseCase(multaRepository, unidadeRepository);
-        registrarPagamentoMultaUseCase = new RegistrarPagamentoMultaUseCase(multaRepository);
-        updateMultaStatusUseCase = new UpdateMultaStatusUseCase(multaRepository);
+        MultaEventPublisher multaEventPublisher = new MultaEventPublisherImpl(
+                List.of(new UnidadeAdimplenciaListener(unidadeRepository)));
+        createMultaManualUseCase = new CreateMultaManualUseCase(multaRepository, unidadeRepository, multaEventPublisher);
+        registrarPagamentoMultaUseCase = new RegistrarPagamentoMultaUseCase(multaRepository, multaEventPublisher);
+        updateMultaStatusUseCase = new UpdateMultaStatusUseCase(multaRepository, multaEventPublisher);
         contestarMultaUseCase = new ContestarMultaUseCase(multaRepository);
         listMultasByUnidadeUseCase = new ListMultasByUnidadeUseCase(multaRepository, unidadeRepository);
 

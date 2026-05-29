@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.MultaResponseDTO;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.RegistrarPagamentoRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaEventPublisher;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
@@ -15,11 +16,14 @@ import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaR
 public class RegistrarPagamentoMultaUseCase {
 
     private final MultaRepository multaRepository;
+    private final MultaEventPublisher eventPublisher;
 
     public RegistrarPagamentoMultaUseCase(
-            MultaRepository multaRepository
+            MultaRepository multaRepository,
+            MultaEventPublisher eventPublisher
     ) {
         this.multaRepository = multaRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public MultaResponseDTO execute(
@@ -42,6 +46,8 @@ public class RegistrarPagamentoMultaUseCase {
         multa.setUpdatedAt(LocalDateTime.now());
 
         Multa salva = multaRepository.save(multa);
+
+        eventPublisher.publicarMultaPaga(salva);
 
         return MultaResponseDTO.fromEntity(salva);
     }
