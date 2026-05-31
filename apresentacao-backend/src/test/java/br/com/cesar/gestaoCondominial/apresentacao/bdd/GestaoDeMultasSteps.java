@@ -99,6 +99,7 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
         unidade.setNumero("302");
         unidade.setBloco("C");
         unidade.setStatus(StatusAdimplencia.ADIMPLENTE);
+        unidade.setSaldoDevedor(BigDecimal.ZERO);
         unidade = unidadeRepository.save(unidade);
         unidadeIdContexto = unidade.getId();
     }
@@ -131,6 +132,8 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
     public void a_multa_p2_pendente(String p1, String estado) {
         Unidade unidade = new Unidade();
         unidade.setNumero("303");
+        unidade.setStatus(StatusAdimplencia.INADIMPLENTE);
+        unidade.setSaldoDevedor(new BigDecimal("150.00"));
         unidade = unidadeRepository.save(unidade);
         unidadeIdContexto = unidade.getId();
 
@@ -160,5 +163,93 @@ public class GestaoDeMultasSteps extends DominiumFuncionalidade {
         assertNull(this.excecao);
         Multa multa = multaRepository.findById(multaIdContexto).orElseThrow();
         assertEquals(StatusMulta.PAGA, multa.getStatus());
+    }
+
+    // ── Observer: criação de multa atualiza saldo da unidade ────────────────────
+
+    @Given("a unidade possui saldo devedor zero")
+    public void a_unidade_possui_saldo_devedor_zero() {
+        Unidade unidade = new Unidade();
+        unidade.setNumero("401");
+        unidade.setBloco("D");
+        unidade.setStatus(StatusAdimplencia.ADIMPLENTE);
+        unidade.setSaldoDevedor(BigDecimal.ZERO);
+        unidade = unidadeRepository.save(unidade);
+        unidadeIdContexto = unidade.getId();
+    }
+
+    @When("uma multa de {int} reais é aplicada à unidade")
+    public void uma_multa_de_reais_e_aplicada_a_unidade(int valor) {
+        try {
+            CreateMultaRequestDTO dto = new CreateMultaRequestDTO();
+            dto.setUnidadeId(unidadeIdContexto.getValor());
+            dto.setDescricao("Infração de regras internas");
+            dto.setValor(new BigDecimal(valor));
+            dto.setTipoValor(TipoValorMulta.FIXO);
+            MultaResponseDTO response = createMultaManualUseCase.execute(dto);
+            multaIdContexto = new MultaId(response.getId());
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
+
+    @Then("o saldo devedor da unidade é atualizado para {int} reais")
+    public void o_saldo_devedor_da_unidade_e_atualizado_para_reais(int valorEsperado) {
+        assertNull(this.excecao);
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto).orElseThrow();
+        assertEquals(0, unidade.getSaldoDevedor().compareTo(new BigDecimal(valorEsperado)));
+    }
+
+    @Then("o status de adimplência da unidade muda para INADIMPLENTE")
+    public void o_status_de_adimplencia_da_unidade_muda_para_inadimplente() {
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto).orElseThrow();
+        assertEquals(StatusAdimplencia.INADIMPLENTE, unidade.getStatus());
+    }
+
+    // ── Observer: pagamento de multa zera o saldo da unidade ────────────────────
+
+    @Given("a unidade possui uma multa aberta no valor de {int} reais")
+    public void a_unidade_possui_uma_multa_aberta_no_valor_de_reais(int valor) {
+        Unidade unidade = new Unidade();
+        unidade.setNumero("402");
+        unidade.setBloco("D");
+        unidade.setStatus(StatusAdimplencia.INADIMPLENTE);
+        unidade.setSaldoDevedor(new BigDecimal(valor));
+        unidade = unidadeRepository.save(unidade);
+        unidadeIdContexto = unidade.getId();
+
+        Multa multa = new Multa();
+        multa.setUnidade(unidade);
+        multa.setDescricao("Infração de regras internas");
+        multa.setValor(new BigDecimal(valor));
+        multa.setStatus(StatusMulta.ABERTA);
+        multa.setTipoValor(TipoValorMulta.FIXO);
+        multa = multaRepository.save(multa);
+        multaIdContexto = multa.getId();
+    }
+
+    @When("o pagamento integral da multa é registrado")
+    public void o_pagamento_integral_da_multa_e_registrado() {
+        try {
+            Multa multa = multaRepository.findById(multaIdContexto).orElseThrow();
+            RegistrarPagamentoRequestDTO dto = new RegistrarPagamentoRequestDTO();
+            dto.setValorPago(multa.getValor());
+            registrarPagamentoMultaUseCase.execute(multaIdContexto.getValor(), dto);
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
+
+    @Then("o saldo devedor da unidade é zerado")
+    public void o_saldo_devedor_da_unidade_e_zerado() {
+        assertNull(this.excecao);
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto).orElseThrow();
+        assertEquals(0, BigDecimal.ZERO.compareTo(unidade.getSaldoDevedor()));
+    }
+
+    @Then("o status de adimplência da unidade muda para ADIMPLENTE")
+    public void o_status_de_adimplencia_da_unidade_muda_para_adimplente() {
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto).orElseThrow();
+        assertEquals(StatusAdimplencia.ADIMPLENTE, unidade.getStatus());
     }
 }

@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.CreateMultaRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.MultaResponseDTO;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaEventPublisher;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
-import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId; // Importado
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.UnidadeRepository;
 
 @Service
@@ -19,12 +20,15 @@ public class CreateMultaManualUseCase {
 
     private final MultaRepository multaRepository;
     private final UnidadeRepository unidadeRepository;
+    private final MultaEventPublisher eventPublisher;
 
     public CreateMultaManualUseCase(
             MultaRepository multaRepository,
-            UnidadeRepository unidadeRepository) {
+            UnidadeRepository unidadeRepository,
+            MultaEventPublisher eventPublisher) {
         this.multaRepository = multaRepository;
         this.unidadeRepository = unidadeRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public MultaResponseDTO execute(CreateMultaRequestDTO request) {
@@ -55,6 +59,8 @@ public class CreateMultaManualUseCase {
         multa.setDataCriacao(LocalDateTime.now());
 
         Multa salva = multaRepository.save(multa);
+
+        eventPublisher.publicarMultaCriada(salva);
 
         // O mapeamento para o DTO de resposta agora acontece no .fromEntity()
         return MultaResponseDTO.fromEntity(salva);

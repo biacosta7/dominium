@@ -7,18 +7,23 @@ import org.springframework.stereotype.Service;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.MultaResponseDTO;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.UpdateMultaStatusRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaEventPublisher;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 
 @Service
 public class UpdateMultaStatusUseCase {
 
     private final MultaRepository multaRepository;
+    private final MultaEventPublisher eventPublisher;
 
     public UpdateMultaStatusUseCase(
-            MultaRepository multaRepository
+            MultaRepository multaRepository,
+            MultaEventPublisher eventPublisher
     ) {
         this.multaRepository = multaRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public MultaResponseDTO execute(
@@ -33,6 +38,10 @@ public class UpdateMultaStatusUseCase {
         multa.setUpdatedAt(LocalDateTime.now());
 
         Multa atualizada = multaRepository.save(multa);
+
+        if (atualizada.getStatus() == StatusMulta.CANCELADA) {
+            eventPublisher.publicarMultaCancelada(atualizada);
+        }
 
         return MultaResponseDTO.fromEntity(atualizada);
     }
