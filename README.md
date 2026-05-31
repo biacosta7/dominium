@@ -46,19 +46,20 @@ Os cenários BDD estão automatizados utilizando Cucumber integrado ao JUnit no 
 ## Requisitos
 - Java 17
 - Maven (ou usar o `./mvnw` incluso)
+- Node.js (versão 18+ ou recente LTS) e npm
 - Docker e Docker Compose (opcional)
 
 ## Tecnologias Utilizadas
 
 - **Backend**: Java 17, Spring Boot 3, JDBC (Sem ORM), H2 Database.
-- **Frontend**: Angular, CSS Vanilla.
+- **Frontend**: React, TypeScript, CSS Vanilla.
 - **Qualidade**: Cucumber, JUnit, Vitest.
 - **Design**: Figma.
 
 ## Como Executar o Projeto
 
-### 1. Via Docker (Recomendado)
-Utilize o Docker Compose na raiz do projeto:
+### 1. Via Docker (Recomendado para o Backend)
+Utilize o Docker Compose na raiz do projeto para subir o contêiner do backend:
 ```bash
 docker-compose up --build
 ```
@@ -66,11 +67,20 @@ docker-compose up --build
 ### 2. Execução Tradicional (Local)
 
 #### Backend
-Para compilar e rodar o servidor:
+Para compilar e rodar o servidor do backend localmente:
 ```bash
 ./mvnw install -DskipTests
 ./mvnw spring-boot:run -pl apresentacao-backend
 ```
+
+#### Frontend
+Para rodar o servidor de desenvolvimento do frontend:
+```bash
+cd apresentacao-frontend
+npm install
+npm run dev
+```
+O frontend estará acessível em `http://localhost:5173`.
 
 #### Testes
 Para rodar os testes de aceitação (Cucumber):
