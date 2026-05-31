@@ -943,7 +943,7 @@ public class DominiumFuncionalidade {
         // ── Multas ───────────────────────────────────────────────────────────────
         MultaEventPublisher multaEventPublisher = new MultaEventPublisherImpl(
                 List.of(new UnidadeAdimplenciaListener(unidadeRepository)));
-        createMultaManualUseCase = new CreateMultaManualUseCase(multaRepository, unidadeRepository, multaEventPublisher);
+        createMultaManualUseCase = new CreateMultaManualUseCase(multaRepository, unidadeRepository, multaEventPublisher, new br.com.cesar.gestaoCondominial.financeiro.dominio.multa.strategy.CalculoMultaProgressivaStrategy());
         registrarPagamentoMultaUseCase = new RegistrarPagamentoMultaUseCase(multaRepository, multaEventPublisher);
         updateMultaStatusUseCase = new UpdateMultaStatusUseCase(multaRepository, multaEventPublisher);
         contestarMultaUseCase = new ContestarMultaUseCase(multaRepository);
