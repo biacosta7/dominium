@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
+import Reserva from './espacos-condominio/Reserva';
+import { buscarReservas } from './espacos-condominio/services/reservaService';
 import { 
   Calendar, DollarSign, Users, AlertTriangle, 
   MessageSquare, LogOut, Check, ArrowRight, X, Clock
@@ -27,11 +29,12 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
   
   // Modals state
   const [modalType, setModalType] = useState<'reserva' | 'ocorrencia' | 'financeiro' | 'votacao' | null>(null);
+  const [paginaAtual, setPaginaAtual] = useState('dashboard');
   
-  // Custom states for modals
-  const [reservaArea, setReservaArea] = useState('Churrasqueira 2');
-  const [reservaDate, setReservaDate] = useState('2026-06-10');
-  const [reservaTime, setReservaTime] = useState('12h às 18h');
+  // Custom states for modals (commented out as they are handled in the dedicated ReservaView page now)
+  // const [reservaArea, setReservaArea] = useState('Churrasqueira 2');
+  // const [reservaDate, setReservaDate] = useState('2026-06-10');
+  // const [reservaTime, setReservaTime] = useState('12h às 18h');
   
   const [ocorrenciaTitulo, setOcorrenciaTitulo] = useState('');
   const [ocorrenciaDesc, setOcorrenciaDesc] = useState('');
@@ -40,59 +43,98 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
   const [hasVoted, setHasVoted] = useState(false);
 
   // Dynamic agenda items
-  const [agenda, setAgenda] = useState<AgendaItem[]>([
-    {
-      id: '1',
-      day: '07',
-      month: 'MAR',
-      title: 'Sua reserva — Churrasqueira 2',
-      time: '12h às 18h · Confirmada ✓',
-      status: 'Conf.',
-      statusType: 'success',
-      color: '#3b82f6'
-    },
-    {
-      id: '2',
-      day: '13',
-      month: 'MAR',
-      title: 'Assembleia Ordinária',
-      time: '19h · Salão de Festas',
-      status: 'Hoje',
-      statusType: 'primary',
-      color: '#8b5cf6'
-    },
-    {
-      id: '3',
-      day: '15',
-      month: 'MAR',
-      title: 'Vencimento cota abril',
-      time: 'R$ 580,00 · Bloco A/102',
-      status: 'Pendente',
-      statusType: 'primary',
-      color: '#14b8a6'
-    }
-  ]);
+  const [agenda, _setAgenda] = useState<AgendaItem[]>([]);
 
-  const handleCreateReserva = (e: React.FormEvent) => {
-    e.preventDefault();
-    const [, monthNum, dayStr] = reservaDate.split('-');
-    const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    const monthName = months[parseInt(monthNum, 10) - 1] || 'JUN';
+  const getTodayFormatted = () => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    };
+    const formatted = today.toLocaleDateString('pt-BR', options);
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
 
-    const newItem: AgendaItem = {
-      id: Date.now().toString(),
-      day: dayStr,
-      month: monthName,
-      title: `Sua reserva — ${reservaArea}`,
-      time: `${reservaTime} · Confirmada ✓`,
-      status: 'Conf.',
-      statusType: 'success',
-      color: '#3b82f6'
+  useEffect(() => {
+    const carregarAgendaDinamica = async () => {
+      try {
+        const response = await buscarReservas(1); // User Ana Lima ID 1
+        const reservasBackend = response.data;
+        
+        const mappedReservas: AgendaItem[] = reservasBackend
+          .filter((res: any) => res.status !== 'CANCELADA')
+          .map((res: any) => {
+            const dataObj = new Date(res.data + 'T00:00:00');
+            const dayStr = dataObj.getDate().toString().padStart(2, '0');
+            const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+            const monthName = months[dataObj.getMonth()] || 'JUN';
+            
+            return {
+              id: 'res-' + res.id,
+              day: dayStr,
+              month: monthName,
+              title: `Sua reserva — ${res.nomeArea}`,
+              time: `${res.horaInicio.substring(0, 5)} às ${res.horaFim.substring(0, 5)} · Confirmada ✓`,
+              status: res.status === 'ATIVA' ? 'Conf.' : res.status,
+              statusType: 'success' as const,
+              color: '#3b82f6'
+            };
+          });
+
+        const staticItems: AgendaItem[] = [
+          {
+            id: '2',
+            day: '13',
+            month: 'MAR',
+            title: 'Assembleia Ordinária',
+            time: '19h · Salão de Festas',
+            status: 'Hoje',
+            statusType: 'primary',
+            color: '#8b5cf6'
+          },
+          {
+            id: '3',
+            day: '15',
+            month: 'MAR',
+            title: 'Vencimento cota abril',
+            time: 'R$ 580,00 · Bloco A/102',
+            status: 'Pendente',
+            statusType: 'primary',
+            color: '#14b8a6'
+          }
+        ];
+
+        _setAgenda([...mappedReservas, ...staticItems]);
+      } catch (error) {
+        console.error("Erro ao carregar reservas para o dashboard", error);
+      }
     };
 
-    setAgenda([newItem, ...agenda]);
-    setModalType(null);
-  };
+    carregarAgendaDinamica();
+  }, [paginaAtual]);
+
+  // const handleCreateReserva = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const [, monthNum, dayStr] = reservaDate.split('-');
+  //   const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+  //   const monthName = months[parseInt(monthNum, 10) - 1] || 'JUN';
+  // 
+  //   const newItem: AgendaItem = {
+  //     id: Date.now().toString(),
+  //     day: dayStr,
+  //     month: monthName,
+  //     title: `Sua reserva — ${reservaArea}`,
+  //     time: `${reservaTime} · Confirmada ✓`,
+  //     status: 'Conf.',
+  //     statusType: 'success',
+  //     color: '#3b82f6'
+  //   };
+  // 
+  //   setAgenda([newItem, ...agenda]);
+  //   setModalType(null);
+  // };
 
   const handleCreateOcorrencia = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +146,8 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
       setOcorrenciaDesc('');
     }, 2000);
   };
+
+  // paginaAtual 'reserva' is now rendered inside the main container to preserve header/navbar
 
   return (
     <div style={{ backgroundColor: 'var(--gray-50)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -124,7 +168,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Reservas' ? 'active' : ''}`}
-              onClick={() => setModalType('reserva')}
+              onClick={() => setPaginaAtual('reserva')}
             >
               Reservas
             </li>
@@ -211,12 +255,18 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
 
       {/* Main Container */}
       <main className="dash-container animate-fade-in">
-        {/* Welcome Banner */}
-        <section className="welcome-banner">
-          <div className="welcome-text">
-            <h1>Olá, Ana! 👋</h1>
-            <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde · Apto 102, Bloco A</p>
-          </div>
+        {paginaAtual === 'reserva' ? (
+          <Reserva
+            onVoltar={() => setPaginaAtual('dashboard')}
+          />
+        ) : (
+          <>
+            {/* Welcome Banner */}
+            <section className="welcome-banner">
+              <div className="welcome-text">
+                <h1>Olá, Ana! 👋</h1>
+                <p>{getTodayFormatted()} · Residencial Parque Verde · Apto 102, Bloco A</p>
+              </div>
 
           <div className="banner-stats">
             <div className="stat-badge">
@@ -238,7 +288,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
         <section>
           <h2 className="section-title">Ações Rápidas</h2>
           <div className="actions-grid">
-            <div className="action-card" onClick={() => setModalType('reserva')}>
+            <div className="action-card" onClick={() => setPaginaAtual('reserva')}>
               <div className="action-icon" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
                 <Calendar size={22} />
               </div>
@@ -342,14 +392,16 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
                 Síndico Marco Ribeiro · 03/03/2026
               </div>
             </div>
-          </div>
-        </section>
+            </div>
+          </section>
+          </>
+        )}
       </main>
 
       {/* ====================================
           MODALS IMPLEMENTATION
           ==================================== */}
-      {modalType === 'reserva' && (
+      {/*{modalType === 'reserva' && (
         <div className="modal-overlay">
           <div className="modal-card">
             <div className="modal-header">
@@ -401,7 +453,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
             </form>
           </div>
         </div>
-      )}
+      )}*/}
 
       {modalType === 'ocorrencia' && (
         <div className="modal-overlay">
