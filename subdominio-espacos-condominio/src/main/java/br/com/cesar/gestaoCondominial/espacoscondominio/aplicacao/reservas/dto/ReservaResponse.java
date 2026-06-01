@@ -24,7 +24,7 @@ public record ReservaResponse(
         }
 
         return new ReservaResponse(
-                reserva.getId() != null ? reserva.getId().toString() : null,
+                reserva.getId() != null ? reserva.getId().getValor() : null,
                 reserva.getAreaComumId() != null ? reserva.getAreaComumId().getValor() : null,
                 nome,
                 reserva.getDataReserva(),

@@ -11,7 +11,7 @@ public class FilaDeEsperaId {
     }
 
     public FilaDeEsperaId() {
-        this.valor = null;
+        this.valor = java.util.UUID.randomUUID().toString();
     }
 
     public String getValor() {

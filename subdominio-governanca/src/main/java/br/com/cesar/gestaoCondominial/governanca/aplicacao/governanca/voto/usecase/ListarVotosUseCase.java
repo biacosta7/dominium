@@ -4,6 +4,8 @@ import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.VotoRepository;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoCollection;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoIterator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,5 +21,9 @@ public class ListarVotosUseCase {
 
     public List<Voto> ListarPorPauta(PautaId pautaId) {
         return votoRepository.buscarPorPauta(pautaId);
+    }
+
+    public VotoIterator iteratorPorPauta(PautaId pautaId) {
+        return new VotoCollection(votoRepository.buscarPorPauta(pautaId)).iterator();
     }
 }

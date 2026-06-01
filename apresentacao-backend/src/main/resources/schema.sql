@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS areas_comuns (
 );
 
 CREATE TABLE IF NOT EXISTS reservas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     area_comum_id BIGINT NOT NULL,
     unidade_id BIGINT NOT NULL,
     usuario_id BIGINT NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS reservas (
 );
 
 CREATE TABLE IF NOT EXISTS fila_espera (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     area_comum_id BIGINT NOT NULL,
     usuario_id BIGINT NOT NULL,
     data_desejada DATE NOT NULL,

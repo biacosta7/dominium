@@ -4,6 +4,7 @@ import br.com.cesar.gestaoCondominial.governanca.aplicacao.governanca.service.Re
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.ResultadoPauta;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoCollection;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +22,8 @@ public class PautaService {
 
         pauta.validarSeEstaAberta();
 
-        regraVotacao.validarQuorum(pauta, votos);
-
         ResultadoPauta resultado =
-                regraVotacao.calcularResultado(pauta, votos);
+                regraVotacao.calcularResultado(pauta, new VotoCollection(votos).iterator());
 
         pauta.encerrar(resultado);
     }

@@ -2,6 +2,7 @@ package br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usec
 
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComum;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.iterator.ReservaCollection;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.areacomum.AreaComumService;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
@@ -41,6 +42,8 @@ public class CriarReservaUseCase {
                 reserva.getHoraInicio(),
                 reserva.getHoraFim());
 
+        politica.validarNovaReserva(reserva, area, new ReservaCollection(existentes).iterator());
+
         br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade unidade = unidadeRepository
                 .findById(reserva.getUnidadeId())
                 .orElseThrow(() -> new DomainException("Unidade não encontrada."));
@@ -57,8 +60,6 @@ public class CriarReservaUseCase {
         if (reservasNoMes >= 2) {
             throw new DomainException("Limite mensal de reservas atingido para esta unidade.");
         }
-
-        politica.validarNovaReserva(reserva, area, existentes);
 
         reserva.ativar();
 
