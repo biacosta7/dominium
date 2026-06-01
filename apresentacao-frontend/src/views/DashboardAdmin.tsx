@@ -4,6 +4,7 @@ import {
   Search, Bell, Plus, Users, Calendar, DollarSign, AlertTriangle, 
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
+import { Unidades } from './Unidades';
 
 interface DashboardAdminProps {
   userEmail: string;
@@ -246,17 +247,18 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
         </header>
 
         {/* Content Container */}
-        <div className="admin-content">
-          {/* Welcome Row */}
-          <div className="admin-welcome-row">
-            <div className="admin-welcome">
-              <h1>Bom dia, Marco 👋</h1>
-              <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde</p>
+        {activeMenu === 'Dashboard' && (
+          <div className="admin-content">
+            {/* Welcome Row */}
+            <div className="admin-welcome-row">
+              <div className="admin-welcome">
+                <h1>Bom dia, Marco 👋</h1>
+                <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde</p>
+              </div>
+              <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
+                <Plus size={16} /> Novo Registro
+              </button>
             </div>
-            <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
-              <Plus size={16} /> Novo Registro
-            </button>
-          </div>
 
           {/* Metrics row */}
           <section className="metrics-row">
@@ -512,9 +514,26 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                 </span>
               </div>
             </div>
+          </div> AQUIII
+        </div>
+      )}
+
+      {/* Renderiza a tela de Unidades */}
+      {activeMenu === 'Unidades' && (
+        <Unidades />
+      )}
+
+      {/* Fallback para telas em desenvolvimento */}
+      {activeMenu !== 'Dashboard' && activeMenu !== 'Unidades' && (
+        <div className="admin-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <div style={{ textAlign: 'center', color: 'var(--gray-500)' }}>
+            <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+            <h2>Módulo de {activeMenu}</h2>
+            <p>Esta tela está em desenvolvimento.</p>
           </div>
         </div>
-      </main>
+      )}
+    </main>
 
       {/* ====================================
           MODALS IMPLEMENTATION
