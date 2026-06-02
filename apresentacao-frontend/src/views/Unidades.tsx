@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Unidades.css';
-import { Search, Plus, Edit, Eye, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+// Adicionado o 'X' na importação abaixo
+import { Search, Plus, Edit, Eye, Pause, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface UnidadeData {
   id: number;
@@ -22,6 +23,16 @@ export const Unidades: React.FC = () => {
     { id: 7, numero: '421', bloco: 'D', titularNome: 'Rafael Lima', quantidadeMoradores: 2, status: 'EM_NEGOCIACAO' },
   ]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    numero: '',
+    bloco: 'Bloco A',
+    titular: '',
+    email: '',
+    telefone: '',
+    status: 'ADIMPLENTE'
+  });
+
   const formatarAndar = (numero: string) => `${numero.charAt(0)}º`;
 
   const renderStatusBadge = (status: string) => {
@@ -33,6 +44,17 @@ export const Unidades: React.FC = () => {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Dados a serem enviados:", formData);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="page-content">
       <div className="page-header">
@@ -40,7 +62,7 @@ export const Unidades: React.FC = () => {
           <h1>Gestão de Unidades</h1>
           <p>120 unidades cadastradas · Blocos A, B, C e D</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
           <Plus size={18} /> Nova Unidade
         </button>
       </div>
@@ -93,7 +115,99 @@ export const Unidades: React.FC = () => {
             <button className="page-btn">Próxima <ChevronRight size={16} /></button>
           </div>
         </div>
-      </div>
+      </div> {/* <-- DIV FECHADA AQUI (encerra a table-container) */}
+
+      {isModalOpen && (
+        <div className="unidade-modal-overlay">
+          <div className="unidade-modal-card">
+            <div className="unidade-modal-header">
+              <h2>Adicionar Unidade</h2>
+              <button className="btn-close" onClick={() => setIsModalOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="unidade-modal-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>UNIDADE</label>
+                  <input 
+                    type="text" 
+                    name="numero"
+                    placeholder="Ex: 304" 
+                    value={formData.numero}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>BLOCO</label>
+                  <select name="bloco" value={formData.bloco} onChange={handleInputChange}>
+                    <option value="Bloco A">Bloco A</option>
+                    <option value="Bloco B">Bloco B</option>
+                    <option value="Bloco C">Bloco C</option>
+                    <option value="Bloco D">Bloco D</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>TITULAR</label>
+                <input 
+                  type="text" 
+                  name="titular"
+                  placeholder="Nome completo" 
+                  value={formData.titular}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>E-MAIL</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="titular@email.com" 
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>TELEFONE</label>
+                  <input 
+                    type="text" 
+                    name="telefone"
+                    placeholder="(11) 9 0000-0000" 
+                    value={formData.telefone}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>STATUS</label>
+                  <select name="status" value={formData.status} onChange={handleInputChange}>
+                    <option value="ADIMPLENTE">Em dia</option>
+                    <option value="INADIMPLENTE">Inadimplente</option>
+                    <option value="EM_NEGOCIACAO">Pendente</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="unidade-modal-footer">
+                <button type="button" className="btn-cancelar" onClick={() => setIsModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-salvar">
+                  Salvar Unidade
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
