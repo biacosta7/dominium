@@ -1,39 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Unidades.css';
-// Adicionado o 'X' na importação abaixo
-import { Search, Plus, Edit, Eye, Pause, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Search, Plus, Edit, Eye, Ban, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface UnidadeData {
   id: number;
   numero: string;
   bloco: string;
-  titularNome: string;
-  quantidadeMoradores: number;
+  proprietarioId: number | null;
+  inquilinoId: number | null;
   status: 'ADIMPLENTE' | 'INADIMPLENTE' | 'EM_NEGOCIACAO';
+  saldoDevedor: number;
 }
 
-export const Unidades: React.FC = () => {
-  const [unidades, setUnidades] = useState<UnidadeData[]>([
-    { id: 1, numero: '101', bloco: 'A', titularNome: 'Roberto Alves', quantidadeMoradores: 3, status: 'ADIMPLENTE' },
-    { id: 2, numero: '102', bloco: 'A', titularNome: 'Ana Lima', quantidadeMoradores: 2, status: 'ADIMPLENTE' },
-    { id: 3, numero: '108', bloco: 'A', titularNome: 'Jorge Santos', quantidadeMoradores: 1, status: 'INADIMPLENTE' },
-    { id: 4, numero: '215', bloco: 'B', titularNome: 'Carla Mendes', quantidadeMoradores: 2, status: 'ADIMPLENTE' },
-    { id: 5, numero: '304', bloco: 'C', titularNome: 'Fernanda Costa', quantidadeMoradores: 4, status: 'ADIMPLENTE' },
-    { id: 6, numero: '312', bloco: 'C', titularNome: 'Paulo Oliveira', quantidadeMoradores: 3, status: 'INADIMPLENTE' },
-    { id: 7, numero: '421', bloco: 'D', titularNome: 'Rafael Lima', quantidadeMoradores: 2, status: 'EM_NEGOCIACAO' },
-  ]);
+interface UsuarioData {
+  id: number;
+  nome: string;
+}
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const PAGE_SIZE = 10;
+
+export const Unidades: React.FC = () => {
+  const [unidades, setUnidades] = useState<UnidadeData[]>([]);
+  const [usuarios, setUsuarios] = useState<UsuarioData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | null>(null);
+  const [editingUnidade, setEditingUnidade] = useState<UnidadeData | null>(null);
+  const [inativandoUnidade, setInativandoUnidade] = useState<UnidadeData | null>(null);
+  const [inativaIds, setInativaIds] = useState<number[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [filterBloco, setFilterBloco] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [formData, setFormData] = useState({
     numero: '',
-    bloco: 'Bloco A',
-    titular: '',
-    email: '',
-    telefone: '',
-    status: 'ADIMPLENTE'
+    bloco: 'A',
+    proprietarioId: '',
+    status: 'ADIMPLENTE',
+    saldoDevedor: '0.00',
   });
 
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/unidades').then(r => { if (!r.ok) throw new Error('Erro ao buscar unidades'); return r.json(); }),
+      fetch('/api/usuarios').then(r => { if (!r.ok) throw new Error('Erro ao buscar usuários'); return r.json(); }),
+    ])
+      .then(([fetchedUnidades, fetchedUsuarios]) => {
+        setUnidades(fetchedUnidades);
+        setUsuarios(fetchedUsuarios);
+      })
+      .catch(err => setError((err as Error).message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const usuarioMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    usuarios.forEach(u => { map[u.id] = u.nome; });
+    return map;
+  }, [usuarios]);
+
+  const blocos = useMemo(() => [...new Set(unidades.map(u => u.bloco))].sort(), [unidades]);
+
+  const filtered = useMemo(() => {
+    return unidades.filter(u => {
+      if (filterBloco && u.bloco !== filterBloco) return false;
+      if (filterStatus && u.status !== filterStatus) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const nome = u.proprietarioId != null ? (usuarioMap[u.proprietarioId] ?? '') : '';
+        if (!u.numero.toLowerCase().includes(q) && !nome.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [unidades, filterBloco, filterStatus, searchQuery, usuarioMap]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   const formatarAndar = (numero: string) => `${numero.charAt(0)}º`;
+
+  const formatCurrency = (value: number) =>
+    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   const renderStatusBadge = (status: string) => {
     switch (status) {
@@ -49,10 +100,89 @@ export const Unidades: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+      setter(e.target.value);
+      setCurrentPage(1);
+    };
+
+  const emptyForm = { numero: '', bloco: 'A', proprietarioId: '', status: 'ADIMPLENTE', saldoDevedor: '0.00' };
+
+  const openCreate = () => {
+    setFormData(emptyForm);
+    setEditingUnidade(null);
+    setModalMode('create');
+  };
+
+  const openEdit = (unidade: UnidadeData) => {
+    setFormData({
+      numero: unidade.numero,
+      bloco: unidade.bloco,
+      proprietarioId: String(unidade.proprietarioId ?? ''),
+      status: unidade.status,
+      saldoDevedor: String(unidade.saldoDevedor),
+    });
+    setEditingUnidade(unidade);
+    setModalMode('edit');
+  };
+
+  const closeModal = () => {
+    setModalMode(null);
+    setEditingUnidade(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados a serem enviados:", formData);
-    setIsModalOpen(false);
+    setSubmitting(true);
+    const payload = {
+      numero: formData.numero,
+      bloco: formData.bloco,
+      proprietarioId: Number(formData.proprietarioId),
+      inquilinoId: editingUnidade?.inquilinoId ?? null,
+      status: formData.status,
+      saldoDevedor: parseFloat(formData.saldoDevedor) || 0,
+    };
+    try {
+      if (modalMode === 'edit' && editingUnidade) {
+        const res = await fetch(`/api/unidades/${editingUnidade.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Erro ao atualizar unidade');
+        const updated: UnidadeData = await res.json();
+        setUnidades(prev => prev.map(u => u.id === updated.id ? updated : u));
+      } else {
+        const res = await fetch('/api/unidades', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Erro ao criar unidade');
+        const created: UnidadeData = await res.json();
+        setUnidades(prev => [...prev, created]);
+      }
+      closeModal();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const confirmInativar = async () => {
+    if (!inativandoUnidade) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/unidades/${inativandoUnidade.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erro ao inativar unidade');
+      setInativaIds(prev => [...prev, inativandoUnidade.id]);
+      setInativandoUnidade(null);
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -60,69 +190,136 @@ export const Unidades: React.FC = () => {
       <div className="page-header">
         <div>
           <h1>Gestão de Unidades</h1>
-          <p>120 unidades cadastradas · Blocos A, B, C e D</p>
+          <p>
+            {loading
+              ? 'Carregando...'
+              : `${unidades.length} unidades cadastradas${blocos.length > 0 ? ` · Blocos ${blocos.join(', ')}` : ''}`}
+          </p>
         </div>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+        <button className="btn-primary" onClick={openCreate}>
           <Plus size={18} /> Nova Unidade
         </button>
       </div>
 
       <div className="filters-bar">
-        <select className="filter-select"><option>Todos os Blocos</option></select>
-        <select className="filter-select"><option>Todos os Status</option></select>
+        <select className="filter-select" value={filterBloco} onChange={handleFilterChange(setFilterBloco)}>
+          <option value="">Todos os Blocos</option>
+          {blocos.map(b => <option key={b} value={b}>Bloco {b}</option>)}
+        </select>
+        <select className="filter-select" value={filterStatus} onChange={handleFilterChange(setFilterStatus)}>
+          <option value="">Todos os Status</option>
+          <option value="ADIMPLENTE">Em dia</option>
+          <option value="INADIMPLENTE">Inadimplente</option>
+          <option value="EM_NEGOCIACAO">Pendente</option>
+        </select>
         <div className="search-input-wrapper">
-          <input type="text" placeholder="Buscar por unidade ou titular" className="filter-input" />
+          <Search size={16} />
+          <input
+            type="text"
+            placeholder="Buscar por unidade ou titular"
+            className="filter-input"
+            value={searchQuery}
+            onChange={handleFilterChange(setSearchQuery)}
+          />
         </div>
       </div>
 
       <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>UNIDADE</th>
-              <th>TITULAR</th>
-              <th>MORADORES</th>
-              <th>BLOCO/ANDAR</th>
-              <th>STATUS</th>
-              <th style={{ textAlign: 'right' }}>AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {unidades.map((unidade) => (
-              <tr key={unidade.id}>
-                <td style={{ fontWeight: 600 }}>{unidade.numero}</td>
-                <td>{unidade.titularNome}</td>
-                <td>{unidade.quantidadeMoradores}</td>
-                <td>Bloco {unidade.bloco} - {formatarAndar(unidade.numero)}</td>
-                <td>{renderStatusBadge(unidade.status)}</td>
-                <td className="actions-cell">
-                  <button className="action-icon"><Edit size={16} /></button>
-                  <button className="action-icon"><Eye size={16} /></button>
-                  <button className="action-icon"><Pause size={16} /></button>
-                </td>
+        {error ? (
+          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--danger)' }}>{error}</div>
+        ) : loading ? (
+          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--gray-500)' }}>Carregando unidades...</div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>UNIDADE</th>
+                <th>TITULAR</th>
+                <th>SALDO DEVEDOR</th>
+                <th>BLOCO/ANDAR</th>
+                <th>STATUS</th>
+                <th style={{ textAlign: 'right' }}>AÇÕES</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        <div className="pagination">
-          <span>Mostrando 7 de 120 unidades</span>
-          <div className="pagination-controls">
-            <button className="page-btn"><ChevronLeft size={16} /> Anterior</button>
-            <button className="page-number active">1</button>
-            <button className="page-number">2</button>
-            <button className="page-number">3</button>
-            <button className="page-btn">Próxima <ChevronRight size={16} /></button>
-          </div>
-        </div>
-      </div> {/* <-- DIV FECHADA AQUI (encerra a table-container) */}
+            </thead>
+            <tbody>
+              {paginated.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', color: 'var(--gray-400)', padding: '32px' }}>
+                    Nenhuma unidade encontrada
+                  </td>
+                </tr>
+              ) : paginated.map((unidade) => {
+                const inativa = inativaIds.includes(unidade.id);
+                return (
+                <tr key={unidade.id} style={{ opacity: inativa ? 0.45 : 1 }}>
+                  <td style={{ fontWeight: 600 }}>{unidade.numero}</td>
+                  <td>
+                    {unidade.proprietarioId != null
+                      ? (usuarioMap[unidade.proprietarioId] ?? `Usuário #${unidade.proprietarioId}`)
+                      : '—'}
+                  </td>
+                  <td>{formatCurrency(unidade.saldoDevedor)}</td>
+                  <td>Bloco {unidade.bloco} - {formatarAndar(unidade.numero)}</td>
+                  <td>
+                    {inativa
+                      ? <span className="badge badge-inactive">Inativo</span>
+                      : renderStatusBadge(unidade.status)}
+                  </td>
+                  <td className="actions-cell">
+                    <button className="action-icon" title="Editar" disabled={inativa} onClick={() => openEdit(unidade)}><Edit size={16} /></button>
+                    <button className="action-icon" title="Visualizar"><Eye size={16} /></button>
+                    <button className="action-icon" title="Inativar" disabled={inativa} onClick={() => setInativandoUnidade(unidade)}>
+                      <Ban size={16} />
+                    </button>
+                  </td>
+                </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
 
-      {isModalOpen && (
+        {!loading && !error && (
+          <div className="pagination">
+            <span>
+              Mostrando {paginated.length} de {filtered.length} unidades
+              {filtered.length !== unidades.length ? ` (${unidades.length} total)` : ''}
+            </span>
+            <div className="pagination-controls">
+              <button
+                className="page-btn"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => p - 1)}
+              >
+                <ChevronLeft size={16} /> Anterior
+              </button>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  className={`page-number ${p === currentPage ? 'active' : ''}`}
+                  onClick={() => setCurrentPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                className="page-btn"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => p + 1)}
+              >
+                Próxima <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {modalMode !== null && (
         <div className="unidade-modal-overlay">
           <div className="unidade-modal-card">
             <div className="unidade-modal-header">
-              <h2>Adicionar Unidade</h2>
-              <button className="btn-close" onClick={() => setIsModalOpen(false)}>
+              <h2>{modalMode === 'edit' ? 'Editar Unidade' : 'Adicionar Unidade'}</h2>
+              <button className="btn-close" onClick={closeModal}>
                 <X size={20} />
               </button>
             </div>
@@ -131,10 +328,10 @@ export const Unidades: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>UNIDADE</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="numero"
-                    placeholder="Ex: 304" 
+                    placeholder="Ex: 304"
                     value={formData.numero}
                     onChange={handleInputChange}
                     required
@@ -143,49 +340,25 @@ export const Unidades: React.FC = () => {
                 <div className="form-group">
                   <label>BLOCO</label>
                   <select name="bloco" value={formData.bloco} onChange={handleInputChange}>
-                    <option value="Bloco A">Bloco A</option>
-                    <option value="Bloco B">Bloco B</option>
-                    <option value="Bloco C">Bloco C</option>
-                    <option value="Bloco D">Bloco D</option>
+                    <option value="A">Bloco A</option>
+                    <option value="B">Bloco B</option>
+                    <option value="C">Bloco C</option>
+                    <option value="D">Bloco D</option>
                   </select>
                 </div>
               </div>
 
               <div className="form-group">
-                <label>TITULAR</label>
-                <input 
-                  type="text" 
-                  name="titular"
-                  placeholder="Nome completo" 
-                  value={formData.titular}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>E-MAIL</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  placeholder="titular@email.com" 
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
+                <label>PROPRIETÁRIO</label>
+                <select name="proprietarioId" value={formData.proprietarioId} onChange={handleInputChange} required>
+                  <option value="">Selecione o proprietário</option>
+                  {usuarios.map(u => (
+                    <option key={u.id} value={u.id}>{u.nome}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-row">
-                <div className="form-group">
-                  <label>TELEFONE</label>
-                  <input 
-                    type="text" 
-                    name="telefone"
-                    placeholder="(11) 9 0000-0000" 
-                    value={formData.telefone}
-                    onChange={handleInputChange}
-                  />
-                </div>
                 <div className="form-group">
                   <label>STATUS</label>
                   <select name="status" value={formData.status} onChange={handleInputChange}>
@@ -194,17 +367,58 @@ export const Unidades: React.FC = () => {
                     <option value="EM_NEGOCIACAO">Pendente</option>
                   </select>
                 </div>
+                <div className="form-group">
+                  <label>SALDO DEVEDOR</label>
+                  <input
+                    type="number"
+                    name="saldoDevedor"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    value={formData.saldoDevedor}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="unidade-modal-footer">
-                <button type="button" className="btn-cancelar" onClick={() => setIsModalOpen(false)}>
+                <button type="button" className="btn-cancelar" onClick={closeModal}>
                   Cancelar
                 </button>
-                <button type="submit" className="btn-salvar">
-                  Salvar Unidade
+                <button type="submit" className="btn-salvar" disabled={submitting}>
+                  {submitting ? 'Salvando...' : modalMode === 'edit' ? 'Salvar Alterações' : 'Salvar Unidade'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {inativandoUnidade && (
+        <div className="unidade-modal-overlay">
+          <div className="unidade-modal-card" style={{ maxWidth: '420px' }}>
+            <div className="unidade-modal-header">
+              <h2>Inativar Unidade</h2>
+              <button className="btn-close" onClick={() => setInativandoUnidade(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="inativar-modal-body">
+              <p>
+                Tem certeza que deseja inativar a unidade <strong>{inativandoUnidade.numero}</strong> — Bloco <strong>{inativandoUnidade.bloco}</strong>?
+              </p>
+              <p className="inativar-modal-hint">
+                A unidade será removida do sistema e nenhuma operação poderá ser realizada sobre ela.
+              </p>
+            </div>
+            <div className="unidade-modal-footer">
+              <button type="button" className="btn-cancelar" onClick={() => setInativandoUnidade(null)}>
+                Cancelar
+              </button>
+              <button type="button" className="btn-inativar" disabled={submitting} onClick={confirmInativar}>
+                {submitting ? 'Inativando...' : 'Inativar Unidade'}
+              </button>
+            </div>
           </div>
         </div>
       )}
