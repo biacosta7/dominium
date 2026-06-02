@@ -302,6 +302,19 @@ MERGE INTO unidades (id, numero, bloco, proprietario_id, inquilino_id, status, s
 KEY(id)
 VALUES (1, '102', 'A', 1, null, 'ADIMPLENTE', 0.00);
 
+-- Vínculo titular ativo (necessário para votar em assembleias)
+MERGE INTO vinculos_morador (id, unidade_id, usuario_id, tipo, status)
+KEY(id)
+VALUES (1, 1, 1, 'TITULAR', 'ATIVO');
+
+MERGE INTO usuarios (id, nome, email, senha, telefone, cpf, tipo)
+KEY(id)
+VALUES (2, 'Marco Ribeiro', 'sindico@residencial.com', 'admin123', '8198888888', '98765432100', 'SINDICO');
+
+MERGE INTO assembleias (id, titulo, data_hora, local, status, sindico_id, data_criacao)
+KEY(id)
+VALUES (1, 'Assembleia Ordinária', '2026-03-13 19:00:00', 'Salão de Festas', 'AGENDADA', 2, CURRENT_TIMESTAMP);
+
 MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
 (1, 'Churrasqueira 1', 15, 'DISPONIVEL');
 MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 

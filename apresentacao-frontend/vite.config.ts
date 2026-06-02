@@ -10,6 +10,14 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/pautas': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/votos': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })

@@ -8,6 +8,21 @@
   color: #1a1a2e;
 }
 
+.assembleias-page-admin {
+  max-width: 100%;
+  margin: 0;
+}
+
+.assembleias-page-admin .assembleias-header {
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.assembleias-page-admin .assembleias-header > div {
+  margin-right: auto;
+}
+
 .assembleias-header {
   display: flex;
   justify-content: space-between;

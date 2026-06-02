@@ -2,6 +2,16 @@ import type { VotarRequest, VotoResponse, ResumoVotos } from '../types/voto';
 
 const BASE_URL = '/votos';
 
+function mensagemErroApi(body: string, fallback: string): string {
+  try {
+    const json = JSON.parse(body) as { message?: string };
+    if (json.message) return json.message;
+  } catch {
+    // corpo não é JSON
+  }
+  return body.trim() || fallback;
+}
+
 export const votoService = {
   async votar(data: VotarRequest): Promise<void> {
     const res = await fetch(BASE_URL, {
@@ -11,7 +21,7 @@ export const votoService = {
     });
     if (!res.ok) {
       const erro = await res.text();
-      throw new Error(erro || 'Erro ao registrar voto');
+      throw new Error(mensagemErroApi(erro, 'Erro ao registrar voto'));
     }
   },
 

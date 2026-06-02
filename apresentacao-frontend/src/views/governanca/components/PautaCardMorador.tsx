@@ -14,14 +14,29 @@ export default function PautaCardMorador({ pauta, usuarioId, unidadeId }: Props)
   const [votado, setVotado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+  const [erroResumo, setErroResumo] = useState('');
   const [resumo, setResumo] = useState<ResumoVotos | null>(null);
 
   useEffect(() => {
-    votoService.listarPorPauta(pauta.id).then((votos) => {
-      setResumo(votoService.resumir(votos));
-      const jaVotou = votos.some((v) => v.unidadeId === unidadeId);
-      setVotado(jaVotou);
-    });
+    let cancelado = false;
+
+    (async () => {
+      try {
+        setErroResumo('');
+        const votos = await votoService.listarPorPauta(pauta.id);
+        if (cancelado) return;
+        setResumo(votoService.resumir(votos));
+        const jaVotou = votos.some((v) => v.unidadeId === unidadeId);
+        setVotado(jaVotou);
+      } catch (e: any) {
+        if (cancelado) return;
+        setErroResumo(e.message || 'Erro ao carregar resumo de votos');
+      }
+    })();
+
+    return () => {
+      cancelado = true;
+    };
   }, [pauta.id, unidadeId]);
 
   async function handleVotar() {
@@ -31,9 +46,25 @@ export default function PautaCardMorador({ pauta, usuarioId, unidadeId }: Props)
     try {
       await votoService.votar({ pautaId: pauta.id, usuarioId, unidadeId, opcao });
       setVotado(true);
-      // atualiza resumo
-      const votos = await votoService.listarPorPauta(pauta.id);
-      setResumo(votoService.resumir(votos));
+
+      // Atualização otimista do resumo (não depender do GET pra mostrar os números)
+      setResumo((prev) => {
+        const base: ResumoVotos = prev ?? { favor: 0, contra: 0, abstencao: 0, total: 0 };
+        const next = { ...base, total: base.total + 1 };
+        if (opcao === 'FAVOR') next.favor += 1;
+        if (opcao === 'CONTRA') next.contra += 1;
+        if (opcao === 'ABSTENCAO') next.abstencao += 1;
+        return next;
+      });
+
+      // tenta sincronizar com o backend (se falhar, mantém o otimista e só avisa)
+      try {
+        setErroResumo('');
+        const votos = await votoService.listarPorPauta(pauta.id);
+        setResumo(votoService.resumir(votos));
+      } catch (e: any) {
+        setErroResumo(e.message || 'Voto registrado, mas não foi possível atualizar o resumo agora');
+      }
     } catch (e: any) {
       setErro(e.message);
     } finally {
@@ -79,6 +110,7 @@ export default function PautaCardMorador({ pauta, usuarioId, unidadeId }: Props)
       {resumo && (
         <p className="pauta-meta">{resumo.total} de ? unidades já votaram · Sua unidade ainda não votou</p>
       )}
+      {!resumo && erroResumo && <p className="pauta-meta">{erroResumo}</p>}
 
       <div className="opcoes-voto">
         <OpcaoItem

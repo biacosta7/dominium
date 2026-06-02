@@ -31,7 +31,7 @@ export default function AssembleiasAdmin() {
   const encerradas = pautas.filter((p) => p.status === 'ENCERRADA');
 
   return (
-    <div className="assembleias-page">
+    <div className="assembleias-page assembleias-page-admin">
       <div className="assembleias-header">
         <div>
           <h1>Assembleias e Votações</h1>
