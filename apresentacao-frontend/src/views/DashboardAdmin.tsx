@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Dashboard.css';
 import AssembleiasAdmin from './governanca/AssembleiasAdmin';
 import { 
-  Search, Bell, Plus, Users, Calendar, DollarSign, AlertTriangle, 
+  Search, Bell, Plus, Users, DollarSign, AlertTriangle, 
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
 
@@ -20,10 +20,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
   // Dynamic states for interactive demo
   const [activities, setActivities] = useState([
     { id: 1, text: 'Apto 304 realizou pagamento de R$ 580,00 — Cota março', time: 'há 12min', color: '#10b981' },
-    { id: 2, text: 'Churrasqueira 2 reservada por Ana Lima (Apto 102) para 07/03', time: 'há 1h', color: '#f59e0b' },
-    { id: 3, text: 'Ocorrência registrada — Barulho excessivo Apto 508 às 23h', time: 'há 3h', color: '#ef4444' },
-    { id: 4, text: 'Nova moradora adicionada — Carla Mendes, Apto 215', time: 'ontem', color: '#3b82f6' },
-    { id: 5, text: 'Assembleia "Obras no Térreo" agendada para 13/03/2026', time: 'ontem', color: '#64748b' }
+    { id: 2, text: 'Ocorrência registrada — Barulho excessivo Apto 508 às 23h', time: 'há 3h', color: '#ef4444' },
+    { id: 3, text: 'Nova moradora adicionada — Carla Mendes, Apto 215', time: 'ontem', color: '#3b82f6' },
+    { id: 4, text: 'Assembleia "Obras no Térreo" agendada para 13/03/2026', time: 'ontem', color: '#64748b' },
   ]);
 
   const [newRecordType, setNewRecordType] = useState('morador');
@@ -127,12 +126,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Operações</div>
               <div className="sidebar-nav">
-                <div 
-                  className={`sidebar-link ${activeMenu === 'Reservas' ? 'active' : ''}`}
-                  onClick={() => setActiveMenu('Reservas')}
-                >
-                  <div className="inner"><Calendar size={16} /> Reservas</div>
-                </div>
                 <div 
                   className={`sidebar-link ${activeMenu === 'Ocorrências' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Ocorrências')}
@@ -265,21 +258,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
               {/* Metrics row */}
               <section className="metrics-row">
-                <div className="metric-card">
-                  <div className="metric-card-header">
-                    <div className="metric-icon-box" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
-                      <Calendar size={18} />
-                    </div>
-                  </div>
-                  <div className="metric-card-content">
-                    <h2>3</h2>
-                    <p>Reservas hoje</p>
-                  </div>
-                  <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                    Churrasqueira · Salão · Piscina
-                  </div>
-                </div>
-
                 <div className="metric-card">
                   <div className="metric-card-header">
                     <div className="metric-icon-box" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
@@ -439,19 +417,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                       <span style={{ fontSize: '12px', color: 'var(--primary)', cursor: 'pointer' }}>Calendário</span>
                     </div>
                     <div className="agenda-column" style={{ gap: '0' }}>
-                      <div className="agenda-card">
-                        <div className="agenda-left">
-                          <div className="agenda-date" style={{ backgroundColor: 'var(--primary)' }}>
-                            <span className="day">07</span>
-                            <span className="month">MAR</span>
-                          </div>
-                          <div className="agenda-details">
-                            <h4>Reserva — Churrasqueira 2</h4>
-                            <p>Ana Lima · Apto 102 · 12h–18h</p>
-                          </div>
-                        </div>
-                      </div>
-
                       <div className="agenda-card">
                         <div className="agenda-left">
                           <div className="agenda-date" style={{ backgroundColor: '#8b5cf6' }}>
