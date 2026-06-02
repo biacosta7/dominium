@@ -6,6 +6,7 @@ import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.TipoMa
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.TipoQuorum;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.OpcaoVoto;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
+import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoIterator;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.TipoVinculo;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.VinculoMorador;
@@ -59,36 +60,37 @@ public class RegraVotacao {
 
     private static final int QUORUM_MIN = 1;
 
-    public void validarQuorum(Pauta pauta, List<Voto> votos){
+    public ResultadoPauta calcularResultado(Pauta pauta, VotoIterator votos){
 
-        int totalVotos = votos.size();
+        int totalVotos = 0;
+        long votosFavor = 0;
+        long votosContra = 0;
 
-        if (pauta.getTipoQuorum() == TipoQuorum.QUALIFICADO){
-            if (totalVotos < QUORUM_MIN){
+        while (votos.hasNext()) {
+            Voto voto = votos.next();
+            totalVotos++;
+
+            if (voto.getOpcaoVoto() == OpcaoVoto.FAVOR) {
+                votosFavor++;
+            }
+            if (voto.getOpcaoVoto() == OpcaoVoto.CONTRA) {
+                votosContra++;
+            }
+        }
+
+        if (pauta.getTipoQuorum() == TipoQuorum.QUALIFICADO) {
+            if (totalVotos < QUORUM_MIN) {
                 throw new RuntimeException("Quórum qualificado não atingido");
             }
         }
 
-        if (totalVotos == 0){
+        if (totalVotos == 0) {
             throw new RuntimeException("Nenhum voto registrado");
         }
-    }
-
-    public ResultadoPauta calcularResultado(Pauta pauta, List<Voto> votos){
-
-        validarQuorum(pauta, votos);
-
-        long votosFavor = votos.stream()
-                .filter(v -> v.getOpcaoVoto() == OpcaoVoto.FAVOR)
-                .count();
-
-        long votosContra = votos.stream()
-                .filter((v -> v.getOpcaoVoto() == OpcaoVoto.CONTRA))
-                .count();
 
         long totalValidos = votosFavor + votosContra;
 
-        if (totalValidos == 0){
+        if (totalValidos == 0) {
             return ResultadoPauta.ADIADO;
         }
 
@@ -111,6 +113,10 @@ public class RegraVotacao {
         }
 
         return ResultadoPauta.ADIADO;
+    }
+
+    public ResultadoPauta calcularResultado(Pauta pauta, List<Voto> votos) {
+        return calcularResultado(pauta, new br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoCollection(votos).iterator());
     }
 
 }

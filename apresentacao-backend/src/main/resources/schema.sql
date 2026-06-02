@@ -1,3 +1,21 @@
+DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS unidades;
+DROP TABLE IF EXISTS vinculo_morador;
+DROP TABLE IF EXISTS orcamentos;
+DROP TABLE IF EXISTS despesas;
+DROP TABLE IF EXISTS funcionarios;
+DROP TABLE IF EXISTS ordens_servico;
+DROP TABLE IF EXISTS avaliacoes_funcionario;
+DROP TABLE IF EXISTS areas_comuns;
+DROP TABLE IF EXISTS reservas;
+DROP TABLE IF EXISTS fila_espera;
+DROP TABLE IF EXISTS documentos;
+DROP TABLE IF EXISTS versoes_documento;
+DROP TABLE IF EXISTS notificacoes;
+DROP TABLE IF EXISTS pauta;
+DROP TABLE IF EXISTS voto;
+DROP TABLE IF EXISTS assembleias;
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
@@ -101,7 +119,7 @@ CREATE TABLE IF NOT EXISTS areas_comuns (
 );
 
 CREATE TABLE IF NOT EXISTS reservas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     area_comum_id BIGINT NOT NULL,
     unidade_id BIGINT NOT NULL,
     usuario_id BIGINT NOT NULL,
@@ -117,7 +135,7 @@ CREATE TABLE IF NOT EXISTS reservas (
 );
 
 CREATE TABLE IF NOT EXISTS fila_espera (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     area_comum_id BIGINT NOT NULL,
     usuario_id BIGINT NOT NULL,
     data_desejada DATE NOT NULL,
@@ -275,3 +293,37 @@ CREATE TABLE IF NOT EXISTS taxa_condominial (
     data_pagamento TIMESTAMP,
     status VARCHAR(20) NOT NULL
 );
+
+MERGE INTO usuarios (id, nome, email, senha, telefone, cpf, tipo) 
+KEY(id)
+VALUES (1, 'Ana Lima', 'ana.lima@email.com', 'senha123', '8199999999', '12345678901', 'MORADOR');
+
+MERGE INTO unidades (id, numero, bloco, proprietario_id, inquilino_id, status, saldo_devedor)
+KEY(id)
+VALUES (1, '102', 'A', 1, null, 'ADIMPLENTE', 0.00);
+
+-- Vínculo titular ativo (necessário para votar em assembleias)
+MERGE INTO vinculos_morador (id, unidade_id, usuario_id, tipo, status)
+KEY(id)
+VALUES (1, 1, 1, 'TITULAR', 'ATIVO');
+
+MERGE INTO usuarios (id, nome, email, senha, telefone, cpf, tipo)
+KEY(id)
+VALUES (2, 'Marco Ribeiro', 'sindico@residencial.com', 'admin123', '8198888888', '98765432100', 'SINDICO');
+
+MERGE INTO assembleias (id, titulo, data_hora, local, status, sindico_id, data_criacao)
+KEY(id)
+VALUES (1, 'Assembleia Ordinária', '2026-03-13 19:00:00', 'Salão de Festas', 'AGENDADA', 2, CURRENT_TIMESTAMP);
+
+MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
+(1, 'Churrasqueira 1', 15, 'DISPONIVEL');
+MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
+(2, 'Churrasqueira 2', 15, 'DISPONIVEL');
+MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
+(3, 'Salão de Festas', 80, 'DISPONIVEL');
+MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
+(4, 'Piscina (Espaço Gourmet)', 30, 'DISPONIVEL');
+
+MERGE INTO reservas (id, area_comum_id, unidade_id, usuario_id, data_reserva, hora_inicio, hora_fim, status, data_expira_confirmacao)
+KEY(id)
+VALUES (101, 3, 1, 1, '2026-06-15', '18:00:00', '23:00:00', 'ATIVA', null);

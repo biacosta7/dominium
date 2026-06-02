@@ -118,9 +118,10 @@ public class GestaoDeReservasSteps extends DominiumFuncionalidade {
         Reserva reserva = new Reserva();
         reserva.setUnidadeId(unidadeIdContexto);
         reserva.setAreaComumId(new AreaComumId(AREA_COMUM_ID));
-        reserva.setDataReserva(LocalDate.now().plusDays(1));
-        reserva.setHoraInicio(LocalTime.of(10, 0));
-        reserva.setHoraFim(LocalTime.of(12, 0));
+        java.time.LocalDateTime dataHoraReserva = java.time.LocalDateTime.now().plusHours(2);
+        reserva.setDataReserva(dataHoraReserva.toLocalDate());
+        reserva.setHoraInicio(dataHoraReserva.toLocalTime());
+        reserva.setHoraFim(dataHoraReserva.toLocalTime().plusHours(2));
         reserva.setStatus(StatusReserva.ATIVA);
         reserva = reservaRepository.save(reserva);
         reservaIdContexto = reserva.getId();

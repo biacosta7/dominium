@@ -1,6 +1,8 @@
 package br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase;
 
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.iterator.ReservaCollection;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.iterator.ReservaIterator;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
 import org.springframework.stereotype.Service;
@@ -17,5 +19,9 @@ public class ListarReservaUseCase {
 
     public List<Reserva> listarPorUsuario(UsuarioId usuarioId) {
         return repository.buscarPorUsuario(usuarioId);
+    }
+
+    public ReservaIterator iteratorPorUsuario(UsuarioId usuarioId) {
+        return new ReservaCollection(repository.buscarPorUsuario(usuarioId)).iterator();
     }
 }

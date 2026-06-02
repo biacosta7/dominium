@@ -21,11 +21,11 @@ public class AdicionarNaFilaUseCase {
         this.areaComumService = areaComumService;
     }
 
-    public FilaDeEspera executar(AreaComumId areaId, Long usuarioId, LocalDate data, LocalTime inicio, LocalTime fim) {
+    public FilaDeEspera executar(AreaComumId areaId, UsuarioId usuarioId, LocalDate data, LocalTime inicio, LocalTime fim) {
 
         AreaComum area = areaComumService.buscarArea(areaId);
 
-        FilaDeEspera fila = FilaDeEspera.criar(new FilaDeEsperaId(), areaId, new UsuarioId(usuarioId), data, inicio, fim);
+        FilaDeEspera fila = FilaDeEspera.criar(new FilaDeEsperaId(), areaId, usuarioId, data, inicio, fim);
 
         return repository.salvar(fila);
     }

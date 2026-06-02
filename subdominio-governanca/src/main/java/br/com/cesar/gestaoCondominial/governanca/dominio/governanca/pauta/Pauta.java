@@ -57,6 +57,7 @@ public class Pauta {
         pauta.tipoQuorum = tipoQuorum;
         pauta.tipoMaioria = tipoMaioria;
         pauta.status = StatusPauta.ABERTA;
+        pauta.resultadoFinal = ResultadoPauta.EM_ANDAMENTO;
 
         return pauta;
     }

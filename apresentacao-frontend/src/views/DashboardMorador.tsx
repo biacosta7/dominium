@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
+import Reserva from './espacos-condominio/Reserva';
+import { buscarReservas } from './espacos-condominio/services/reservaService';
+import AssembleiasMorador from './governanca/AssembleiasMorador';
+import { pautaService } from './governanca/services/pautaService';
+import type { Pauta } from './governanca/types/pauta';
 import { 
   Calendar, DollarSign, Users, AlertTriangle, 
-  MessageSquare, LogOut, Check, ArrowRight, X, Clock
+  MessageSquare, LogOut, Check, ArrowRight, X
 } from 'lucide-react';
+
+const MESES_ABREV = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 
 interface DashboardMoradorProps {
   userEmail: string;
@@ -26,73 +33,144 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
   const [activeTab, setActiveTab] = useState('Início');
   
   // Modals state
-  const [modalType, setModalType] = useState<'reserva' | 'ocorrencia' | 'financeiro' | 'votacao' | null>(null);
+  const [modalType, setModalType] = useState<'ocorrencia' | 'financeiro' | null>(null);
+  const [paginaAtual, setPaginaAtual] = useState('dashboard');
+  const [pautasAbertas, setPautasAbertas] = useState<Pauta[]>([]);
   
-  // Custom states for modals
-  const [reservaArea, setReservaArea] = useState('Churrasqueira 2');
-  const [reservaDate, setReservaDate] = useState('2026-06-10');
-  const [reservaTime, setReservaTime] = useState('12h às 18h');
+  // Custom states for modals (commented out as they are handled in the dedicated ReservaView page now)
+  // const [reservaArea, setReservaArea] = useState('Churrasqueira 2');
+  // const [reservaDate, setReservaDate] = useState('2026-06-10');
+  // const [reservaTime, setReservaTime] = useState('12h às 18h');
   
   const [ocorrenciaTitulo, setOcorrenciaTitulo] = useState('');
   const [ocorrenciaDesc, setOcorrenciaDesc] = useState('');
   const [ocorrenciaSuccess, setOcorrenciaSuccess] = useState(false);
 
-  const [hasVoted, setHasVoted] = useState(false);
-
   // Dynamic agenda items
-  const [agenda, setAgenda] = useState<AgendaItem[]>([
-    {
-      id: '1',
-      day: '07',
-      month: 'MAR',
-      title: 'Sua reserva — Churrasqueira 2',
-      time: '12h às 18h · Confirmada ✓',
-      status: 'Conf.',
-      statusType: 'success',
-      color: '#3b82f6'
-    },
-    {
-      id: '2',
-      day: '13',
-      month: 'MAR',
-      title: 'Assembleia Ordinária',
-      time: '19h · Salão de Festas',
-      status: 'Hoje',
-      statusType: 'primary',
-      color: '#8b5cf6'
-    },
-    {
-      id: '3',
-      day: '15',
-      month: 'MAR',
-      title: 'Vencimento cota abril',
-      time: 'R$ 580,00 · Bloco A/102',
-      status: 'Pendente',
-      statusType: 'primary',
-      color: '#14b8a6'
-    }
-  ]);
+  const [agenda, _setAgenda] = useState<AgendaItem[]>([]);
 
-  const handleCreateReserva = (e: React.FormEvent) => {
-    e.preventDefault();
-    const [, monthNum, dayStr] = reservaDate.split('-');
-    const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    const monthName = months[parseInt(monthNum, 10) - 1] || 'JUN';
+  const irParaAssembleias = () => {
+    setActiveTab('Assembleias');
+    setModalType(null);
+    setPaginaAtual('assembleias');
+  };
 
-    const newItem: AgendaItem = {
-      id: Date.now().toString(),
-      day: dayStr,
-      month: monthName,
-      title: `Sua reserva — ${reservaArea}`,
-      time: `${reservaTime} · Confirmada ✓`,
-      status: 'Conf.',
-      statusType: 'success',
-      color: '#3b82f6'
+  const irParaInicio = () => {
+    setActiveTab('Início');
+    setModalType(null);
+    setPaginaAtual('dashboard');
+  };
+
+  const pautaParaAgenda = (pauta: Pauta): AgendaItem => {
+    const hoje = new Date();
+    return {
+      id: `pauta-${pauta.id}`,
+      day: hoje.getDate().toString().padStart(2, '0'),
+      month: MESES_ABREV[hoje.getMonth()] ?? 'JUN',
+      title: `Votação — ${pauta.titulo}`,
+      time: pauta.descricao
+        ? `${pauta.descricao.slice(0, 60)}${pauta.descricao.length > 60 ? '…' : ''}`
+        : 'Participação aberta · Toque para votar',
+      status: 'Aberta',
+      statusType: 'primary',
+      color: '#8b5cf6',
+    };
+  };
+
+  const getTodayFormatted = () => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    };
+    const formatted = today.toLocaleDateString('pt-BR', options);
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
+
+  useEffect(() => {
+    const carregarDashboard = async () => {
+      let abertas: Pauta[] = [];
+      let itensAgenda: AgendaItem[] = [];
+
+      try {
+        const pautas = await pautaService.listar();
+        abertas = pautas.filter((p) => p.status === 'ABERTA');
+        setPautasAbertas(abertas);
+        itensAgenda = abertas.map(pautaParaAgenda);
+      } catch (error) {
+        console.error('Erro ao carregar pautas para o dashboard', error);
+        setPautasAbertas([]);
+      }
+
+      try {
+        const response = await buscarReservas(1); // User Ana Lima ID 1
+        const reservasBackend = response.data;
+
+        const mappedReservas: AgendaItem[] = reservasBackend
+          .filter((res: any) => res.status !== 'CANCELADA')
+          .map((res: any) => {
+            const dataObj = new Date(res.data + 'T00:00:00');
+            const dayStr = dataObj.getDate().toString().padStart(2, '0');
+            const monthName = MESES_ABREV[dataObj.getMonth()] || 'JUN';
+
+            return {
+              id: 'res-' + res.id,
+              day: dayStr,
+              month: monthName,
+              title: `Sua reserva — ${res.nomeArea}`,
+              time: `${res.horaInicio.substring(0, 5)} às ${res.horaFim.substring(0, 5)} · Confirmada ✓`,
+              status: res.status === 'ATIVA' ? 'Conf.' : res.status,
+              statusType: 'success' as const,
+              color: '#3b82f6',
+            };
+          });
+
+        itensAgenda = [...itensAgenda, ...mappedReservas];
+      } catch (error) {
+        console.error('Erro ao carregar reservas para o dashboard', error);
+      }
+
+      const staticItems: AgendaItem[] = [
+        {
+          id: 'cota-abril',
+          day: '15',
+          month: 'MAR',
+          title: 'Vencimento cota abril',
+          time: 'R$ 580,00 · Bloco A/102',
+          status: 'Pendente',
+          statusType: 'primary',
+          color: '#14b8a6',
+        },
+      ];
+
+      _setAgenda([...itensAgenda, ...staticItems]);
     };
 
-    setAgenda([newItem, ...agenda]);
-    setModalType(null);
-  };
+    carregarDashboard();
+  }, [paginaAtual]);
+
+  // const handleCreateReserva = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const [, monthNum, dayStr] = reservaDate.split('-');
+  //   const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+  //   const monthName = months[parseInt(monthNum, 10) - 1] || 'JUN';
+  // 
+  //   const newItem: AgendaItem = {
+  //     id: Date.now().toString(),
+  //     day: dayStr,
+  //     month: monthName,
+  //     title: `Sua reserva — ${reservaArea}`,
+  //     time: `${reservaTime} · Confirmada ✓`,
+  //     status: 'Conf.',
+  //     statusType: 'success',
+  //     color: '#3b82f6'
+  //   };
+  // 
+  //   setAgenda([newItem, ...agenda]);
+  //   setModalType(null);
+  // };
 
   const handleCreateOcorrencia = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,11 +183,13 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
     }, 2000);
   };
 
+  // paginaAtual 'reserva' is now rendered inside the main container to preserve header/navbar
+
   return (
     <div style={{ backgroundColor: 'var(--gray-50)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <header className="dash-header">
-        <div className="dash-logo" onClick={() => setActiveTab('Início')}>
+        <div className="dash-logo" onClick={irParaInicio}>
           <div className="logo-badge">D</div>
           <span className="logo-text">Dominium</span>
         </div>
@@ -118,31 +198,47 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
           <ul className="dash-nav">
             <li 
               className={`dash-nav-item ${activeTab === 'Início' ? 'active' : ''}`}
-              onClick={() => setActiveTab('Início')}
+              onClick={irParaInicio}
             >
               Início
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Reservas' ? 'active' : ''}`}
-              onClick={() => setModalType('reserva')}
+              onClick={() => {
+                setActiveTab('Reservas');
+                setModalType(null);
+                setPaginaAtual('reserva');
+              }}
             >
               Reservas
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Financeiro' ? 'active' : ''}`}
-              onClick={() => setModalType('financeiro')}
+              onClick={() => {
+                setActiveTab('Financeiro');
+                setPaginaAtual('dashboard');
+                setModalType('financeiro');
+              }}
             >
               Financeiro
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Assembleias' ? 'active' : ''}`}
-              onClick={() => setModalType('votacao')}
+              onClick={() => {
+                setActiveTab('Assembleias');
+                setModalType(null);
+                setPaginaAtual('assembleias');
+              }}
             >
               Assembleias
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Ocorrências' ? 'active' : ''}`}
-              onClick={() => setModalType('ocorrencia')}
+              onClick={() => {
+                setActiveTab('Ocorrências');
+                setPaginaAtual('dashboard');
+                setModalType('ocorrencia');
+              }}
             >
               Ocorrências
             </li>
@@ -211,12 +307,20 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
 
       {/* Main Container */}
       <main className="dash-container animate-fade-in">
-        {/* Welcome Banner */}
-        <section className="welcome-banner">
-          <div className="welcome-text">
-            <h1>Olá, Ana! 👋</h1>
-            <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde · Apto 102, Bloco A</p>
-          </div>
+        {paginaAtual === 'reserva' ? (
+          <Reserva
+            onVoltar={irParaInicio}
+          />
+        ) : paginaAtual === 'assembleias' ? (
+          <AssembleiasMorador />
+        ) : (
+          <>
+            {/* Welcome Banner */}
+            <section className="welcome-banner">
+              <div className="welcome-text">
+                <h1>Olá, Ana! 👋</h1>
+                <p>{getTodayFormatted()} · Residencial Parque Verde · Apto 102, Bloco A</p>
+              </div>
 
           <div className="banner-stats">
             <div className="stat-badge">
@@ -227,10 +331,23 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
               <DollarSign size={16} />
               <span>Cota de março: <strong>R$ 580 · Em dia ✓</strong></span>
             </div>
-            <div className="stat-badge">
-              <Users size={16} />
-              <span>Votação aberta: <strong>Reforma fachada B</strong></span>
-            </div>
+            {pautasAbertas.length > 0 && (
+              <div
+                className="stat-badge"
+                style={{ cursor: 'pointer' }}
+                onClick={irParaAssembleias}
+              >
+                <Users size={16} />
+                <span>
+                  Votação aberta:{' '}
+                  <strong>
+                    {pautasAbertas.length === 1
+                      ? pautasAbertas[0].titulo
+                      : `${pautasAbertas.length} pautas`}
+                  </strong>
+                </span>
+              </div>
+            )}
           </div>
         </section>
 
@@ -238,7 +355,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
         <section>
           <h2 className="section-title">Ações Rápidas</h2>
           <div className="actions-grid">
-            <div className="action-card" onClick={() => setModalType('reserva')}>
+            <div className="action-card" onClick={() => setPaginaAtual('reserva')}>
               <div className="action-icon" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
                 <Calendar size={22} />
               </div>
@@ -252,7 +369,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
               <span>Ver Financeiro</span>
             </div>
 
-            <div className="action-card" onClick={() => setModalType('votacao')}>
+            <div className="action-card" onClick={irParaAssembleias}>
               <div className="action-icon" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
                 <Users size={22} />
               </div>
@@ -273,32 +390,24 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
           {/* Attention / Alerts */}
           <section className="attention-column">
             <h2 className="section-title">Atenção</h2>
-            
-            <div className="alert-card info">
-              <div className="alert-icon">
-                <Users size={20} />
-              </div>
-              <div className="alert-text">
-                <h4>Votação disponível</h4>
-                <p>A assembleia de votação para a Reforma da Fachada do Bloco B está aberta. Seu voto é muito importante e encerra em 13/03.</p>
-                <span className="alert-link" onClick={() => setModalType('votacao')}>
-                  Votar Agora <ArrowRight size={14} />
-                </span>
-              </div>
-            </div>
 
-            <div className="alert-card warning">
-              <div className="alert-icon">
-                <Calendar size={20} />
+            {pautasAbertas.map((pauta) => (
+              <div className="alert-card info" key={pauta.id}>
+                <div className="alert-icon">
+                  <Users size={20} />
+                </div>
+                <div className="alert-text">
+                  <h4>Votação disponível</h4>
+                  <p>
+                    A pauta <strong>{pauta.titulo}</strong> está aberta para votação.
+                    {pauta.descricao ? ` ${pauta.descricao}` : ' Seu voto é importante para o condomínio.'}
+                  </p>
+                  <span className="alert-link" onClick={irParaAssembleias}>
+                    Votar Agora <ArrowRight size={14} />
+                  </span>
+                </div>
               </div>
-              <div className="alert-text">
-                <h4>Assembleia em 8 dias</h4>
-                <p>Assembleia Geral Ordinária de Março/2026 acontecerá no dia 13/03 às 19h no Salão de Festas.</p>
-                <span className="alert-link" onClick={() => setModalType('votacao')}>
-                  Ver Detalhes <ArrowRight size={14} />
-                </span>
-              </div>
-            </div>
+            ))}
           </section>
 
           {/* Agenda */}
@@ -306,7 +415,12 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
             <h2 className="section-title">Agenda</h2>
             
             {agenda.map((item) => (
-              <div className="agenda-card" key={item.id}>
+              <div
+                className="agenda-card"
+                key={item.id}
+                style={item.id.startsWith('pauta-') ? { cursor: 'pointer' } : undefined}
+                onClick={item.id.startsWith('pauta-') ? irParaAssembleias : undefined}
+              >
                 <div className="agenda-left">
                   <div className="agenda-date" style={{ backgroundColor: item.color }}>
                     <span className="day">{item.day}</span>
@@ -342,66 +456,11 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
                 Síndico Marco Ribeiro · 03/03/2026
               </div>
             </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ====================================
-          MODALS IMPLEMENTATION
-          ==================================== */}
-      {modalType === 'reserva' && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Nova Reserva de Área Comum</h3>
-              <button className="close-modal-btn" onClick={() => setModalType(null)}><X size={20} /></button>
             </div>
-            <form onSubmit={handleCreateReserva} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div className="form-group">
-                <label>Área Comum</label>
-                <select 
-                  value={reservaArea} 
-                  onChange={(e) => setReservaArea(e.target.value)}
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
-                >
-                  <option value="Churrasqueira 1">Churrasqueira 1</option>
-                  <option value="Churrasqueira 2">Churrasqueira 2</option>
-                  <option value="Salão de Festas">Salão de Festas</option>
-                  <option value="Piscina (Espaço Gourmet)">Piscina (Espaço Gourmet)</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Data</label>
-                <input 
-                  type="date" 
-                  value={reservaDate} 
-                  onChange={(e) => setReservaDate(e.target.value)}
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Horário</label>
-                <select 
-                  value={reservaTime} 
-                  onChange={(e) => setReservaTime(e.target.value)}
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
-                >
-                  <option value="09h às 15h">Manhã / Tarde (09h às 15h)</option>
-                  <option value="12h às 18h">Tarde (12h às 18h)</option>
-                  <option value="18h às 23h">Noite (18h às 23h)</option>
-                </select>
-              </div>
-
-              <button type="submit" className="submit-btn" style={{ marginTop: '10px' }}>
-                Confirmar Reserva
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+          </section>
+          </>
+        )}
+      </main>
 
       {modalType === 'ocorrencia' && (
         <div className="modal-overlay">
@@ -497,58 +556,6 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
         </div>
       )}
 
-      {modalType === 'votacao' && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Assembleia & Votações Ativas</h3>
-              <button className="close-modal-btn" onClick={() => setModalType(null)}><X size={20} /></button>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
-                <h4 style={{ fontSize: '15px', color: 'var(--gray-900)', marginBottom: '6px' }}>Pauta: Reforma da Fachada Bloco B</h4>
-                <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginBottom: '16px' }}>
-                  Decisão sobre o modelo de revestimento e cores da fachada lateral externa do Bloco B.
-                </p>
-
-                {hasVoted ? (
-                  <div style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '12px', borderRadius: 'var(--radius-sm)', textAlign: 'center', fontSize: '13px', fontWeight: 600 }}>
-                    Seu voto foi registrado com sucesso! (Opção A - Texturizado Cinza)
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button 
-                      onClick={() => setHasVoted(true)} 
-                      className="submit-btn" 
-                      style={{ padding: '10px', fontSize: '13px', backgroundColor: 'white', color: 'var(--gray-800)', border: '1px solid var(--gray-300)', boxShadow: 'none' }}
-                    >
-                      Opção A: Texturizado Cinza e Azul
-                    </button>
-                    <button 
-                      onClick={() => setHasVoted(true)} 
-                      className="submit-btn" 
-                      style={{ padding: '10px', fontSize: '13px', backgroundColor: 'white', color: 'var(--gray-800)', border: '1px solid var(--gray-300)', boxShadow: 'none' }}
-                    >
-                      Opção B: Pintura Clássica Off-White
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', padding: '16px', backgroundColor: 'var(--gray-50)' }}>
-                <h4 style={{ fontSize: '14px', color: 'var(--gray-700)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Clock size={16} /> Próxima Assembleia Geral
-                </h4>
-                <p style={{ fontSize: '13px', color: 'var(--gray-500)', marginTop: '6px' }}>
-                  <strong>Data:</strong> 13/03/2026 às 19:00h no Salão de Festas.<br/>
-                  <strong>Pautas:</strong> Aprovação de despesas do exercício de 2025, eleição de conselho consultivo e definição do calendário de dedetização.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

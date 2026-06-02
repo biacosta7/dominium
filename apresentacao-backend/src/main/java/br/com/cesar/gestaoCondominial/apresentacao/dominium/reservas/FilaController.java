@@ -4,6 +4,7 @@ import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.dto.F
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usecase.AdicionarNaFilaUseCase;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComumId;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.FilaDeEspera;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.UsuarioId;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +21,7 @@ public class FilaController {
     public FilaDeEspera adicionar(@RequestBody FilaRequestDTO dto) {
         return useCase.executar(
                 new AreaComumId(dto.getAreaComumId()),
-                dto.getUsuarioId(),
+                new UsuarioId(dto.getUsuarioId()),
                 dto.getData(),
                 dto.getHoraInicio(),
                 dto.getHoraFim()

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
+import AssembleiasAdmin from './governanca/AssembleiasAdmin';
 import { 
-  Search, Bell, Plus, Users, Calendar, DollarSign, AlertTriangle, 
+  Search, Bell, Plus, Users, DollarSign, AlertTriangle, 
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
 
@@ -19,10 +20,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
   // Dynamic states for interactive demo
   const [activities, setActivities] = useState([
     { id: 1, text: 'Apto 304 realizou pagamento de R$ 580,00 — Cota março', time: 'há 12min', color: '#10b981' },
-    { id: 2, text: 'Churrasqueira 2 reservada por Ana Lima (Apto 102) para 07/03', time: 'há 1h', color: '#f59e0b' },
-    { id: 3, text: 'Ocorrência registrada — Barulho excessivo Apto 508 às 23h', time: 'há 3h', color: '#ef4444' },
-    { id: 4, text: 'Nova moradora adicionada — Carla Mendes, Apto 215', time: 'ontem', color: '#3b82f6' },
-    { id: 5, text: 'Assembleia "Obras no Térreo" agendada para 13/03/2026', time: 'ontem', color: '#64748b' }
+    { id: 2, text: 'Ocorrência registrada — Barulho excessivo Apto 508 às 23h', time: 'há 3h', color: '#ef4444' },
+    { id: 3, text: 'Nova moradora adicionada — Carla Mendes, Apto 215', time: 'ontem', color: '#3b82f6' },
+    { id: 4, text: 'Assembleia "Obras no Térreo" agendada para 13/03/2026', time: 'ontem', color: '#64748b' },
   ]);
 
   const [newRecordType, setNewRecordType] = useState('morador');
@@ -126,12 +126,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Operações</div>
               <div className="sidebar-nav">
-                <div 
-                  className={`sidebar-link ${activeMenu === 'Reservas' ? 'active' : ''}`}
-                  onClick={() => setActiveMenu('Reservas')}
-                >
-                  <div className="inner"><Calendar size={16} /> Reservas</div>
-                </div>
                 <div 
                   className={`sidebar-link ${activeMenu === 'Ocorrências' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Ocorrências')}
@@ -247,272 +241,250 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
         {/* Content Container */}
         <div className="admin-content">
-          {/* Welcome Row */}
-          <div className="admin-welcome-row">
-            <div className="admin-welcome">
-              <h1>Bom dia, Marco 👋</h1>
-              <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde</p>
-            </div>
-            <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
-              <Plus size={16} /> Novo Registro
-            </button>
-          </div>
-
-          {/* Metrics row */}
-          <section className="metrics-row">
-            <div className="metric-card">
-              <div className="metric-card-header">
-                <div className="metric-icon-box" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
-                  <Calendar size={18} />
+          {activeMenu === 'Assembleias' ? (
+            <AssembleiasAdmin />
+          ) : (
+            <>
+              {/* Welcome Row */}
+              <div className="admin-welcome-row">
+                <div className="admin-welcome">
+                  <h1>Bom dia, Marco 👋</h1>
+                  <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde</p>
                 </div>
+                <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
+                  <Plus size={16} /> Novo Registro
+                </button>
               </div>
-              <div className="metric-card-content">
-                <h2>3</h2>
-                <p>Reservas hoje</p>
-              </div>
-              <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                Churrasqueira · Salão · Piscina
-              </div>
-            </div>
 
-            <div className="metric-card">
-              <div className="metric-card-header">
-                <div className="metric-icon-box" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
-                  <DollarSign size={18} />
-                </div>
-              </div>
-              <div className="metric-card-content">
-                <h2>R$48,2k</h2>
-                <p>Receita mensal</p>
-              </div>
-              <div className="metric-card-footer" style={{ color: 'var(--success)' }}>
-                ↑ 4.2% vs mês anterior
-              </div>
-            </div>
-
-            <div className="metric-card">
-              <div className="metric-card-header">
-                <div className="metric-icon-box" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)' }}>
-                  <Users size={18} />
-                </div>
-              </div>
-              <div className="metric-card-content">
-                <h2>7</h2>
-                <p>Inadimplentes</p>
-              </div>
-              <div className="metric-card-footer" style={{ color: 'var(--danger)' }}>
-                ↑ 2 desde mês passado
-              </div>
-            </div>
-
-            <div className="metric-card">
-              <div className="metric-card-header">
-                <div className="metric-icon-box" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
-                  <AlertTriangle size={18} />
-                </div>
-              </div>
-              <div className="metric-card-content">
-                <h2>2</h2>
-                <p>Ocorrências abertas</p>
-              </div>
-              <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                Aguardando análise
-              </div>
-            </div>
-
-            <div className="metric-card">
-              <div className="metric-card-header">
-                <div className="metric-icon-box" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6' }}>
-                  <Users size={18} />
-                </div>
-              </div>
-              <div className="metric-card-content">
-                <h2>1</h2>
-                <p>Assembleia próxima</p>
-              </div>
-              <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                Em 8 dias
-              </div>
-            </div>
-          </section>
-
-          {/* Content Layout */}
-          <div className="admin-grid-layout">
-            {/* Left Column */}
-            <div className="admin-left-col">
-              {/* Financial Chart Card */}
-              <div className="card-box">
-                <div className="card-box-header">
-                  <h3>Fluxo Financeiro — 2026</h3>
-                  <div className="toggle-group">
-                    <button 
-                      className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
-                      onClick={() => setChartMode('receitas')}
-                    >
-                      Receitas
-                    </button>
-                    <button 
-                      className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
-                      onClick={() => setChartMode('despesas')}
-                    >
-                      Despesas
-                    </button>
+              {/* Metrics row */}
+              <section className="metrics-row">
+                <div className="metric-card">
+                  <div className="metric-card-header">
+                    <div className="metric-icon-box" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
+                      <DollarSign size={18} />
+                    </div>
+                  </div>
+                  <div className="metric-card-content">
+                    <h2>R$48,2k</h2>
+                    <p>Receita mensal</p>
+                  </div>
+                  <div className="metric-card-footer" style={{ color: 'var(--success)' }}>
+                    ↑ 4.2% vs mês anterior
                   </div>
                 </div>
 
-                <div className="chart-container">
-                  <div className="bars-wrapper">
-                    {/* Render dynamic columns depending on toggle */}
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '82px' : '65px', backgroundColor: 'var(--primary)' }}></div>
-                      <span>Jan</span>
-                    </div>
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '98px' : '55px', backgroundColor: 'var(--primary)' }}></div>
-                      <span>Fev</span>
-                    </div>
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '92px' : '70px', backgroundColor: 'var(--primary)' }}></div>
-                      <span>Mar</span>
-                    </div>
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '30px' : '20px', backgroundColor: 'var(--gray-300)' }}></div>
-                      <span>Abr</span>
-                    </div>
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '45px' : '32px', backgroundColor: 'var(--gray-300)' }}></div>
-                      <span>Mai</span>
-                    </div>
-                    <div className="chart-bar-group">
-                      <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '25px' : '15px', backgroundColor: 'var(--gray-300)' }}></div>
-                      <span>Jun</span>
+                <div className="metric-card">
+                  <div className="metric-card-header">
+                    <div className="metric-icon-box" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)' }}>
+                      <Users size={18} />
                     </div>
                   </div>
-
-                  <div className="chart-stats">
-                    <div className="chart-stat-item">
-                      <span className="chart-stat-label">Receita</span>
-                      <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>R$ 144.600</span>
-                    </div>
-                    <div className="chart-stat-item">
-                      <span className="chart-stat-label">Despesas</span>
-                      <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>R$ 98.300</span>
-                    </div>
-                    <div className="chart-stat-item">
-                      <span className="chart-stat-label">Saldo</span>
-                      <span className="chart-stat-value" style={{ color: 'var(--success)' }}>R$ 46.300</span>
-                    </div>
+                  <div className="metric-card-content">
+                    <h2>7</h2>
+                    <p>Inadimplentes</p>
+                  </div>
+                  <div className="metric-card-footer" style={{ color: 'var(--danger)' }}>
+                    ↑ 2 desde mês passado
                   </div>
                 </div>
-              </div>
 
-              {/* Recent Activity Card */}
-              <div className="card-box">
-                <div className="card-box-header">
-                  <h3>Atividade Recente</h3>
+                <div className="metric-card">
+                  <div className="metric-card-header">
+                    <div className="metric-icon-box" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
+                      <AlertTriangle size={18} />
+                    </div>
+                  </div>
+                  <div className="metric-card-content">
+                    <h2>2</h2>
+                    <p>Ocorrências abertas</p>
+                  </div>
+                  <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
+                    Aguardando análise
+                  </div>
                 </div>
-                <div className="activity-list">
-                  {activities.map((act) => (
-                    <div className="activity-item" key={act.id}>
-                      <div className="activity-content">
-                        <div className="activity-dot" style={{ backgroundColor: act.color }}></div>
-                        <span className="activity-text">{act.text}</span>
+
+                <div className="metric-card">
+                  <div className="metric-card-header">
+                    <div className="metric-icon-box" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6' }}>
+                      <Users size={18} />
+                    </div>
+                  </div>
+                  <div className="metric-card-content">
+                    <h2>1</h2>
+                    <p>Assembleia próxima</p>
+                  </div>
+                  <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
+                    Em 8 dias
+                  </div>
+                </div>
+              </section>
+
+              {/* Content Layout */}
+              <div className="admin-grid-layout">
+                {/* Left Column */}
+                <div className="admin-left-col">
+                  {/* Financial Chart Card */}
+                  <div className="card-box">
+                    <div className="card-box-header">
+                      <h3>Fluxo Financeiro — 2026</h3>
+                      <div className="toggle-group">
+                        <button 
+                          className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
+                          onClick={() => setChartMode('receitas')}
+                        >
+                          Receitas
+                        </button>
+                        <button 
+                          className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
+                          onClick={() => setChartMode('despesas')}
+                        >
+                          Despesas
+                        </button>
                       </div>
-                      <span className="activity-time">{act.time}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
 
-            {/* Right Column */}
-            <div className="admin-right-col">
-              {/* Upcoming Events Card */}
-              <div className="card-box">
-                <div className="card-box-header">
-                  <h3>Próximos Eventos</h3>
-                  <span style={{ fontSize: '12px', color: 'var(--primary)', cursor: 'pointer' }}>Calendário</span>
-                </div>
-                <div className="agenda-column" style={{ gap: '0' }}>
-                  <div className="agenda-card">
-                    <div className="agenda-left">
-                      <div className="agenda-date" style={{ backgroundColor: 'var(--primary)' }}>
-                        <span className="day">07</span>
-                        <span className="month">MAR</span>
+                    <div className="chart-container">
+                      <div className="bars-wrapper">
+                        {/* Render dynamic columns depending on toggle */}
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '82px' : '65px', backgroundColor: 'var(--primary)' }}></div>
+                          <span>Jan</span>
+                        </div>
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '98px' : '55px', backgroundColor: 'var(--primary)' }}></div>
+                          <span>Fev</span>
+                        </div>
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '92px' : '70px', backgroundColor: 'var(--primary)' }}></div>
+                          <span>Mar</span>
+                        </div>
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '30px' : '20px', backgroundColor: 'var(--gray-300)' }}></div>
+                          <span>Abr</span>
+                        </div>
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '45px' : '32px', backgroundColor: 'var(--gray-300)' }}></div>
+                          <span>Mai</span>
+                        </div>
+                        <div className="chart-bar-group">
+                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '25px' : '15px', backgroundColor: 'var(--gray-300)' }}></div>
+                          <span>Jun</span>
+                        </div>
                       </div>
-                      <div className="agenda-details">
-                        <h4>Reserva — Churrasqueira 2</h4>
-                        <p>Ana Lima · Apto 102 · 12h–18h</p>
+
+                      <div className="chart-stats">
+                        <div className="chart-stat-item">
+                          <span className="chart-stat-label">Receita</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>R$ 144.600</span>
+                        </div>
+                        <div className="chart-stat-item">
+                          <span className="chart-stat-label">Despesas</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>R$ 98.300</span>
+                        </div>
+                        <div className="chart-stat-item">
+                          <span className="chart-stat-label">Saldo</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--success)' }}>R$ 46.300</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="agenda-card">
-                    <div className="agenda-left">
-                      <div className="agenda-date" style={{ backgroundColor: '#8b5cf6' }}>
-                        <span className="day">13</span>
-                        <span className="month">MAR</span>
+                  {/* Recent Activity Card */}
+                  <div className="card-box">
+                    <div className="card-box-header">
+                      <h3>Atividade Recente</h3>
+                    </div>
+                    <div className="activity-list">
+                      {activities.map((act) => (
+                        <div className="activity-item" key={act.id}>
+                          <div className="activity-content">
+                            <div className="activity-dot" style={{ backgroundColor: act.color }}></div>
+                            <span className="activity-text">{act.text}</span>
+                          </div>
+                          <span className="activity-time">{act.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="admin-right-col">
+                  {/* Upcoming Events Card */}
+                  <div className="card-box">
+                    <div className="card-box-header">
+                      <h3>Próximos Eventos</h3>
+                      <span style={{ fontSize: '12px', color: 'var(--primary)', cursor: 'pointer' }}>Calendário</span>
+                    </div>
+                    <div className="agenda-column" style={{ gap: '0' }}>
+                      <div className="agenda-card">
+                        <div className="agenda-left">
+                          <div className="agenda-date" style={{ backgroundColor: '#8b5cf6' }}>
+                            <span className="day">13</span>
+                            <span className="month">MAR</span>
+                          </div>
+                          <div className="agenda-details">
+                            <h4>Assembleia Ordinária</h4>
+                            <p>19h · Salão de Festas · 3 pautas</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="agenda-details">
-                        <h4>Assembleia Ordinária</h4>
-                        <p>19h · Salão de Festas · 3 pautas</p>
+
+                      <div className="agenda-card" style={{ marginBottom: 0 }}>
+                        <div className="agenda-left">
+                          <div className="agenda-date" style={{ backgroundColor: '#14b8a6' }}>
+                            <span className="day">15</span>
+                            <span className="month">MAR</span>
+                          </div>
+                          <div className="agenda-details">
+                            <h4>Vencimento Cotas</h4>
+                            <p>120 unidades · R$ 580,00/unid</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="agenda-card" style={{ marginBottom: 0 }}>
-                    <div className="agenda-left">
-                      <div className="agenda-date" style={{ backgroundColor: '#14b8a6' }}>
-                        <span className="day">15</span>
-                        <span className="month">MAR</span>
+                  {/* Debtors List Card */}
+                  <div className="card-box">
+                    <div className="card-box-header">
+                      <h3>Inadimplência</h3>
+                      <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>7 unidades</span>
+                    </div>
+                    <div className="debt-list">
+                      <div className="debt-item">
+                        <div className="debt-item-info">
+                          <h4>Apto 108 · Jorge Santos</h4>
+                          <p>Venc. 15/02 · 18 dias em atraso</p>
+                        </div>
+                        <span className="debt-amount">R$ 580</span>
                       </div>
-                      <div className="agenda-details">
-                        <h4>Vencimento Cotas</h4>
-                        <p>120 unidades · R$ 580,00/unid</p>
+
+                      <div className="debt-item">
+                        <div className="debt-item-info">
+                          <h4>Apto 312 · P. Oliveira</h4>
+                          <p>Venc. 15/01 · 49 dias em atraso</p>
+                        </div>
+                        <span className="debt-amount">R$ 1.160</span>
+                      </div>
+
+                      <div className="debt-item" style={{ marginBottom: 0 }}>
+                        <div className="debt-item-info">
+                          <h4>Apto 421 · R. Lima</h4>
+                          <p>Venc. 15/02 · 18 dias em atraso</p>
+                        </div>
+                        <span className="debt-amount">R$ 580</span>
                       </div>
                     </div>
+
+                    <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
+                      Ver todos os 7 <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
+                    </span>
                   </div>
                 </div>
               </div>
-
-              {/* Debtors List Card */}
-              <div className="card-box">
-                <div className="card-box-header">
-                  <h3>Inadimplência</h3>
-                  <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>7 unidades</span>
-                </div>
-                <div className="debt-list">
-                  <div className="debt-item">
-                    <div className="debt-item-info">
-                      <h4>Apto 108 · Jorge Santos</h4>
-                      <p>Venc. 15/02 · 18 dias em atraso</p>
-                    </div>
-                    <span className="debt-amount">R$ 580</span>
-                  </div>
-
-                  <div className="debt-item">
-                    <div className="debt-item-info">
-                      <h4>Apto 312 · P. Oliveira</h4>
-                      <p>Venc. 15/01 · 49 dias em atraso</p>
-                    </div>
-                    <span className="debt-amount">R$ 1.160</span>
-                  </div>
-
-                  <div className="debt-item" style={{ marginBottom: 0 }}>
-                    <div className="debt-item-info">
-                      <h4>Apto 421 · R. Lima</h4>
-                      <p>Venc. 15/02 · 18 dias em atraso</p>
-                    </div>
-                    <span className="debt-amount">R$ 580</span>
-                  </div>
-                </div>
-
-                <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
-                  Ver todos os 7 <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
-                </span>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </main>
 

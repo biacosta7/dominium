@@ -57,7 +57,7 @@ public class PautaRepositoryImpl implements PautaRepository {
             ps.setString(4, pauta.getTipoQuorum().name());
             ps.setString(5, pauta.getTipoMaioria().name());
             ps.setString(6, pauta.getStatus().name());
-            ps.setString(7, pauta.getResultadoFinal().name());
+            ps.setString(7, pauta.getResultadoFinal() != null ? pauta.getResultadoFinal().name() : ResultadoPauta.EM_ANDAMENTO.name());
             return ps;
         }, keyHolder);
 
@@ -95,7 +95,7 @@ public class PautaRepositoryImpl implements PautaRepository {
                 pauta.getTipoQuorum().name(),
                 pauta.getTipoMaioria().name(),
                 pauta.getStatus().name(),
-                pauta.getResultadoFinal().name(),
+                pauta.getResultadoFinal() != null ? pauta.getResultadoFinal().name() : ResultadoPauta.EM_ANDAMENTO.name(),
                 pauta.getId().getValor()
         );
 

@@ -59,9 +59,9 @@ public class ReservaController {
                     new AreaComumId(request.areaComumId()),
                     new UnidadeId(request.unidadeId()),
                     new UsuarioId(request.usuarioId()),
-                    request.data(),
-                    request.horaInicio(),
-                    request.horaFim());
+                    LocalDate.parse(request.data()),
+                    LocalTime.parse(request.horaInicio()),
+                    LocalTime.parse(request.horaFim()));
 
             Reserva salva = criarReservaUseCase.executar(reserva);
             return ResponseEntity.ok(ReservaResponse.from(salva));
@@ -73,10 +73,10 @@ public class ReservaController {
         return exceptionHandler.withHandler(() -> {
             FilaDeEspera fila = adicionarNaFilaUseCase.executar(
                     new AreaComumId(request.areaComumId()),
-                    request.usuarioId(),
-                    request.data(),
-                    request.horaInicio(),
-                    request.horaFim());
+                    new UsuarioId(request.usuarioId()),
+                    LocalDate.parse(request.data()),
+                    LocalTime.parse(request.horaInicio()),
+                    LocalTime.parse(request.horaFim()));
             return ResponseEntity.ok(fila);
         });
     }

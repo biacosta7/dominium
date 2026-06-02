@@ -3,6 +3,7 @@ package br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.usec
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.areacomum.AreaComum;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.Reserva;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.ReservaId;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.iterator.ReservaCollection;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.areacomum.AreaComumService;
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
@@ -57,7 +58,7 @@ public class AtualizarReservaUseCase {
                 // ⚠️ remove a própria reserva da lista (evita falso conflito)
                 existentes.removeIf(r -> r.getId().equals(reserva.getId()));
 
-                politica.validarNovaReserva(versaoAtualizada, area, existentes);
+                politica.validarNovaReserva(versaoAtualizada, area, new ReservaCollection(existentes).iterator());
 
                 // aplica mudança depois de validar
                 reserva.atualizarDados(novaData, novoInicio, novoFim);
