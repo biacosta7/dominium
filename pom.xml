@@ -20,7 +20,6 @@
 		<module>subdominio-governanca</module>
 		<module>subdominio-operacional</module>
 		<module>subdominio-comunicacao</module>
-		<module>infraestrutura</module>
 		<module>apresentacao-frontend</module>
 		<module>apresentacao-backend</module>
 	</modules>
