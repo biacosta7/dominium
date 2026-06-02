@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import Reserva from './espacos-condominio/Reserva';
 import { buscarReservas } from './espacos-condominio/services/reservaService';
+import AssembleiasMorador from './governanca/AssembleiasMorador';
 import { 
   Calendar, DollarSign, Users, AlertTriangle, 
   MessageSquare, LogOut, Check, ArrowRight, X, Clock
@@ -168,25 +169,41 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Reservas' ? 'active' : ''}`}
-              onClick={() => setPaginaAtual('reserva')}
+              onClick={() => {
+                setActiveTab('Reservas');
+                setModalType(null);
+                setPaginaAtual('reserva');
+              }}
             >
               Reservas
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Financeiro' ? 'active' : ''}`}
-              onClick={() => setModalType('financeiro')}
+              onClick={() => {
+                setActiveTab('Financeiro');
+                setPaginaAtual('dashboard');
+                setModalType('financeiro');
+              }}
             >
               Financeiro
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Assembleias' ? 'active' : ''}`}
-              onClick={() => setModalType('votacao')}
+              onClick={() => {
+                setActiveTab('Assembleias');
+                setModalType(null);
+                setPaginaAtual('assembleias');
+              }}
             >
               Assembleias
             </li>
             <li 
               className={`dash-nav-item ${activeTab === 'Ocorrências' ? 'active' : ''}`}
-              onClick={() => setModalType('ocorrencia')}
+              onClick={() => {
+                setActiveTab('Ocorrências');
+                setPaginaAtual('dashboard');
+                setModalType('ocorrencia');
+              }}
             >
               Ocorrências
             </li>
@@ -259,6 +276,8 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
           <Reserva
             onVoltar={() => setPaginaAtual('dashboard')}
           />
+        ) : paginaAtual === 'assembleias' ? (
+          <AssembleiasMorador />
         ) : (
           <>
             {/* Welcome Banner */}

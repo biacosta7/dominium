@@ -1,0 +1,508 @@
+/* ===== ASSEMBLEIAS MODULE ===== */
+
+.assembleias-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #1a1a2e;
+}
+
+.assembleias-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.assembleias-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.assembleias-sub {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.loading-text {
+  color: #9ca3af;
+  text-align: center;
+  padding: 48px;
+}
+
+/* ===== PAUTA CARD ===== */
+
+.pauta-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.votacao-aberta {
+  border: 2px solid #6366f1;
+}
+
+.pauta-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.pauta-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.pauta-nome {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: #111827;
+}
+
+.pauta-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 4px;
+}
+
+.pauta-meta {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  margin: 4px 0 0;
+}
+
+.pauta-card-top {
+  margin-bottom: 8px;
+}
+
+/* ===== BADGES ===== */
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge-aberta {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-encerrada {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.badge-votacao-aberta {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+/* ===== BARRAS DE PROGRESSO ===== */
+
+.barra-bg {
+  width: 100%;
+  height: 10px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.barra-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.barra-fill.favor { background: #10b981; }
+.barra-fill.contra { background: #ef4444; }
+.barra-fill.abstencao { background: #d1d5db; }
+
+.pauta-resultado-parcial {
+  margin: 16px 0;
+}
+
+.resultado-linha {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.resultado-pct {
+  font-weight: 700;
+}
+.resultado-pct.favor { color: #10b981; }
+.resultado-pct.contra { color: #ef4444; }
+.resultado-pct.abstencao { color: #9ca3af; }
+
+/* ===== RESULTADO FINAL ===== */
+
+.resultado-final {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin: 12px 0;
+}
+
+.resultado-aprovado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.resultado-rejeitado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.resultado-adiado {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ===== OPÇÕES DE VOTO ===== */
+
+.opcoes-voto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.opcao-voto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.opcao-voto:hover {
+  border-color: #6366f1;
+  background: #f5f3ff;
+}
+
+.opcao-ativa {
+  border-color: #6366f1;
+  background: #ede9fe;
+}
+
+.opcao-icone {
+  font-size: 1.2rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.opcao-titulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: #111827;
+}
+
+.opcao-sub {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ===== VOTADO ===== */
+
+.votado-card {
+  border-color: #6366f1;
+}
+
+.votado-success {
+  text-align: center;
+  padding: 24px 0 16px;
+}
+
+.votado-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.votado-success h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.votado-success p {
+  color: #6b7280;
+  font-size: 0.88rem;
+  margin: 0 0 12px;
+}
+
+.resultado-parcial-morador {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.resultado-parcial-morador h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.barra-resultado {
+  margin-bottom: 10px;
+}
+
+.barra-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.83rem;
+  margin-bottom: 4px;
+}
+
+.parcial-aviso {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin: 8px 0 0;
+}
+
+/* ===== FOOTER DO CARD ===== */
+
+.pauta-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ===== CAMPOS ===== */
+
+.field-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #111827;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.field-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-erro {
+  color: #ef4444;
+  font-size: 0.83rem;
+  margin: 0;
+}
+
+/* ===== BOTÕES ===== */
+
+.btn-primario {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primario:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.btn-primario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-votar {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.btn-secundario {
+  background: #fff;
+  color: #374151;
+  border: 1.5px solid #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-secundario:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.btn-encerrar {
+  background: #fff;
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-encerrar:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.btn-encerrar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== EMPTY STATE ===== */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: #9ca3af;
+}
+
+.empty-state p {
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
