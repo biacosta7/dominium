@@ -19,53 +19,49 @@ import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.Unida
 @Service
 public class CreateMultaManualUseCase {
 
-    private final MultaRepository multaRepository;
-    private final UnidadeRepository unidadeRepository;
-    private final MultaEventPublisher eventPublisher;
-    private final CalculoMultaStrategy calculoMultaStrategy;
+        private final MultaRepository multaRepository;
+        private final UnidadeRepository unidadeRepository;
+        private final MultaEventPublisher eventPublisher;
+        private final CalculoMultaStrategy calculoMultaStrategy;
 
-    public CreateMultaManualUseCase(
-            MultaRepository multaRepository,
-            UnidadeRepository unidadeRepository,
-            MultaEventPublisher eventPublisher,
-            CalculoMultaStrategy calculoMultaStrategy) {
-        this.multaRepository = multaRepository;
-        this.unidadeRepository = unidadeRepository;
-        this.eventPublisher = eventPublisher;
-        this.calculoMultaStrategy = calculoMultaStrategy;
-    }
+        public CreateMultaManualUseCase(
+                        MultaRepository multaRepository,
+                        UnidadeRepository unidadeRepository,
+                        MultaEventPublisher eventPublisher,
+                        CalculoMultaStrategy calculoMultaStrategy) {
+                this.multaRepository = multaRepository;
+                this.unidadeRepository = unidadeRepository;
+                this.eventPublisher = eventPublisher;
+                this.calculoMultaStrategy = calculoMultaStrategy;
+        }
 
-    public MultaResponseDTO execute(CreateMultaRequestDTO request) {
+        public MultaResponseDTO execute(CreateMultaRequestDTO request) {
 
-        // Converte o Long do DTO para UnidadeId ao buscar no repositório
-        Unidade unidade = unidadeRepository.findById(new UnidadeId(request.getUnidadeId()))
-                .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada."));
+                Unidade unidade = unidadeRepository.findById(new UnidadeId(request.getUnidadeId()))
+                                .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada."));
 
-        // unidade.getId() agora já retorna um UnidadeId, então o repositório aceita direto
-        long reincidencias = multaRepository.countByUnidadeIdAndDescricao(
-                unidade.getId(),
-                request.getDescricao()
-        );
+                long reincidencias = multaRepository.countByUnidadeIdAndDescricao(
+                                unidade.getId(),
+                                request.getDescricao());
 
-        BigDecimal valorFinal = calculoMultaStrategy.calcular(
-                request.getValor(),
-                reincidencias
-        );
+                BigDecimal valorFinal = calculoMultaStrategy.calcular(
+                                request.getValor(),
+                                reincidencias);
 
-        Multa multa = new Multa();
-        multa.setOcorrenciaId(request.getOcorrenciaId());
-        multa.setUnidade(unidade);
-        multa.setDescricao(request.getDescricao());
-        multa.setValor(valorFinal);
-        multa.setTipoValor(request.getTipoValor());
-        multa.setStatus(StatusMulta.ABERTA);
-        multa.setReincidencia((int) reincidencias);
-        multa.setDataCriacao(LocalDateTime.now());
+                Multa multa = new Multa();
+                multa.setOcorrenciaId(request.getOcorrenciaId());
+                multa.setUnidade(unidade);
+                multa.setDescricao(request.getDescricao());
+                multa.setValor(valorFinal);
+                multa.setTipoValor(request.getTipoValor());
+                multa.setStatus(StatusMulta.ABERTA);
+                multa.setReincidencia((int) reincidencias);
+                multa.setDataCriacao(LocalDateTime.now());
 
-        Multa salva = multaRepository.save(multa);
+                Multa salva = multaRepository.save(multa);
 
-        eventPublisher.publicarMultaCriada(salva);
+                eventPublisher.publicarMultaCriada(salva);
 
-        return MultaResponseDTO.fromEntity(salva);
-    }
+                return MultaResponseDTO.fromEntity(salva);
+        }
 }

@@ -37,7 +37,7 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
         despesaRequest.setDescricao("Gasto Teste");
         despesaRequest.setValor(new BigDecimal("500.00"));
         despesaRequest.setData(LocalDate.now());
-        despesaRequest.setTipo("ordinaria".equalsIgnoreCase(tipo) ? TipoDespesa.ORDINARIA : TipoDespesa.EXTRAORDINARIA);
+        despesaRequest.setTipo("ordinaria".equalsIgnoreCase(tipo) || "ordinária".equalsIgnoreCase(tipo) ? TipoDespesa.ORDINARIA : TipoDespesa.EXTRAORDINARIA);
         despesaRequest.setCategoria(CategoriaDespesa.MANUTENCAO);
     }
 
@@ -64,6 +64,25 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
                     return orcamentoRepository.save(novo);
                 });
 
+        this.orcamentoId = orcamento.getId();
+    }
+
+    @Given("o valor {string} acima do limite da despesa ordinária")
+    public void o_valor_p1_acima_do_limite_ordinaria(String estado) {
+        despesaRequest.setValor(new BigDecimal("10000.01"));
+
+        Orcamento orcamento = orcamentoRepository.findByAno(LocalDate.now().getYear())
+                .orElseGet(() -> {
+                    Orcamento novo = new Orcamento();
+                    novo.setAno(LocalDate.now().getYear());
+                    novo.setValorTotal(new BigDecimal("20000.00"));
+                    novo.setValorGasto(BigDecimal.ZERO);
+                    return orcamentoRepository.save(novo);
+                });
+
+        orcamento.setValorTotal(new BigDecimal("20000.00"));
+        orcamento.setValorGasto(BigDecimal.ZERO);
+        orcamento = orcamentoRepository.save(orcamento);
         this.orcamentoId = orcamento.getId();
     }
 
@@ -136,6 +155,22 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
 
         assertEquals(StatusDespesa.PENDENTE, despesa.getStatus(),
                 "Despesas extraordinárias acima do limite devem nascer com status PENDENTE.");
+    }
+
+    @Then("o sistema exige aprovação para a despesa ordinária")
+    public void o_sistema_exige_aprovacao_para_a_despesa_ordinaria() {
+        if (this.excecao != null) {
+            fail("O sistema lançou um erro inesperado: " + this.excecao.getMessage());
+        }
+
+        Despesa despesa = despesaRepository.findAll().stream()
+                .filter(d -> d.getTipo() == TipoDespesa.ORDINARIA && d.getValor().compareTo(new BigDecimal("10000.00")) > 0)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(
+                        "ERRO: A despesa ordinária acima do limite deveria ter sido salva como PENDENTE, mas não foi encontrada no banco."));
+
+        assertEquals(StatusDespesa.PENDENTE, despesa.getStatus(),
+                "Despesas ordinárias acima do limite devem nascer com status PENDENTE.");
     }
 
     @Then("a despesa aguarda rateio automático após aprovada")
