@@ -18,6 +18,8 @@ public interface ReservaRepository {
 
     List<Reserva> buscarPorUsuario(UsuarioId usuarioId);
 
+    List<Reserva> buscarPorUsuarioPaginado(UsuarioId usuarioId, int limit, int offset);
+
     List<Reserva> buscarAtivasPorPeriodo(
             AreaComumId areaComumId,
             LocalDate data,

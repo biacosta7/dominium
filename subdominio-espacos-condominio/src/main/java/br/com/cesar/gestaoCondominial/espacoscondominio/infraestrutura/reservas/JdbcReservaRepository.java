@@ -98,6 +98,11 @@ public class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
+    public List<Reserva> buscarPorUsuarioPaginado(UsuarioId usuarioId, int limit, int offset) {
+        return jdbcTemplate.query("SELECT * FROM reservas WHERE usuario_id = ? ORDER BY id LIMIT ? OFFSET ?", rowMapper, usuarioId.getId(), limit, offset);
+    }
+
+    @Override
     public List<Reserva> buscarAtivasPorPeriodo(AreaComumId areaComumId, LocalDate data, LocalTime inicio, LocalTime fim) {
         String sql = "SELECT * FROM reservas WHERE area_comum_id = ? AND data_reserva = ? AND status NOT IN ('CANCELADA', 'CONCLUIDA') " +
                 "AND ((hora_inicio < ? AND hora_fim > ?) OR (hora_inicio < ? AND hora_fim > ?) OR (hora_inicio >= ? AND hora_fim <= ?))";

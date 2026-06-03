@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.ArrayList;
+import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.iterator.ReservaIterator;
 
 @RestController
 @RequestMapping("/reservas")
@@ -116,10 +118,11 @@ public class ReservaController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<ReservaResponse>> listarPorUsuario(@PathVariable Long usuarioId) {
         return exceptionHandler.withHandler(() -> {
-            List<Reserva> reservas = listarReservaUseCase.listarPorUsuario(new UsuarioId(usuarioId));
-            List<ReservaResponse> response = reservas.stream()
-                    .map(ReservaResponse::from)
-                    .toList();
+            ReservaIterator iterator = listarReservaUseCase.iteratorPorUsuario(new UsuarioId(usuarioId));
+            List<ReservaResponse> response = new ArrayList<>();
+            while (iterator.hasNext()) {
+                response.add(ReservaResponse.from(iterator.next()));
+            }
             return ResponseEntity.ok(response);
         });
     }

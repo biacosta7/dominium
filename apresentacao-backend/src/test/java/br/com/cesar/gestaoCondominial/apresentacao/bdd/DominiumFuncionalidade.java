@@ -629,6 +629,16 @@ public class DominiumFuncionalidade {
             }
 
             @Override
+            public List<Reserva> buscarPorUsuarioPaginado(UsuarioId usuarioId, int limit, int offset) {
+                return db.values().stream()
+                        .filter(r -> r.getUsuarioId() != null && r.getUsuarioId().equals(usuarioId))
+                        .sorted((r1, r2) -> r1.getId().getValor().compareTo(r2.getId().getValor()))
+                        .skip(offset)
+                        .limit(limit)
+                        .collect(Collectors.toList());
+            }
+
+            @Override
             public List<Reserva> buscarAtivasPorPeriodo(AreaComumId areaId, LocalDate data, LocalTime inicio,
                     LocalTime fim) {
                 return db.values().stream()

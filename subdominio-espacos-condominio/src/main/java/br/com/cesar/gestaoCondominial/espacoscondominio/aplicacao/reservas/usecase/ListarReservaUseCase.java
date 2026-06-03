@@ -22,6 +22,6 @@ public class ListarReservaUseCase {
     }
 
     public ReservaIterator iteratorPorUsuario(UsuarioId usuarioId) {
-        return new ReservaCollection(repository.buscarPorUsuario(usuarioId)).iterator();
+        return new ReservaCollection(repository, usuarioId).iterator();
     }
 }

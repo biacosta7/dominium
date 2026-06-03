@@ -322,7 +322,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
                 <p>{getTodayFormatted()} · Residencial Parque Verde · Apto 102, Bloco A</p>
               </div>
 
-          <div className="banner-stats">
+          {/*<div className="banner-stats">
             <div className="stat-badge">
               <Calendar size={16} />
               <span>Próxima reserva: <strong>07/03 · Churrasqueira</strong></span>
@@ -348,7 +348,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
                 </span>
               </div>
             )}
-          </div>
+          </div>*/}
         </section>
 
         {/* Quick Actions */}
