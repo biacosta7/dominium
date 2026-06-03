@@ -6,7 +6,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,8 +32,7 @@ public class FilaDeEspera {
             UsuarioId usuarioId,
             LocalDate data,
             LocalTime inicio,
-            LocalTime fim
-    ) {
+            LocalTime fim) {
         FilaDeEspera fila = new FilaDeEspera();
         fila.id = id;
         fila.areaComumId = areaId;

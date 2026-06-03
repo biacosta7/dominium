@@ -13,6 +13,13 @@ Feature: Gestão de Orçamentos e Despesas do Condomínio
      When o síndico tenta registrar a despesa
      Then o sistema bloqueia a despesa para impedir o estouro do orçamento
 
+  Scenario: Registrar despesa ordinária acima do limite
+    Given o "orçamento" "possui" saldo disponível
+      And a despesa "é" "ordinária"
+      And o valor "está" acima do limite da despesa ordinária
+     When o síndico registra a despesa
+     Then o sistema exige aprovação para a despesa ordinária
+
   Scenario: Registrar despesa extraordinária
     Given a despesa "é" "extraordinária"
       And o valor "está" acima do limite
