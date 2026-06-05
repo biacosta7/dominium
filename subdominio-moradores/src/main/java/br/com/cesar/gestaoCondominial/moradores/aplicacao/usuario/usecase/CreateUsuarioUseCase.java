@@ -20,6 +20,9 @@ public class CreateUsuarioUseCase {
     }
 
     public UsuarioResponseDTO execute(UsuarioRequestDTO request) {
+        if (request.getSenha() == null || request.getSenha().isBlank()) {
+            throw new DomainException("A senha é obrigatória");
+        }
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new DomainException("Email já cadastrado");
         }

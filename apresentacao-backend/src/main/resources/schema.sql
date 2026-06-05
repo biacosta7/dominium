@@ -327,3 +327,9 @@ MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES
 MERGE INTO reservas (id, area_comum_id, unidade_id, usuario_id, data_reserva, hora_inicio, hora_fim, status, data_expira_confirmacao)
 KEY(id)
 VALUES (101, 3, 1, 1, '2026-06-15', '18:00:00', '23:00:00', 'ATIVA', null);
+
+ALTER TABLE usuarios ALTER COLUMN id RESTART WITH 3;
+ALTER TABLE unidades ALTER COLUMN id RESTART WITH 2;
+ALTER TABLE vinculos_morador ALTER COLUMN id RESTART WITH 2;
+ALTER TABLE assembleias ALTER COLUMN id RESTART WITH 2;
+ALTER TABLE areas_comuns ALTER COLUMN id RESTART WITH 5;

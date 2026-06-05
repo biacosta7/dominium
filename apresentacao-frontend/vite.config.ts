@@ -18,6 +18,18 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/unidades': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/usuarios': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
