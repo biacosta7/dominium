@@ -252,6 +252,6 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
     @Then("uma notificação deve ser enviada para o síndico sobre o vencimento do {string}")
     public void uma_notificacao_deve_ser_enviada_para_o_sindico_sobre_o_vencimento_do(String nome) {
         assertTrue(notificacoesEnviadas.stream()
-                .anyMatch(n -> n.mensagem.contains(nome) && n.mensagem.contains("vence em")));
+                .anyMatch(n -> n.usuarioId != null && n.mensagem.contains(nome) && n.mensagem.contains("vence em") && n.tipo != null));
     }
 }
