@@ -3,8 +3,11 @@ import './Dashboard.css';
 import Reserva from './espacos-condominio/Reserva';
 import { buscarReservas } from './espacos-condominio/services/reservaService';
 import AssembleiasMorador from './governanca/AssembleiasMorador';
+import FinanceiroMorador from './financeiro/FinanceiroMorador';
 import { pautaService } from './governanca/services/pautaService';
 import type { Pauta } from './governanca/types/pauta';
+import { financeiroService } from './financeiro/services/financeiroService';
+import type { Taxa } from './financeiro/types/financeiro';
 import { 
   Calendar, DollarSign, Users, AlertTriangle, 
   MessageSquare, LogOut, Check, ArrowRight, X
@@ -48,6 +51,11 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
 
   // Dynamic agenda items
   const [agenda, _setAgenda] = useState<AgendaItem[]>([]);
+
+  // Real-time financial dashboard state
+  const [unidadeMorador, setUnidadeMorador] = useState<any>(null);
+  const [taxasMorador, setTaxasMorador] = useState<Taxa[]>([]);
+  const [proximaReserva, setProximaReserva] = useState<string | null>(null);
 
   const irParaAssembleias = () => {
     setActiveTab('Assembleias');
@@ -107,6 +115,21 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
       try {
         const response = await buscarReservas(1); // User Ana Lima ID 1
         const reservasBackend = response.data;
+        const hojeStr = new Date().toISOString().split('T')[0];
+        
+        const futuras = reservasBackend
+          .filter((res: any) => res.status !== 'CANCELADA' && res.data >= hojeStr)
+          .sort((a: any, b: any) => a.data.localeCompare(b.data));
+
+        if (futuras.length > 0) {
+          const next = futuras[0];
+          const dataObj = new Date(next.data + 'T00:00:00');
+          const dayStr = dataObj.getDate().toString().padStart(2, '0');
+          const monthStr = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+          setProximaReserva(`${dayStr}/${monthStr} · ${next.nomeArea}`);
+        } else {
+          setProximaReserva(null);
+        }
 
         const mappedReservas: AgendaItem[] = reservasBackend
           .filter((res: any) => res.status !== 'CANCELADA')
@@ -132,20 +155,43 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
         console.error('Erro ao carregar reservas para o dashboard', error);
       }
 
-      const staticItems: AgendaItem[] = [
-        {
-          id: 'cota-abril',
-          day: '15',
-          month: 'MAR',
-          title: 'Vencimento cota abril',
-          time: 'R$ 580,00 · Bloco A/102',
-          status: 'Pendente',
-          statusType: 'primary',
-          color: '#14b8a6',
-        },
-      ];
+      let taxasMoradorData: Taxa[] = [];
+      try {
+        const units = await financeiroService.fetchUnits();
+        const myUnit = units.find(u => u.numero === '102' && u.bloco === 'A');
+        if (myUnit) {
+          setUnidadeMorador(myUnit);
+          const resTaxas = await fetch(`/api/taxas/unidade/${myUnit.id}`);
+          if (resTaxas.ok) {
+            taxasMoradorData = await resTaxas.json();
+            taxasMoradorData.sort((a, b) => new Date(b.dataVencimento).getTime() - new Date(a.dataVencimento).getTime());
+            setTaxasMorador(taxasMoradorData);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar taxas para o dashboard', error);
+      }
 
-      _setAgenda([...itensAgenda, ...staticItems]);
+      const dynamicTaxaItems: AgendaItem[] = taxasMoradorData
+        .filter(t => t.status !== 'PAGO')
+        .map(t => {
+          const dateObj = new Date(t.dataVencimento + 'T00:00:00');
+          const dayStr = dateObj.getDate().toString().padStart(2, '0');
+          const monthName = MESES_ABREV[dateObj.getMonth()] || 'JUN';
+
+          return {
+            id: `taxa-${t.id}`,
+            day: dayStr,
+            month: monthName,
+            title: `Taxa Condominial - Ref. ${monthName}`,
+            time: `Valor: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.valorTotal)} · Vencimento: ${dayStr}/${(dateObj.getMonth()+1).toString().padStart(2, '0')}`,
+            status: t.status === 'PENDENTE' ? 'Pendente' : 'Atrasada',
+            statusType: 'primary' as const,
+            color: '#14b8a6',
+          };
+        });
+
+      _setAgenda([...itensAgenda, ...dynamicTaxaItems]);
     };
 
     carregarDashboard();
@@ -216,8 +262,8 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
               className={`dash-nav-item ${activeTab === 'Financeiro' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('Financeiro');
-                setPaginaAtual('dashboard');
-                setModalType('financeiro');
+                setPaginaAtual('financeiro');
+                setModalType(null);
               }}
             >
               Financeiro
@@ -313,23 +359,51 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
           />
         ) : paginaAtual === 'assembleias' ? (
           <AssembleiasMorador />
+        ) : paginaAtual === 'financeiro' ? (
+          <FinanceiroMorador />
         ) : (
           <>
             {/* Welcome Banner */}
             <section className="welcome-banner">
               <div className="welcome-text">
                 <h1>Olá, Ana! 👋</h1>
-                <p>{getTodayFormatted()} · Residencial Parque Verde · Apto 102, Bloco A</p>
+                <p>{getTodayFormatted()} · Residencial Parque Verde · Apto {unidadeMorador?.numero || '102'}, Bloco {unidadeMorador?.bloco || 'A'}</p>
               </div>
 
           <div className="banner-stats">
-            <div className="stat-badge">
-              <Calendar size={16} />
-              <span>Próxima reserva: <strong>07/03 · Churrasqueira</strong></span>
-            </div>
-            <div className="stat-badge">
+            {proximaReserva ? (
+              <div className="stat-badge" onClick={() => { setActiveTab('Reservas'); setPaginaAtual('reserva'); }} style={{ cursor: 'pointer' }}>
+                <Calendar size={16} />
+                <span>Próxima reserva: <strong>{proximaReserva}</strong></span>
+              </div>
+            ) : (
+              <div className="stat-badge" onClick={() => { setActiveTab('Reservas'); setPaginaAtual('reserva'); }} style={{ cursor: 'pointer' }}>
+                <Calendar size={16} />
+                <span>Nenhuma reserva futura</span>
+              </div>
+            )}
+            <div className="stat-badge" onClick={() => { setActiveTab('Financeiro'); setPaginaAtual('financeiro'); }} style={{ cursor: 'pointer' }}>
               <DollarSign size={16} />
-              <span>Cota de março: <strong>R$ 580 · Em dia ✓</strong></span>
+              <span>{(() => {
+                const pending = taxasMorador.filter(t => t.status !== 'PAGO');
+                if (pending.length > 0) {
+                  const sortedUnpaid = [...pending].sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime());
+                  const oldestUnpaid = sortedUnpaid[0];
+                  const dateObj = new Date(oldestUnpaid.dataVencimento + 'T00:00:00');
+                  const mesName = MESES_ABREV[dateObj.getMonth()] || 'Mês';
+                  const formattedVal = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(oldestUnpaid.valorTotal);
+                  return `Próxima Cota (${mesName}): ${formattedVal} · ${oldestUnpaid.status === 'PENDENTE' ? 'Pendente' : 'Atrasada'}`;
+                }
+                if (taxasMorador.length > 0) {
+                  const latestPaid = taxasMorador.find(t => t.status === 'PAGO');
+                  if (latestPaid) {
+                    const dateObj = new Date(latestPaid.dataVencimento + 'T00:00:00');
+                    const mesName = MESES_ABREV[dateObj.getMonth()] || 'Mês';
+                    return `Cota de ${mesName.toLowerCase()}: Em dia ✓`;
+                  }
+                }
+                return 'Financeiro: Em dia ✓';
+              })()}</span>
             </div>
             {pautasAbertas.length > 0 && (
               <div
@@ -362,7 +436,11 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
               <span>Fazer Reserva</span>
             </div>
 
-            <div className="action-card" onClick={() => setModalType('financeiro')}>
+            <div className="action-card" onClick={() => {
+              setActiveTab('Financeiro');
+              setPaginaAtual('financeiro');
+              setModalType(null);
+            }}>
               <div className="action-icon" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
                 <DollarSign size={22} />
               </div>
@@ -512,49 +590,7 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
         </div>
       )}
 
-      {modalType === 'financeiro' && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3>Detalhamento Financeiro</h3>
-              <button className="close-modal-btn" onClick={() => setModalType(null)}><X size={20} /></button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: 'var(--gray-50)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray-500)' }}>Cota Condominial (03/2026)</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--success)' }}>Pago</span>
-                </div>
-                <h2 style={{ fontSize: '28px', color: 'var(--gray-900)' }}>R$ 580,00</h2>
-                <span style={{ fontSize: '11px', color: 'var(--gray-400)' }}>Pago em 01/03/2026 - ID Transação: #849302</span>
-              </div>
 
-              <div>
-                <h4 style={{ fontSize: '14px', marginBottom: '10px' }}>Composição da Taxa</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--gray-500)' }}>Fundo de Reserva ordinária</span>
-                    <span>R$ 420,00</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--gray-500)' }}>Manutenção e Limpeza</span>
-                    <span>R$ 100,00</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--gray-500)' }}>Taxa Extraordinária (Fachada)</span>
-                    <span>R$ 60,00</span>
-                  </div>
-                  <hr style={{ border: 'none', borderTop: '1px solid var(--gray-200)' }} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
-                    <span>Total</span>
-                    <span>R$ 580,00</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
