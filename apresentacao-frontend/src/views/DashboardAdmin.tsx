@@ -3,8 +3,10 @@ import './Dashboard.css';
 import AssembleiasAdmin from './governanca/AssembleiasAdmin';
 import MoradoresAdmin from './moradores/MoradoresAdmin';
 import { Unidades } from './Unidades';
-import { 
-  Search, Bell, Plus, Users, DollarSign, AlertTriangle, 
+import FinanceiroAdmin from './financeiro/FinanceiroAdmin';
+
+import {
+  Search, Bell, Plus, Users, DollarSign, AlertTriangle,
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
 
@@ -78,20 +80,20 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Principal</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Dashboard' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Dashboard')}
                 >
                   <div className="inner"><TrendingUp size={16} /> Dashboard</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Financeiro' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Financeiro')}
                 >
                   <div className="inner"><DollarSign size={16} /> Financeiro</div>
                   <span className="badge">3</span>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Notificações' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Notificações')}
                 >
@@ -104,19 +106,19 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Cadastros</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Unidades' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Unidades')}
                 >
                   <div className="inner"><FileText size={16} /> Unidades</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Moradores' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Moradores')}
                 >
                   <div className="inner"><Users size={16} /> Moradores</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Funcionários' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Funcionários')}
                 >
@@ -128,20 +130,20 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Operações</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Ocorrências' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Ocorrências')}
                 >
                   <div className="inner"><AlertTriangle size={16} /> Ocorrências</div>
                   <span className="badge danger">2</span>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Assembleias' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Assembleias')}
                 >
                   <div className="inner"><Users size={16} /> Assembleias</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Documentos' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Documentos')}
                 >
@@ -154,8 +156,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
         {/* Sidebar user footer */}
         <div className="sidebar-bottom" style={{ position: 'relative' }}>
-          <div 
-            className="sidebar-user" 
+          <div
+            className="sidebar-user"
             style={{ cursor: 'pointer' }}
             onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
@@ -170,7 +172,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
           </button>
 
           {showProfileMenu && (
-            <div 
+            <div
               style={{
                 position: 'absolute',
                 bottom: '50px',
@@ -184,7 +186,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                 zIndex: 10
               }}
             >
-              <div 
+              <div
                 style={{
                   padding: '6px 14px',
                   fontSize: '11px',
@@ -230,11 +232,11 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
               <Search size={16} />
               <input type="text" placeholder="Buscar..." />
             </div>
-            
+
             <button className="icon-button">
               <Bell size={18} />
             </button>
-            
+
             <div className="sidebar-user-avatar" style={{ cursor: 'pointer', width: '32px', height: '32px', fontSize: '11px' }}>
               MR
             </div>
@@ -249,6 +251,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <MoradoresAdmin />
           ) : activeMenu === 'Unidades' ? (
             <Unidades />
+          ) : activeMenu === 'Financeiro' ? (
+            <FinanceiroAdmin />
           ) : (
             <>
               {/* Welcome Row */}
@@ -334,13 +338,13 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                     <div className="card-box-header">
                       <h3>Fluxo Financeiro — 2026</h3>
                       <div className="toggle-group">
-                        <button 
+                        <button
                           className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
                           onClick={() => setChartMode('receitas')}
                         >
                           Receitas
                         </button>
-                        <button 
+                        <button
                           className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
                           onClick={() => setChartMode('despesas')}
                         >
@@ -507,8 +511,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <form onSubmit={handleCreateRecord} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
                 <label>Tipo de Registro</label>
-                <select 
-                  value={newRecordType} 
+                <select
+                  value={newRecordType}
                   onChange={(e) => setNewRecordType(e.target.value)}
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
                 >
@@ -519,9 +523,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
               <div className="form-group">
                 <label>{newRecordType === 'morador' ? 'Nome Completo' : 'Título da Ocorrência'}</label>
-                <input 
-                  type="text" 
-                  value={newRecordName} 
+                <input
+                  type="text"
+                  value={newRecordName}
                   onChange={(e) => setNewRecordName(e.target.value)}
                   placeholder={newRecordType === 'morador' ? 'Ex: Carlos Souza' : 'Ex: Vazamento de água no subsolo'}
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
@@ -531,9 +535,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
               <div className="form-group">
                 <label>Unidade (Apto e Bloco)</label>
-                <input 
-                  type="text" 
-                  value={newRecordUnit} 
+                <input
+                  type="text"
+                  value={newRecordUnit}
                   onChange={(e) => setNewRecordUnit(e.target.value)}
                   placeholder="Ex: 302 - Bloco B"
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
