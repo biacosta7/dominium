@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository("assembleiaRepositoryJdbc")
 public class AssembleiaRepositoryImpl implements AssembleiaRepository {
 
     private final JdbcTemplate jdbcTemplate;
