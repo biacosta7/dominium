@@ -5,12 +5,9 @@ import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.Pauta;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaId;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.PautaRepository;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta.ResultadoPauta;
-import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.Voto;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.VotoRepository;
 import br.com.cesar.gestaoCondominial.governanca.dominio.governanca.voto.iterator.VotoCollection;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class EncerrarPautaUseCase {
@@ -33,10 +30,8 @@ public class EncerrarPautaUseCase {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new RuntimeException("Pauta não encontrada"));
 
-        List<Voto> votos = votoRepository.buscarPorPauta(pautaId);
-
         ResultadoPauta resultado =
-                regraVotacao.calcularResultado(pauta, new VotoCollection(votos).iterator());
+                regraVotacao.calcularResultado(pauta, new VotoCollection(votoRepository, pautaId).iterator());
 
         pauta.encerrar(resultado);
 

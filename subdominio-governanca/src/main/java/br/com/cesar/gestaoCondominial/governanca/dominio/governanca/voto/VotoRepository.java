@@ -14,5 +14,7 @@ public interface VotoRepository {
 
     List<Voto> buscarPorPauta(PautaId pautaId);
 
+    List<Voto> buscarPorPautaPaginado(PautaId pautaId, int limit, int offset);
+
     boolean findByPautaAndUnidade(PautaId pautaId, UnidadeId unidadeId);
 }

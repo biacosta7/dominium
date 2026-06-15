@@ -82,6 +82,13 @@ public class VotoRepositoryImpl implements VotoRepository {
     }
 
     @Override
+    public List<Voto> buscarPorPautaPaginado(PautaId pautaId, int limit, int offset) {
+        String sql = "SELECT * FROM voto WHERE pauta_id = ? ORDER BY id LIMIT ? OFFSET ?";
+
+        return jdbc.query(sql, votoMapper, pautaId.getValor(), limit, offset);
+    }
+
+    @Override
     public boolean findByPautaAndUnidade(PautaId pautaId, UnidadeId unidadeId) {
         String sql = """
                 SELECT COUNT(*) FROM voto
