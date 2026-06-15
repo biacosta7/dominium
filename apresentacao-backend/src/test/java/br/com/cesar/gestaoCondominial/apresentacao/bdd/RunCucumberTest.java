@@ -12,9 +12,10 @@ import static io.cucumber.junit.platform.engine.Constants.FEATURES_PROPERTY_NAME
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectClasspathResource("features/gestao_de_reservas.feature")
+@SelectClasspathResource("features/gestao_de_pautas_votacoes.feature")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "br.com.cesar.gestaoCondominial.apresentacao.bdd")
-@ConfigurationParameter(key = FEATURES_PROPERTY_NAME, value = "classpath:features")
+@ConfigurationParameter(key = FEATURES_PROPERTY_NAME, value = "classpath:features/gestao_de_reservas.feature,classpath:features/gestao_de_pautas_votacoes.feature")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber-reports.html, json:target/cucumber-reports.json, junit:target/cucumber-reports.xml")
 public class RunCucumberTest {
 }

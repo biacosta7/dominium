@@ -599,6 +599,16 @@ public class DominiumFuncionalidade {
             }
 
             @Override
+            public List<Voto> buscarPorPautaPaginado(PautaId pautaId, int limit, int offset) {
+                return db.values().stream()
+                        .filter(v -> v.getPautaId().equals(pautaId))
+                        .sorted(java.util.Comparator.comparing(v -> v.getId().getValor()))
+                        .skip(offset)
+                        .limit(limit)
+                        .collect(Collectors.toList());
+            }
+
+            @Override
             public boolean findByPautaAndUnidade(PautaId pautaId, UnidadeId unidadeId) {
                 return db.values().stream().anyMatch(v -> v.getPautaId().equals(pautaId)
                         && v.getUnidadeId().equals(unidadeId));
