@@ -39,3 +39,11 @@ export const atualizarReserva = async (id: string, data: string, horaInicio: str
   const result = await res.json();
   return { data: result };
 };
+
+export const confirmarReserva = async (id: string) => {
+  const res = await fetch(`/reservas/${id}/confirmar`, {
+    method: "PUT"
+  });
+  if (!res.ok) throw new Error("Erro ao confirmar reserva");
+  return { status: res.status };
+};

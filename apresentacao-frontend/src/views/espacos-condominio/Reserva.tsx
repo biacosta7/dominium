@@ -3,7 +3,7 @@ import Calendario from "./components/Calendario";
 import Disponibilidade from "./components/Disponibilidade";
 import ModalReserva from "./components/ModalReserva";
 import ReservaCard from "./components/ReservaCard";
-import { buscarReservas, cancelarReserva, criarReserva, atualizarReserva } from "./services/reservaService";
+import { buscarReservas, cancelarReserva, criarReserva, atualizarReserva, confirmarReserva } from "./services/reservaService";
 import type { Reserva, DiaCalendario, DisponibilidadeArea, AreaCatalogo } from "./types/reserva";
 import "./Reserva.css";
 
@@ -73,6 +73,17 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
     } catch (error) {
       console.error("Erro ao cancelar reserva", error);
       showToast("Erro ao solicitar cancelamento.");
+    }
+  };
+
+  const handleConfirmar = async (id: string) => {
+    try {
+      await confirmarReserva(id);
+      showToast("Reserva confirmada com sucesso!");
+      carregarReservas();
+    } catch (error) {
+      console.error("Erro ao confirmar reserva", error);
+      showToast("Erro ao confirmar agendamento.");
     }
   };
 
@@ -319,6 +330,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
                     reserva={res}
                     onCancelar={handleCancelar}
                     onEditar={handleEditar}
+                    onConfirmar={handleConfirmar}
                   />
                 ))
             )}
