@@ -17,6 +17,7 @@ export default function AssembleiasMorador() {
   }, []);
 
   const abertas = pautas.filter((p) => p.status === 'ABERTA');
+  const encerradas = pautas.filter((p) => p.status === 'ENCERRADA');
 
   return (
     <div className="assembleias-page">
@@ -49,6 +50,20 @@ export default function AssembleiasMorador() {
             <div className="empty-state">
               <p>Nenhuma votação aberta no momento.</p>
             </div>
+          )}
+
+          {encerradas.length > 0 && (
+            <section style={{ marginTop: '32px' }}>
+              <p className="section-label" style={{ color: '#666' }}>VOTAÇÕES ENCERRADAS</p>
+              {encerradas.map((p) => (
+                <PautaCardMorador
+                  key={p.id}
+                  pauta={p}
+                  usuarioId={USUARIO_ID}
+                  unidadeId={UNIDADE_ID}
+                />
+              ))}
+            </section>
           )}
         </>
       )}

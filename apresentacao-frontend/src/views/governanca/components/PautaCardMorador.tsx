@@ -75,6 +75,30 @@ export default function PautaCardMorador({ pauta, usuarioId, unidadeId }: Props)
   const total = resumo?.total ?? 0;
   const pct = (n: number) => total > 0 ? Math.round((n / total) * 100) : 0;
 
+  if (pauta.status === 'ENCERRADA') {
+    return (
+      <div className="pauta-card encerrada-card">
+        <div className="pauta-card-top" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <span className={`badge-resultado resultado-${pauta.resultadoFinal?.toLowerCase()}`} style={{ fontWeight: 'bold', fontSize: '13px' }}>
+            {pauta.resultadoFinal === 'APROVADO' ? '✅ Aprovada' : pauta.resultadoFinal === 'REJEITADO' ? '❌ Rejeitada' : '⭕ Adiada'}
+          </span>
+          <span className="badge badge-encerrada" style={{ background: '#eee', color: '#666' }}>● Votação Encerrada</span>
+        </div>
+        <h3 className="pauta-nome">{pauta.titulo}</h3>
+        {pauta.descricao && <p className="pauta-desc">{pauta.descricao}</p>}
+
+        {resumo && (
+          <div className="resultado-final-morador" style={{ marginTop: '16px' }}>
+            <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>Resultado Final — {resumo.total} votos</h4>
+            <BarraResultado label="✅ Sim" votos={resumo.favor} pct={pct(resumo.favor)} cor="favor" />
+            <BarraResultado label="❌ Não" votos={resumo.contra} pct={pct(resumo.contra)} cor="contra" />
+            <BarraResultado label="⭕ Abstenção" votos={resumo.abstencao} pct={pct(resumo.abstencao)} cor="abstencao" />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (votado) {
     return (
       <div className="pauta-card votado-card">
