@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Dashboard.css';
 import AssembleiasAdmin from './governanca/AssembleiasAdmin';
 import MoradoresAdmin from './moradores/MoradoresAdmin';
+import { Unidades } from './Unidades';
 import { 
   Search, Bell, Plus, Users, DollarSign, AlertTriangle, 
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
@@ -246,6 +247,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <AssembleiasAdmin />
           ) : activeMenu === 'Moradores' ? (
             <MoradoresAdmin />
+          ) : activeMenu === 'Unidades' ? (
+            <Unidades />
           ) : (
             <>
               {/* Welcome Row */}

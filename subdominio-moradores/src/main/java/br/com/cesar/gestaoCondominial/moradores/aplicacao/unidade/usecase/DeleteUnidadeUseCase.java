@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.Unidade;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.StatusAdimplencia;
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.repository.UnidadeRepository;
 
 @Service
@@ -21,13 +22,14 @@ public class DeleteUnidadeUseCase {
         Unidade unidade = unidadeRepository.findById(new UnidadeId(id))
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada"));
 
-        // 2. Regra de negócio: não pode deletar com débito
-        if (unidade.getSaldoDevedor() != null 
+        // 2. Regra de negócio: não pode inativar com débito
+        if (unidade.getSaldoDevedor() != null
                 && unidade.getSaldoDevedor().compareTo(java.math.BigDecimal.ZERO) > 0) {
-            throw new IllegalStateException("Não é possível excluir unidade com débitos ativos");
+            throw new IllegalStateException("Não é possível inativar unidade com débitos ativos");
         }
 
-        // 3. Deletar
-        unidadeRepository.deleteById(new UnidadeId(id));
+        // 3. Soft delete: marca como inativa
+        unidade.setStatus(StatusAdimplencia.INATIVO);
+        unidadeRepository.save(unidade);
     }
 }
