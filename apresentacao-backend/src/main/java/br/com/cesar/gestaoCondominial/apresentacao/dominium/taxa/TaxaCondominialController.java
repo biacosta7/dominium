@@ -4,6 +4,7 @@ import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.Atualiza
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.ConsultarHistoricoTaxasUseCase;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.GerarTaxaMensalUseCase;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.RegistrarPagamentoTaxaUseCase;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.usecase.ListarTodasTaxasUseCase;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.AtualizarTaxaRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.taxa.dto.TaxaResponseDTO;
@@ -21,22 +22,31 @@ public class TaxaCondominialController {
     private final AtualizarValorTaxaUseCase atualizarValorTaxaUseCase;
     private final RegistrarPagamentoTaxaUseCase registrarPagamentoTaxaUseCase;
     private final ConsultarHistoricoTaxasUseCase consultarHistoricoTaxasUseCase;
+    private final ListarTodasTaxasUseCase listarTodasTaxasUseCase;
 
     public TaxaCondominialController(
             GerarTaxaMensalUseCase gerarTaxaMensalUseCase,
             AtualizarValorTaxaUseCase atualizarValorTaxaUseCase,
             RegistrarPagamentoTaxaUseCase registrarPagamentoTaxaUseCase,
-            ConsultarHistoricoTaxasUseCase consultarHistoricoTaxasUseCase) {
+            ConsultarHistoricoTaxasUseCase consultarHistoricoTaxasUseCase,
+            ListarTodasTaxasUseCase listarTodasTaxasUseCase) {
         this.gerarTaxaMensalUseCase = gerarTaxaMensalUseCase;
         this.atualizarValorTaxaUseCase = atualizarValorTaxaUseCase;
         this.registrarPagamentoTaxaUseCase = registrarPagamentoTaxaUseCase;
         this.consultarHistoricoTaxasUseCase = consultarHistoricoTaxasUseCase;
+        this.listarTodasTaxasUseCase = listarTodasTaxasUseCase;
     }
 
     @PostMapping
     public ResponseEntity<TaxaResponseDTO> gerarTaxa(@RequestBody TaxaRequestDTO request) {
         TaxaResponseDTO response = gerarTaxaMensalUseCase.executar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TaxaResponseDTO>> listarTodas() {
+        List<TaxaResponseDTO> response = listarTodasTaxasUseCase.executar();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/valor")

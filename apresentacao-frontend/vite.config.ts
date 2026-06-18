@@ -10,6 +10,10 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/financeiro': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
       '/pautas': {
         target: 'http://localhost:8080',
         changeOrigin: true,

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import AssembleiasAdmin from './governanca/AssembleiasAdmin';
 import MoradoresAdmin from './moradores/MoradoresAdmin';
 import { Unidades } from './Unidades';
-import { 
-  Search, Bell, Plus, Users, DollarSign, AlertTriangle, 
+import FinanceiroAdmin from './financeiro/FinanceiroAdmin';
+
+import {
+  Search, Bell, Plus, Users, DollarSign, AlertTriangle,
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
 
@@ -18,6 +20,99 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
   const [chartMode, setChartMode] = useState<'receitas' | 'despesas'>('receitas');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [modalType, setModalType] = useState<'novo-registro' | 'inadimplentes' | null>(null);
+
+  // Dynamic backend states
+  const [taxas, setTaxas] = useState<any[]>([]);
+  const [unidades, setUnidades] = useState<any[]>([]);
+  const [vinculos, setVinculos] = useState<any[]>([]);
+  const [orcamentos, setOrcamentos] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        const resTaxas = await fetch('/api/taxas');
+        if (resTaxas.ok) {
+          const dataTaxas = await resTaxas.json();
+          setTaxas(dataTaxas);
+        }
+        const resUnits = await fetch('/unidades');
+        if (resUnits.ok) {
+          const dataUnits = await resUnits.json();
+          setUnidades(dataUnits);
+          
+          const fetchedPromises = dataUnits.map((u: any) =>
+            fetch(`/api/unidades/${u.id}/moradores`).then(r => r.ok ? r.json() : []).catch(() => [])
+          );
+          const lists = await Promise.all(fetchedPromises);
+          setVinculos(lists.flat());
+        }
+        const resBudget = await fetch('/financeiro/orcamentos');
+        if (resBudget.ok) {
+          const dataBudgets = await resBudget.json();
+          setOrcamentos(dataBudgets);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar dados do dashboard:', err);
+      }
+    }
+    loadDashboardData();
+  }, [activeMenu]);
+
+  const formatarDataDDMM = (dataStr: string) => {
+    if (!dataStr) return '—';
+    const parts = dataStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}`;
+    }
+    return dataStr;
+  };
+
+  const getTitular = (unidadeId: number) => {
+    const unitVinculos = vinculos.filter(v => v.unidadeId === unidadeId);
+    const titular = unitVinculos.find(v => v.tipo === 'TITULAR');
+    return titular ? titular.usuario.nome : '—';
+  };
+
+  const getUnidadeNum = (unidadeId: number) => {
+    const u = unidades.find(unit => unit.id === unidadeId);
+    return u ? `${u.numero}${u.bloco ? ' - ' + u.bloco : ''}` : `Apto ${unidadeId}`;
+  };
+
+  const formatarMoeda = (val: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      maximumFractionDigits: 0
+    }).format(val);
+  };
+
+  // Calculate unpaid taxes
+  const unpaidList = taxas
+    .filter(t => t.status !== 'PAGO')
+    .map(t => {
+      const due = new Date(t.dataVencimento);
+      const diffTime = Math.max(0, new Date('2026-03-05').getTime() - due.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return {
+        unitId: t.unidadeId,
+        unitLabel: getUnidadeNum(t.unidadeId),
+        name: getTitular(t.unidadeId),
+        days: diffDays,
+        amount: t.valorTotal,
+        dateLabel: formatarDataDDMM(t.dataVencimento)
+      };
+    });
+
+  const totalReceitaCalculada = taxas
+    .filter(t => t.status === 'PAGO')
+    .reduce((acc, t) => acc + t.valorTotal, 0);
+
+  const uniqueUnpaidUnits = new Set(taxas.filter(t => t.status !== 'PAGO').map(t => t.unidadeId));
+  const inadimplentesCount = uniqueUnpaidUnits.size;
+
+  const budget2026 = orcamentos.find(o => o.ano === 2026);
+  const totalDespesasCalculadas = budget2026 ? budget2026.valorGasto : 0;
+  const saldoCalculado = totalReceitaCalculada - totalDespesasCalculadas;
 
   // Dynamic states for interactive demo
   const [activities, setActivities] = useState([
@@ -78,20 +173,20 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Principal</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Dashboard' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Dashboard')}
                 >
                   <div className="inner"><TrendingUp size={16} /> Dashboard</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Financeiro' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Financeiro')}
                 >
                   <div className="inner"><DollarSign size={16} /> Financeiro</div>
                   <span className="badge">3</span>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Notificações' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Notificações')}
                 >
@@ -104,19 +199,19 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Cadastros</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Unidades' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Unidades')}
                 >
                   <div className="inner"><FileText size={16} /> Unidades</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Moradores' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Moradores')}
                 >
                   <div className="inner"><Users size={16} /> Moradores</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Funcionários' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Funcionários')}
                 >
@@ -128,20 +223,20 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <div>
               <div className="menu-group-title">Operações</div>
               <div className="sidebar-nav">
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Ocorrências' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Ocorrências')}
                 >
                   <div className="inner"><AlertTriangle size={16} /> Ocorrências</div>
                   <span className="badge danger">2</span>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Assembleias' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Assembleias')}
                 >
                   <div className="inner"><Users size={16} /> Assembleias</div>
                 </div>
-                <div 
+                <div
                   className={`sidebar-link ${activeMenu === 'Documentos' ? 'active' : ''}`}
                   onClick={() => setActiveMenu('Documentos')}
                 >
@@ -154,8 +249,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
         {/* Sidebar user footer */}
         <div className="sidebar-bottom" style={{ position: 'relative' }}>
-          <div 
-            className="sidebar-user" 
+          <div
+            className="sidebar-user"
             style={{ cursor: 'pointer' }}
             onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
@@ -170,7 +265,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
           </button>
 
           {showProfileMenu && (
-            <div 
+            <div
               style={{
                 position: 'absolute',
                 bottom: '50px',
@@ -184,7 +279,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                 zIndex: 10
               }}
             >
-              <div 
+              <div
                 style={{
                   padding: '6px 14px',
                   fontSize: '11px',
@@ -230,11 +325,11 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
               <Search size={16} />
               <input type="text" placeholder="Buscar..." />
             </div>
-            
+
             <button className="icon-button">
               <Bell size={18} />
             </button>
-            
+
             <div className="sidebar-user-avatar" style={{ cursor: 'pointer', width: '32px', height: '32px', fontSize: '11px' }}>
               MR
             </div>
@@ -249,6 +344,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <MoradoresAdmin />
           ) : activeMenu === 'Unidades' ? (
             <Unidades />
+          ) : activeMenu === 'Financeiro' ? (
+            <FinanceiroAdmin />
           ) : (
             <>
               {/* Welcome Row */}
@@ -271,11 +368,11 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                     </div>
                   </div>
                   <div className="metric-card-content">
-                    <h2>R$48,2k</h2>
+                    <h2>{formatarMoeda(totalReceitaCalculada)}</h2>
                     <p>Receita mensal</p>
                   </div>
                   <div className="metric-card-footer" style={{ color: 'var(--success)' }}>
-                    ↑ 4.2% vs mês anterior
+                    Faturamento atual
                   </div>
                 </div>
 
@@ -286,11 +383,11 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                     </div>
                   </div>
                   <div className="metric-card-content">
-                    <h2>7</h2>
+                    <h2>{inadimplentesCount}</h2>
                     <p>Inadimplentes</p>
                   </div>
                   <div className="metric-card-footer" style={{ color: 'var(--danger)' }}>
-                    ↑ 2 desde mês passado
+                    Cota em atraso ou pendente
                   </div>
                 </div>
 
@@ -334,13 +431,13 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                     <div className="card-box-header">
                       <h3>Fluxo Financeiro — 2026</h3>
                       <div className="toggle-group">
-                        <button 
+                        <button
                           className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
                           onClick={() => setChartMode('receitas')}
                         >
                           Receitas
                         </button>
-                        <button 
+                        <button
                           className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
                           onClick={() => setChartMode('despesas')}
                         >
@@ -381,15 +478,15 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                       <div className="chart-stats">
                         <div className="chart-stat-item">
                           <span className="chart-stat-label">Receita</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>R$ 144.600</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>{formatarMoeda(totalReceitaCalculada)}</span>
                         </div>
                         <div className="chart-stat-item">
                           <span className="chart-stat-label">Despesas</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>R$ 98.300</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>{formatarMoeda(totalDespesasCalculadas)}</span>
                         </div>
                         <div className="chart-stat-item">
                           <span className="chart-stat-label">Saldo</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--success)' }}>R$ 46.300</span>
+                          <span className="chart-stat-value" style={{ color: 'var(--success)' }}>{formatarMoeda(saldoCalculado)}</span>
                         </div>
                       </div>
                     </div>
@@ -455,37 +552,31 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
                   <div className="card-box">
                     <div className="card-box-header">
                       <h3>Inadimplência</h3>
-                      <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>7 unidades</span>
+                      <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>{inadimplentesCount} unidades</span>
                     </div>
-                    <div className="debt-list">
-                      <div className="debt-item">
-                        <div className="debt-item-info">
-                          <h4>Apto 108 · Jorge Santos</h4>
-                          <p>Venc. 15/02 · 18 dias em atraso</p>
-                        </div>
-                        <span className="debt-amount">R$ 580</span>
+                    {unpaidList.length === 0 ? (
+                      <div style={{ padding: '20px 0', textAlign: 'center', color: 'var(--gray-400)', fontSize: '13px' }}>
+                        Nenhuma pendência financeira pendente.
                       </div>
-
-                      <div className="debt-item">
-                        <div className="debt-item-info">
-                          <h4>Apto 312 · P. Oliveira</h4>
-                          <p>Venc. 15/01 · 49 dias em atraso</p>
+                    ) : (
+                      <>
+                        <div className="debt-list">
+                          {unpaidList.slice(0, 3).map((item, idx) => (
+                            <div className="debt-item" key={idx}>
+                              <div className="debt-item-info">
+                                <h4>{item.unitLabel} · {item.name}</h4>
+                                <p>Venc. {item.dateLabel} · {item.days} dias em atraso</p>
+                              </div>
+                              <span className="debt-amount">{formatarMoeda(item.amount)}</span>
+                            </div>
+                          ))}
                         </div>
-                        <span className="debt-amount">R$ 1.160</span>
-                      </div>
 
-                      <div className="debt-item" style={{ marginBottom: 0 }}>
-                        <div className="debt-item-info">
-                          <h4>Apto 421 · R. Lima</h4>
-                          <p>Venc. 15/02 · 18 dias em atraso</p>
-                        </div>
-                        <span className="debt-amount">R$ 580</span>
-                      </div>
-                    </div>
-
-                    <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
-                      Ver todos os 7 <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
-                    </span>
+                        <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
+                          Ver todos os {inadimplentesCount} <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -507,8 +598,8 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             <form onSubmit={handleCreateRecord} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
                 <label>Tipo de Registro</label>
-                <select 
-                  value={newRecordType} 
+                <select
+                  value={newRecordType}
                   onChange={(e) => setNewRecordType(e.target.value)}
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
                 >
@@ -519,9 +610,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
               <div className="form-group">
                 <label>{newRecordType === 'morador' ? 'Nome Completo' : 'Título da Ocorrência'}</label>
-                <input 
-                  type="text" 
-                  value={newRecordName} 
+                <input
+                  type="text"
+                  value={newRecordName}
                   onChange={(e) => setNewRecordName(e.target.value)}
                   placeholder={newRecordType === 'morador' ? 'Ex: Carlos Souza' : 'Ex: Vazamento de água no subsolo'}
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
@@ -531,9 +622,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
               <div className="form-group">
                 <label>Unidade (Apto e Bloco)</label>
-                <input 
-                  type="text" 
-                  value={newRecordUnit} 
+                <input
+                  type="text"
+                  value={newRecordUnit}
                   onChange={(e) => setNewRecordUnit(e.target.value)}
                   placeholder="Ex: 302 - Bloco B"
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)' }}
@@ -553,25 +644,17 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
         <div className="modal-overlay">
           <div className="modal-card" style={{ width: '600px' }}>
             <div className="modal-header">
-              <h3>Todos os Inadimplentes (7)</h3>
+              <h3>Todos os Inadimplentes ({inadimplentesCount})</h3>
               <button className="close-modal-btn" onClick={() => setModalType(null)}><X size={20} /></button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '400px', overflowY: 'auto', paddingRight: '6px' }}>
-              {[
-                { unit: 'Apto 108', name: 'Jorge Santos', days: 18, amount: 'R$ 580,00' },
-                { unit: 'Apto 312', name: 'P. Oliveira', days: 49, amount: 'R$ 1.160,00' },
-                { unit: 'Apto 421', name: 'R. Lima', days: 18, amount: 'R$ 580,00' },
-                { unit: 'Apto 204', name: 'Juliana Costa', days: 18, amount: 'R$ 580,00' },
-                { unit: 'Apto 502', name: 'A. Rodrigues', days: 78, amount: 'R$ 1.740,00' },
-                { unit: 'Apto 115', name: 'Marcos André', days: 18, amount: 'R$ 580,00' },
-                { unit: 'Apto 307', name: 'Beatriz Martins', days: 18, amount: 'R$ 580,00' },
-              ].map((debtor, index) => (
+              {unpaidList.map((debtor, index) => (
                 <div className="debt-item" key={index}>
                   <div className="debt-item-info">
-                    <h4>{debtor.unit} · {debtor.name}</h4>
-                    <p>{debtor.days} dias em atraso</p>
+                    <h4>{debtor.unitLabel} · {debtor.name}</h4>
+                    <p>Venc. {debtor.dateLabel} · {debtor.days} dias em atraso</p>
                   </div>
-                  <span className="debt-amount">{debtor.amount}</span>
+                  <span className="debt-amount">{formatarMoeda(debtor.amount)}</span>
                 </div>
               ))}
             </div>
