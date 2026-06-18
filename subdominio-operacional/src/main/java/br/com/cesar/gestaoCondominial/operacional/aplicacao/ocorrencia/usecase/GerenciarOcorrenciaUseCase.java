@@ -35,6 +35,7 @@ public class GerenciarOcorrenciaUseCase {
         Long actualUnidadeId = unidadeOpt.map(u -> u.getId().getValor()).orElse(dto.getUnidadeId());
         
         Ocorrencia ocorrencia = new Ocorrencia();
+        ocorrencia.setTipo(dto.getTipo());
         ocorrencia.setDescricao(dto.getDescricao());
         ocorrencia.setUnidadeId(new UnidadeId(actualUnidadeId));
         ocorrencia.setDataRegistro(LocalDateTime.now());

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ModalOcorrencia } from '../components/ModalOcorrencia';
-import { listarOcorrencias, criarOcorrencia } from '../services/ocorrenciaService';
+import { listarOcorrencias, criarOcorrencia, encerrarOcorrencia } from '../services/ocorrenciaService';
 import './Ocorrencias.css';
 
 const statusClasses: Record<string, string> = {
@@ -23,6 +23,10 @@ function formatarData(dataStr: string) {
   } catch {
     return dataStr;
   }
+}
+
+function formatarMoeda(valor: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 }
 
 export const Ocorrencias: React.FC = () => {
@@ -73,6 +77,16 @@ export const Ocorrencias: React.FC = () => {
       carregar();
     } catch (e: any) {
       alert('Erro ao salvar ocorrência: ' + e.message);
+    }
+  };
+
+  const encerrar = async (id: number, dados: any) => {
+    try {
+      await encerrarOcorrencia(id, dados);
+      fecharModal();
+      carregar();
+    } catch (e: any) {
+      alert('Erro ao encerrar ocorrência: ' + e.message);
     }
   };
 
@@ -138,6 +152,7 @@ export const Ocorrencias: React.FC = () => {
                 <th>#</th>
                 <th>UNIDADE</th>
                 <th>RELATOR</th>
+                <th>TIPO</th>
                 <th>DESCRIÇÃO</th>
                 <th>DATA REGISTRO</th>
                 <th>PENALIDADE</th>
@@ -151,11 +166,14 @@ export const Ocorrencias: React.FC = () => {
                   <td className="td-id">#{String(oc.id).padStart(4, '0')}</td>
                   <td className="td-unidade">{oc.unidadeId || '—'}</td>
                   <td>{oc.relatorNome || '—'}</td>
+                  <td className="td-tipo">{oc.tipo || '—'}</td>
                   <td className="td-descricao">{oc.descricao}</td>
                   <td>{formatarData(oc.dataRegistro)}</td>
                   <td>
-                    {oc.penalidade && oc.penalidade !== 'NENHUMA' ? (
-                      <span className="multa-badge multa-valor">{oc.penalidade}</span>
+                    {oc.valorMulta != null ? (
+                      <span className="multa-badge multa-valor">{formatarMoeda(oc.valorMulta)}</span>
+                    ) : oc.penalidade === 'ADVERTENCIA' ? (
+                      <span className="multa-badge advertencia-badge">Advertência</span>
                     ) : (
                       <span className="multa-sem">—</span>
                     )}
@@ -168,18 +186,18 @@ export const Ocorrencias: React.FC = () => {
                   <td className="td-acoes">
                     <button
                       className="btn-acao btn-editar"
-                      title="Editar"
+                      title={oc.status === 'ENCERRADA' ? 'Ver detalhes' : 'Encerrar ocorrência'}
                       id={`btn-editar-${oc.id}`}
                       onClick={() => abrirEditar(oc)}
                     >
-                      ✏️
+                      {oc.status === 'ENCERRADA' ? '👁️' : '✏️'}
                     </button>
                   </td>
                 </tr>
               ))}
               {!carregando && ocorrenciasFiltradas.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="td-vazio">
+                  <td colSpan={9} className="td-vazio">
                     {erro ? 'Erro ao carregar.' : 'Nenhuma ocorrência encontrada.'}
                   </td>
                 </tr>
@@ -194,6 +212,7 @@ export const Ocorrencias: React.FC = () => {
         <ModalOcorrencia
           ocorrencia={ocorrenciaEdicao}
           onSalvar={salvar}
+          onEncerrar={encerrar}
           onFechar={fecharModal}
         />
       )}

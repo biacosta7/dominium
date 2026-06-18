@@ -21,6 +21,8 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
+                seedTiposOcorrencia();
+
                 Integer userCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM usuarios", Integer.class);
                 if (userCount != null && userCount > 0) {
                         System.out.println("Banco de dados já contém registros. Pulando seeding inicial.");
@@ -122,6 +124,23 @@ public class DatabaseSeeder implements CommandLineRunner {
                                 "EXTRAORDINARIA", "PENDENTE", budget2026);
 
                 System.out.println("Seeding do banco de dados concluído com sucesso!");
+        }
+
+        private void seedTiposOcorrencia() {
+                Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tipos_ocorrencia", Integer.class);
+                if (count != null && count > 0) {
+                        return;
+                }
+                System.out.println("Inserindo tipos de ocorrência padrão...");
+                String sql = "INSERT INTO tipos_ocorrencia (nome, valor_base_multa) VALUES (?, ?)";
+                jdbcTemplate.update(sql, "Barulho Excessivo",            new BigDecimal("150.00"));
+                jdbcTemplate.update(sql, "Descarte Irregular",           new BigDecimal("200.00"));
+                jdbcTemplate.update(sql, "Vandalismo",                   new BigDecimal("500.00"));
+                jdbcTemplate.update(sql, "Limpeza",                      new BigDecimal("100.00"));
+                jdbcTemplate.update(sql, "Uso Indevido de Área Comum",   new BigDecimal("250.00"));
+                jdbcTemplate.update(sql, "Estacionamento Irregular",     new BigDecimal("120.00"));
+                jdbcTemplate.update(sql, "Animais sem Guia",             new BigDecimal("80.00"));
+                jdbcTemplate.update(sql, "Outros",                       new BigDecimal("150.00"));
         }
 
         private long insertUsuario(String nome, String email, String senha, String telefone, String cpf, String tipo) {

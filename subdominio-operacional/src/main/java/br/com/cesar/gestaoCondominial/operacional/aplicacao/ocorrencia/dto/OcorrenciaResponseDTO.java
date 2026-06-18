@@ -1,9 +1,11 @@
 package br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class OcorrenciaResponseDTO {
     private Long id;
+    private String tipo;
     private String descricao;
     private Long unidadeId;
     private Long relatorId;
@@ -12,11 +14,15 @@ public class OcorrenciaResponseDTO {
     private String status;
     private String penalidade;
     private String observacaoSindico;
+    private BigDecimal valorMulta;
 
     public OcorrenciaResponseDTO() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
@@ -41,4 +47,7 @@ public class OcorrenciaResponseDTO {
 
     public String getObservacaoSindico() { return observacaoSindico; }
     public void setObservacaoSindico(String observacaoSindico) { this.observacaoSindico = observacaoSindico; }
+
+    public BigDecimal getValorMulta() { return valorMulta; }
+    public void setValorMulta(BigDecimal valorMulta) { this.valorMulta = valorMulta; }
 }

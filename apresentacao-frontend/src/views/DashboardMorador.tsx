@@ -4,6 +4,7 @@ import Reserva from './espacos-condominio/Reserva';
 import { buscarReservas } from './espacos-condominio/services/reservaService';
 import AssembleiasMorador from './governanca/AssembleiasMorador';
 import FinanceiroMorador from './financeiro/FinanceiroMorador';
+import OcorrenciasMorador from './ocorrencias/OcorrenciasMorador';
 import { pautaService } from './governanca/services/pautaService';
 import type { Pauta } from './governanca/types/pauta';
 import { financeiroService } from './financeiro/services/financeiroService';
@@ -278,12 +279,11 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
             >
               Assembleias
             </li>
-            <li 
+            <li
               className={`dash-nav-item ${activeTab === 'Ocorrências' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('Ocorrências');
-                setPaginaAtual('dashboard');
-                setModalType('ocorrencia');
+                setPaginaAtual('ocorrencias');
               }}
             >
               Ocorrências
@@ -361,6 +361,8 @@ export const DashboardMorador: React.FC<DashboardMoradorProps> = ({ userEmail, o
           <AssembleiasMorador />
         ) : paginaAtual === 'financeiro' ? (
           <FinanceiroMorador />
+        ) : paginaAtual === 'ocorrencias' ? (
+          <OcorrenciasMorador />
         ) : (
           <>
             {/* Welcome Banner */}

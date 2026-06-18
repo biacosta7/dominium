@@ -207,6 +207,7 @@ CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
 
 CREATE TABLE IF NOT EXISTS ocorrencias (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(100),
     descricao TEXT NOT NULL,
     unidade_id BIGINT NOT NULL,
     usuario_id BIGINT,
@@ -274,4 +275,10 @@ CREATE TABLE taxa_condominial (
     data_vencimento DATE NOT NULL,
     data_pagamento TIMESTAMP,
     status VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tipos_ocorrencia (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    valor_base_multa DECIMAL(15,2) NOT NULL
 );

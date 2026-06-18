@@ -225,6 +225,7 @@ CREATE TABLE IF NOT EXISTS notificacoes_assembleia (
 
 CREATE TABLE IF NOT EXISTS ocorrencias (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(100),
     descricao TEXT NOT NULL,
     unidade_id BIGINT NOT NULL,
     usuario_id BIGINT,
@@ -293,6 +294,23 @@ CREATE TABLE IF NOT EXISTS taxa_condominial (
     data_pagamento TIMESTAMP,
     status VARCHAR(20) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS tipos_ocorrencia (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    valor_base_multa DECIMAL(15,2) NOT NULL
+);
+
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (1, 'Barulho Excessivo', 150.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (2, 'Descarte Irregular', 200.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (3, 'Vandalismo', 500.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (4, 'Limpeza', 100.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (5, 'Uso Indevido de Área Comum', 250.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (6, 'Estacionamento Irregular', 120.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (7, 'Animais sem Guia', 80.00);
+MERGE INTO tipos_ocorrencia (id, nome, valor_base_multa) KEY(id) VALUES (8, 'Outros', 150.00);
+
+ALTER TABLE tipos_ocorrencia ALTER COLUMN id RESTART WITH 9;
 
 MERGE INTO usuarios (id, nome, email, senha, telefone, cpf, tipo) 
 KEY(id)

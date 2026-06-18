@@ -8,4 +8,5 @@ public interface OcorrenciaRepository {
     Ocorrencia salvar(Ocorrencia ocorrencia);
     Optional<Ocorrencia> buscarPorId(Long id);
     List<Ocorrencia> listarTodas();
+    List<Ocorrencia> listarPorUnidade(Long unidadeId);
 }
