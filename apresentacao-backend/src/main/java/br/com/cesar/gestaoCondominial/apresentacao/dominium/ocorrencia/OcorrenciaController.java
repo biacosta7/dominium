@@ -8,10 +8,13 @@ import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.A
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.OcorrenciaRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/ocorrencias")
@@ -20,14 +23,26 @@ public class OcorrenciaController {
     private final GerenciarOcorrenciaUseCase gerenciarOcorrenciaUseCase;
     private final AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase;
     private final EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase;
+    private final OcorrenciaRepository ocorrenciaRepository;
 
     public OcorrenciaController(
             GerenciarOcorrenciaUseCase gerenciarOcorrenciaUseCase,
             AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase,
-            EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase) {
+            EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase,
+            OcorrenciaRepository ocorrenciaRepository) {
         this.gerenciarOcorrenciaUseCase = gerenciarOcorrenciaUseCase;
         this.atualizarStatusOcorrenciaUseCase = atualizarStatusOcorrenciaUseCase;
         this.encerrarOcorrenciaUseCase = encerrarOcorrenciaUseCase;
+        this.ocorrenciaRepository = ocorrenciaRepository;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OcorrenciaResponseDTO>> listarTodas() {
+        List<Ocorrencia> ocorrencias = ocorrenciaRepository.listarTodas();
+        List<OcorrenciaResponseDTO> dtos = ocorrencias.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping

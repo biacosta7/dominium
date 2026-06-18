@@ -1013,7 +1013,7 @@ public class DominiumFuncionalidade {
         confirmarReservaPromovidaUseCase = new ConfirmarReservaPromovidaUseCase(reservaRepository);
 
         // ── Ocorrências ──────────────────────────────────────────────────────────
-        gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository);
+        gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository, unidadeRepository);
         encerrarOcorrenciaUseCase = new EncerrarOcorrenciaUseCase(ocorrenciaRepository, createMultaManualUseCase);
 
         // ── Funcionários ─────────────────────────────────────────────────────────

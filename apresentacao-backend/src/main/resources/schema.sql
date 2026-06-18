@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS ocorrencias (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     descricao TEXT NOT NULL,
     unidade_id BIGINT NOT NULL,
-    usuario_id BIGINT NOT NULL,
+    usuario_id BIGINT,
     data_registro TIMESTAMP NOT NULL,
     status VARCHAR(50) NOT NULL,
     penalidade VARCHAR(50),
