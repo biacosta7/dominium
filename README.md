@@ -124,3 +124,28 @@ O `CreateMultaManualUseCase` atua como gatilho: após persistir a multa, chama `
 | `subdominio-financeiro/.../aplicacao/multa/usecase/CreateMultaManualUseCase.java` | Dispara o evento após persistir a multa |
 | `subdominio-financeiro/.../aplicacao/multa/usecase/RegistrarPagamentoMultaUseCase.java` | Dispara o evento de pagamento |
 | `subdominio-financeiro/.../aplicacao/multa/usecase/UpdateMultaStatusUseCase.java` | Dispara o evento de cancelamento |
+
+### Proxy
+
+**Implementado por:** Gabrielle Mastellari
+
+**Motivação:**
+Nas histórias de Gestão de Assembleias e Gestão de Funcionários, havia a necessidade de adicionar comportamentos transversais (auditoria e validação de regras de negócio) na hora de acessar os repositórios, sem alterar a implementação JDBC já existente nem os use cases que dependem dela. O padrão Proxy foi escolhido para resolver isso: um objeto Proxy implementa a mesma interface do repositório real e se posiciona entre o use case e a implementação JDBC, interceptando as chamadas para executar lógica adicional antes e/ou depois de delegar a chamada real — de forma totalmente transparente para quem consome o repositório.
+
+**Como foi implementado:**
+Em ambos os casos, a implementação JDBC concreta (`AssembleiaRepositoryImpl` / `FuncionarioRepositoryImpl`) passou a ser registrada com um `@Qualifier` específico (`assembleiaRepositoryJdbc` / `funcionarioRepositoryJdbc`), deixando de ser o bean injetado por padrão. No lugar dela, uma classe Proxy (`AssembleiaRepositoryAuditProxy` / `FuncionarioRepositoryValidacaoProxy`) implementa a mesma interface do repositório, recebe a implementação JDBC injetada via construtor (usando o `@Qualifier` correspondente) e é marcada com `@Primary`, garantindo que seja ela — e não a implementação real — a injetada em todos os use cases que dependem do repositório.
+
+Na **Gestão de Assembleias**, o `AssembleiaRepositoryAuditProxy` adiciona auditoria: a cada `save()`, registra em log se a operação é uma criação ou atualização (com título, status e síndico responsável) antes de delegar para o repositório real, e registra a conclusão (com o id gerado) depois; em `findById()` e `findAll()`, registra logs de busca e indica se a assembleia foi encontrada. Nenhuma dessas operações de log altera o resultado retornado — o Proxy apenas observa e repassa.
+
+Na **Gestão de Funcionários**, o `FuncionarioRepositoryValidacaoProxy` adiciona uma regra de validação automática: em `findById()`, `findAll()` e `findByStatus()`, cada `Funcionario` retornado pela implementação real passa pelo método `aplicarRegraVencimento()`, que verifica se o contrato do funcionário está vencido enquanto ele ainda está marcado como `ATIVO`. Se estiver, o Proxy bloqueia o funcionário (`funcionario.bloquear()`) e persiste essa mudança através do próprio delegate, antes de devolver o objeto já atualizado para quem chamou — garantindo que nenhum funcionário com contrato vencido seja exibido como ativo, sem que os use cases precisem conhecer essa regra.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| `subdominio-governanca/.../dominio/assembleia/repository/AssembleiaRepository.java` | Interface comum implementada pelo Proxy e pelo objeto real (*Subject*) |
+| `subdominio-governanca/.../infraestrutura/assembleia/AssembleiaRepositoryImpl.java` | Implementação JDBC real (*RealSubject*), qualificada como `assembleiaRepositoryJdbc` |
+| `subdominio-governanca/.../aplicacao/assembleia/proxy/AssembleiaRepositoryAuditProxy.java` | Proxy de auditoria — loga criação/atualização/busca de assembleias antes de delegar |
+| `subdominio-operacional/.../dominio/funcionario/repository/FuncionarioRepository.java` | Interface comum implementada pelo Proxy e pelo objeto real (*Subject*) |
+| `subdominio-operacional/.../infraestrutura/funcionario/FuncionarioRepositoryImpl.java` | Implementação JDBC real (*RealSubject*), qualificada como `funcionarioRepositoryJdbc` |
+| `subdominio-operacional/.../aplicacao/funcionario/proxy/FuncionarioRepositoryValidacaoProxy.java` | Proxy de validação — bloqueia automaticamente funcionários com contrato vencido ao serem buscados |
