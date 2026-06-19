@@ -117,4 +117,11 @@ public class PautaRepositoryImpl implements PautaRepository {
 
         return jdbc.query(sql, pautaMapper);
     }
+
+    @Override
+    public List<Pauta> buscarPorAssembleia(AssembleiaId assembleiaId) {
+        String sql = "SELECT * FROM pauta WHERE assembleia_id = ?";
+
+        return jdbc.query(sql, pautaMapper, assembleiaId.getValor());
+    }
 }

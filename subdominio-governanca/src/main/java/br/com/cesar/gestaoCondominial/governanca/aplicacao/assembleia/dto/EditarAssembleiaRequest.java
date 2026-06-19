@@ -7,5 +7,6 @@ public record EditarAssembleiaRequest(
         String titulo,
         LocalDateTime dataHora,
         String local,
-        List<String> pauta
+        List<String> pauta,
+        String tipo
 ) {}

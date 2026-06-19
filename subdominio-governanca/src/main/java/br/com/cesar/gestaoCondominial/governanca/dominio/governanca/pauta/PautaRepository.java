@@ -1,5 +1,7 @@
 package br.com.cesar.gestaoCondominial.governanca.dominio.governanca.pauta;
 
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,5 +12,7 @@ public interface PautaRepository {
     Optional<Pauta> findById(PautaId pautaId);
 
     List<Pauta> buscarAbertas();
+
+    List<Pauta> buscarPorAssembleia(AssembleiaId assembleiaId);
 
 }

@@ -574,6 +574,13 @@ public class DominiumFuncionalidade {
             public List<Pauta> buscarAbertas() {
                 return List.copyOf(db.values());
             }
+
+            @Override
+            public List<Pauta> buscarPorAssembleia(AssembleiaId assembleiaId) {
+                return db.values().stream()
+                        .filter(p -> p.getAssembleiaId() != null && p.getAssembleiaId().equals(assembleiaId))
+                        .toList();
+            }
         };
 
         votoRepository = new VotoRepository() {
@@ -992,16 +999,17 @@ public class DominiumFuncionalidade {
                     "Nova assembleia agendada: " + assembleia.getTitulo(),
                     br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.NOVA_ASSEMBLEIA);
         };
+        RegraVotacao regraVotacao = new RegraVotacao(vinculoMoradorRepository, unidadeRepository);
+        encerrarPautaUseCase = new EncerrarPautaUseCase(pautaRepository, votoRepository, regraVotacao);
         criarAssembleiaUseCase = new CriarAssembleiaUseCase(assembleiaRepository, usuarioRepository,
                 servicoNotificacao);
-        encerrarAssembleiaUseCase = new EncerrarAssembleiaUseCase(assembleiaRepository, usuarioRepository);
+        encerrarAssembleiaUseCase = new EncerrarAssembleiaUseCase(assembleiaRepository, usuarioRepository,
+                pautaRepository, encerrarPautaUseCase);
         cancelarAssembleiaUseCase = new CancelarAssembleiaUseCase(assembleiaRepository, usuarioRepository);
         editarAssembleiaUseCase = new EditarAssembleiaUseCase(assembleiaRepository, usuarioRepository);
 
         // ── Pautas e Votações ─────────────────────────────────────────────────────
-        RegraVotacao regraVotacao = new RegraVotacao(vinculoMoradorRepository, unidadeRepository);
         abrirPautaUseCase = new AbrirPautaUseCase(pautaRepository);
-        encerrarPautaUseCase = new EncerrarPautaUseCase(pautaRepository, votoRepository, regraVotacao);
         listarPautasUseCase = new ListarPautasUseCase(pautaRepository);
         votarUseCase = new VotarUseCase(votoRepository, pautaRepository, regraVotacao);
         listarVotosUseCase = new ListarVotosUseCase(votoRepository);

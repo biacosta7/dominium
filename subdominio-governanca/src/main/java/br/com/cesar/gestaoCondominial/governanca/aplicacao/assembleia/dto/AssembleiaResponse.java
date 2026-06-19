@@ -12,6 +12,7 @@ public record AssembleiaResponse(
         String local,
         List<String> pauta,
         String status,
+        String tipo,
         Long sindicoId,
         LocalDateTime dataCriacao
 ) {
@@ -23,6 +24,7 @@ public record AssembleiaResponse(
                 assembleia.getLocal(),
                 assembleia.getPauta(),
                 assembleia.getStatus().name(),
+                assembleia.getTipo().name(),
                 assembleia.getSindicoId(),
                 assembleia.getDataCriacao()
         );

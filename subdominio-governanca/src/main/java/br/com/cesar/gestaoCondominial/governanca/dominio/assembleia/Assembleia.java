@@ -21,6 +21,7 @@ public class Assembleia {
     private String local;
     private List<String> pauta;
     private StatusAssembleia status;
+    private TipoAssembleia tipo;
     private Long sindicoId;
     private LocalDateTime dataCriacao;
 
@@ -30,6 +31,7 @@ public class Assembleia {
             LocalDateTime dataHora,
             String local,
             List<String> pauta,
+            TipoAssembleia tipo,
             Long sindicoId
     ) {
         validarAntecedencia(dataHora);
@@ -40,6 +42,7 @@ public class Assembleia {
         a.local = local;
         a.pauta = pauta != null ? pauta : List.of();
         a.status = StatusAssembleia.AGENDADA;
+        a.tipo = tipo != null ? tipo : TipoAssembleia.ORDINARIA;
         a.sindicoId = sindicoId;
         a.dataCriacao = LocalDateTime.now();
         return a;
@@ -52,6 +55,7 @@ public class Assembleia {
             String local,
             List<String> pauta,
             StatusAssembleia status,
+            TipoAssembleia tipo,
             Long sindicoId,
             LocalDateTime dataCriacao
     ) {
@@ -62,12 +66,13 @@ public class Assembleia {
         a.local = local;
         a.pauta = pauta != null ? pauta : List.of();
         a.status = status;
+        a.tipo = tipo != null ? tipo : TipoAssembleia.ORDINARIA;
         a.sindicoId = sindicoId;
         a.dataCriacao = dataCriacao;
         return a;
     }
 
-    public void editar(String titulo, LocalDateTime dataHora, String local, List<String> pauta) {
+    public void editar(String titulo, LocalDateTime dataHora, String local, List<String> pauta, TipoAssembleia tipo) {
         if (this.status != StatusAssembleia.AGENDADA) {
             throw new DomainException("Apenas assembleias agendadas podem ser editadas");
         }
@@ -76,6 +81,7 @@ public class Assembleia {
         this.dataHora = dataHora;
         this.local = local;
         this.pauta = pauta != null ? pauta : List.of();
+        this.tipo = tipo != null ? tipo : this.tipo;
     }
 
     public void cancelar() {

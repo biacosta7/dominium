@@ -208,6 +208,7 @@ CREATE TABLE IF NOT EXISTS assembleias (
     data_hora TIMESTAMP NOT NULL,
     local VARCHAR(255) NOT NULL,
     status VARCHAR(50) NOT NULL,
+    tipo VARCHAR(50) NOT NULL DEFAULT 'ORDINARIA',
     sindico_id BIGINT NOT NULL,
     data_criacao TIMESTAMP NOT NULL,
     CONSTRAINT fk_assembleia_sindico FOREIGN KEY (sindico_id) REFERENCES usuarios(id)
@@ -311,9 +312,9 @@ MERGE INTO usuarios (id, nome, email, senha, telefone, cpf, tipo)
 KEY(id)
 VALUES (2, 'Marco Ribeiro', 'sindico@residencial.com', 'admin123', '8198888888', '98765432100', 'SINDICO');
 
-MERGE INTO assembleias (id, titulo, data_hora, local, status, sindico_id, data_criacao)
+MERGE INTO assembleias (id, titulo, data_hora, local, status, tipo, sindico_id, data_criacao)
 KEY(id)
-VALUES (1, 'Assembleia Ordinária', '2026-03-13 19:00:00', 'Salão de Festas', 'AGENDADA', 2, CURRENT_TIMESTAMP);
+VALUES (1, 'Assembleia Ordinária', DATEADD('DAY', 14, CURRENT_TIMESTAMP), 'Salão de Festas', 'AGENDADA', 'ORDINARIA', 2, CURRENT_TIMESTAMP);
 
 MERGE INTO areas_comuns (id, nome, capacidade_maxima, status) KEY(id) VALUES 
 (1, 'Churrasqueira 1', 15, 'DISPONIVEL');
