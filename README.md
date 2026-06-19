@@ -92,3 +92,35 @@ Para rodar os testes de aceitação (Cucumber):
 Com o backend em execução, você pode acessar a interface do Swagger para explorar e testar os endpoints:
 - **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - **API Docs**: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
+
+---
+
+## Padrões de Projeto Implementados
+
+### Observer
+
+**Implementado por:** Nina Henrique França
+
+**Motivação:**
+Quando uma multa é criada, paga ou cancelada no sistema, outras partes do domínio precisam reagir a esse evento, especialmente a unidade condominial, cujo saldo devedor e status de adimplência devem ser atualizados automaticamente. O padrão Observer foi escolhido para desacoplar a lógica de criação de multas da lógica de atualização da unidade: o use case que cria a multa não precisa saber quais efeitos colaterais existem, apenas que um evento ocorreu.
+
+**Como foi implementado:**
+A implementação segue o padrão clássico com interfaces separadas para o publicador e para o ouvinte. A interface `MultaEventPublisher` define os métodos de publicação de eventos (`publicarMultaCriada`, `publicarMultaPaga`, `publicarMultaCancelada`) e os métodos de registro e remoção de ouvintes. A interface `MultaEventListener` define os callbacks que cada ouvinte deve implementar (`onMultaCriada`, `onMultaPaga`, `onMultaCancelada`).
+
+`MultaEventPublisherImpl` é a implementação concreta do publicador: mantém uma lista de ouvintes registrados e, ao receber um evento, itera sobre todos eles chamando o callback correspondente. O Spring injeta automaticamente todos os beans que implementam `MultaEventListener` na lista do publicador via injeção por construtor.
+
+O único ouvinte registrado atualmente é `UnidadeAdimplenciaListener`, que reage aos três eventos: ao criar uma multa, soma o valor ao saldo devedor da unidade e marca-a como `INADIMPLENTE`; ao registrar um pagamento, subtrai o valor pago e, se o saldo zerar, retorna o status para `ADIMPLENTE`; ao cancelar uma multa, reverte o valor adicionado ao saldo.
+
+O `CreateMultaManualUseCase` atua como gatilho: após persistir a multa, chama `eventPublisher.publicarMultaCriada(salva)`, sem qualquer conhecimento de quem irá reagir ao evento.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| `subdominio-financeiro/.../dominio/multa/MultaEventPublisher.java` | Interface do publicador (*Subject*) |
+| `subdominio-financeiro/.../dominio/multa/MultaEventListener.java` | Interface do ouvinte (*Observer*) |
+| `subdominio-financeiro/.../aplicacao/multa/observer/MultaEventPublisherImpl.java` | Implementação concreta do publicador |
+| `subdominio-financeiro/.../aplicacao/multa/observer/UnidadeAdimplenciaListener.java` | Ouvinte concreto — atualiza saldo devedor e adimplência da unidade |
+| `subdominio-financeiro/.../aplicacao/multa/usecase/CreateMultaManualUseCase.java` | Dispara o evento após persistir a multa |
+| `subdominio-financeiro/.../aplicacao/multa/usecase/RegistrarPagamentoMultaUseCase.java` | Dispara o evento de pagamento |
+| `subdominio-financeiro/.../aplicacao/multa/usecase/UpdateMultaStatusUseCase.java` | Dispara o evento de cancelamento |
