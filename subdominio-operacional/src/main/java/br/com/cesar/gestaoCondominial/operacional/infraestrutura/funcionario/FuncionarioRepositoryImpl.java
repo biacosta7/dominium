@@ -7,9 +7,13 @@ import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.TipoVincul
 import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.repository.FuncionarioRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -40,19 +44,29 @@ public class FuncionarioRepositoryImpl implements FuncionarioRepository {
 
     @Override
     public Funcionario save(Funcionario f) {
-        boolean existe = Boolean.TRUE.equals(
-            jdbcTemplate.queryForObject("SELECT COUNT(*) > 0 FROM funcionarios WHERE id = ?", Boolean.class, f.getId().getValor())
-        );
+        boolean isNew = f.getId().getValor() == null;
 
-        if (!existe) {
-            jdbcTemplate.update(
-                "INSERT INTO funcionarios (id, nome, cpf, email, telefone, tipo_vinculo, status, contrato_inicio, contrato_fim, valor_mensal, sindico_id, data_cadastro) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                f.getId().getValor(), f.getNome(), f.getCpf(), f.getEmail(), f.getTelefone(),
-                f.getTipoVinculo().name(), f.getStatus().name(),
-                Date.valueOf(f.getContratoInicio()), Date.valueOf(f.getContratoFim()),
-                f.getValorMensal(), f.getSindicoId(),
-                Timestamp.valueOf(f.getDataCadastro())
-            );
+        if (isNew) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO funcionarios (nome, cpf, email, telefone, tipo_vinculo, status, contrato_inicio, contrato_fim, valor_mensal, sindico_id, data_cadastro) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, f.getNome());
+                ps.setString(2, f.getCpf());
+                ps.setString(3, f.getEmail());
+                ps.setString(4, f.getTelefone());
+                ps.setString(5, f.getTipoVinculo().name());
+                ps.setString(6, f.getStatus().name());
+                ps.setDate(7, Date.valueOf(f.getContratoInicio()));
+                ps.setDate(8, Date.valueOf(f.getContratoFim()));
+                ps.setBigDecimal(9, f.getValorMensal());
+                ps.setLong(10, f.getSindicoId());
+                ps.setTimestamp(11, Timestamp.valueOf(f.getDataCadastro()));
+                return ps;
+            }, keyHolder);
+            f.setId(new FuncionarioId(keyHolder.getKey().longValue()));
         } else {
             jdbcTemplate.update(
                 "UPDATE funcionarios SET nome=?, cpf=?, email=?, telefone=?, tipo_vinculo=?, status=?, contrato_inicio=?, contrato_fim=?, valor_mensal=? WHERE id=?",

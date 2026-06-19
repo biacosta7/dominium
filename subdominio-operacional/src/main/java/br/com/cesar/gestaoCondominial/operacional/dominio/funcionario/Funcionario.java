@@ -88,6 +88,19 @@ public class Funcionario {
         return f;
     }
 
+    public void editar(String nome, String cpf, String email, String telefone,
+                       TipoVinculo tipoVinculo, LocalDate contratoInicio,
+                       LocalDate contratoFim, BigDecimal valorMensal) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.telefone = telefone;
+        this.tipoVinculo = tipoVinculo;
+        this.contratoInicio = contratoInicio;
+        this.contratoFim = contratoFim;
+        this.valorMensal = valorMensal;
+    }
+
     public boolean contratoVencido() {
         return LocalDate.now().isAfter(contratoFim);
     }

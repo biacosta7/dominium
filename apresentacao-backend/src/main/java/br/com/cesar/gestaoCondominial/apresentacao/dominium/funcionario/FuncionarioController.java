@@ -1,10 +1,13 @@
 package br.com.cesar.gestaoCondominial.apresentacao.dominium.funcionario;
 
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.dto.CadastrarFuncionarioRequest;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.dto.EditarFuncionarioRequest;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.dto.FuncionarioResponse;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.dto.RegistrarAvaliacaoRequest;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.dto.RenovarContratoRequest;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.CadastrarFuncionarioUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.EditarFuncionarioUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.ListarFuncionariosUseCase;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.RegistrarAvaliacaoUseCase;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.funcionario.usecase.RenovarContratoUseCase;
 import br.com.cesar.gestaoCondominial.operacional.dominio.funcionario.Funcionario;
@@ -13,25 +16,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/funcionarios")
 public class FuncionarioController {
 
     private final CadastrarFuncionarioUseCase cadastrarUseCase;
+    private final EditarFuncionarioUseCase editarUseCase;
+    private final ListarFuncionariosUseCase listarUseCase;
     private final RenovarContratoUseCase renovarContratoUseCase;
     private final RegistrarAvaliacaoUseCase registrarAvaliacaoUseCase;
     private final ExceptionHandler exceptionHandler;
 
     public FuncionarioController(
             CadastrarFuncionarioUseCase cadastrarUseCase,
+            EditarFuncionarioUseCase editarUseCase,
+            ListarFuncionariosUseCase listarUseCase,
             RenovarContratoUseCase renovarContratoUseCase,
             RegistrarAvaliacaoUseCase registrarAvaliacaoUseCase,
             ExceptionHandler exceptionHandler
     ) {
         this.cadastrarUseCase = cadastrarUseCase;
+        this.editarUseCase = editarUseCase;
+        this.listarUseCase = listarUseCase;
         this.renovarContratoUseCase = renovarContratoUseCase;
         this.registrarAvaliacaoUseCase = registrarAvaliacaoUseCase;
         this.exceptionHandler = exceptionHandler;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FuncionarioResponse>> listar() {
+        List<FuncionarioResponse> lista = listarUseCase.executar()
+                .stream()
+                .map(FuncionarioResponse::from)
+                .toList();
+        return ResponseEntity.ok(lista);
     }
 
     @PostMapping
@@ -47,6 +67,23 @@ public class FuncionarioController {
                     request.valorMensal()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(FuncionarioResponse.from(f));
+        });
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(
+            @RequestHeader("X-Sindico-Id") Long sindicoId,
+            @PathVariable String id,
+            @RequestBody EditarFuncionarioRequest request
+    ) {
+        return exceptionHandler.withHandler(() -> {
+            Funcionario f = editarUseCase.executar(
+                    sindicoId, id,
+                    request.nome(), request.cpf(), request.email(), request.telefone(),
+                    request.tipoVinculo(), request.contratoInicio(), request.contratoFim(),
+                    request.valorMensal()
+            );
+            return ResponseEntity.ok(FuncionarioResponse.from(f));
         });
     }
 
