@@ -35,8 +35,10 @@ public class EncerrarPautaUseCase {
 
         List<Voto> votos = votoRepository.buscarPorPauta(pautaId);
 
-        ResultadoPauta resultado =
-                regraVotacao.calcularResultado(pauta, new VotoCollection(votos).iterator());
+        // Pauta sem nenhum voto é encerrada como ADIADO em vez de bloquear o encerramento
+        ResultadoPauta resultado = votos.isEmpty()
+                ? ResultadoPauta.ADIADO
+                : regraVotacao.calcularResultado(pauta, new VotoCollection(votos).iterator());
 
         pauta.encerrar(resultado);
 

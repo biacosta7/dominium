@@ -7,11 +7,14 @@ import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.Ca
 import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.CriarAssembleiaUseCase;
 import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.EditarAssembleiaUseCase;
 import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.EncerrarAssembleiaUseCase;
+import br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase.ListarAssembleiasUseCase;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/assembleias")
@@ -21,6 +24,7 @@ public class AssembleiaController {
     private final EditarAssembleiaUseCase editarUseCase;
     private final CancelarAssembleiaUseCase cancelarUseCase;
     private final EncerrarAssembleiaUseCase encerrarUseCase;
+    private final ListarAssembleiasUseCase listarUseCase;
     private final ExceptionHandler exceptionHandler;
 
     public AssembleiaController(
@@ -28,13 +32,24 @@ public class AssembleiaController {
             EditarAssembleiaUseCase editarUseCase,
             CancelarAssembleiaUseCase cancelarUseCase,
             EncerrarAssembleiaUseCase encerrarUseCase,
+            ListarAssembleiasUseCase listarUseCase,
             ExceptionHandler exceptionHandler
     ) {
         this.criarUseCase = criarUseCase;
         this.editarUseCase = editarUseCase;
         this.cancelarUseCase = cancelarUseCase;
         this.encerrarUseCase = encerrarUseCase;
+        this.listarUseCase = listarUseCase;
         this.exceptionHandler = exceptionHandler;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AssembleiaResponse>> listar() {
+        List<AssembleiaResponse> assembleias = listarUseCase.executar()
+                .stream()
+                .map(AssembleiaResponse::from)
+                .toList();
+        return ResponseEntity.ok(assembleias);
     }
 
     @PostMapping
@@ -48,7 +63,8 @@ public class AssembleiaController {
                     request.titulo(),
                     request.dataHora(),
                     request.local(),
-                    request.pauta()
+                    request.pauta(),
+                    request.tipo()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(AssembleiaResponse.from(assembleia));
         });
@@ -67,7 +83,8 @@ public class AssembleiaController {
                     request.titulo(),
                     request.dataHora(),
                     request.local(),
-                    request.pauta()
+                    request.pauta(),
+                    request.tipo()
             );
             return ResponseEntity.ok(AssembleiaResponse.from(assembleia));
         });

@@ -2,6 +2,7 @@ package br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase;
 
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.TipoAssembleia;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.repository.AssembleiaRepository;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.service.ServicoNotificacaoAssembleia;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
@@ -32,7 +33,7 @@ public class CriarAssembleiaUseCase {
     }
 
     @Transactional
-    public Assembleia executar(Long sindicoId, String titulo, LocalDateTime dataHora, String local, List<String> pauta) {
+    public Assembleia executar(Long sindicoId, String titulo, LocalDateTime dataHora, String local, List<String> pauta, String tipo) {
         Usuario sindico = usuarioRepository.findById(sindicoId)
                 .orElseThrow(() -> new DomainException("Usuário não encontrado"));
 
@@ -46,6 +47,7 @@ public class CriarAssembleiaUseCase {
                 dataHora,
                 local,
                 pauta,
+                tipo != null ? TipoAssembleia.valueOf(tipo) : TipoAssembleia.ORDINARIA,
                 sindicoId
         );
 

@@ -7,5 +7,6 @@ public record CriarAssembleiaRequest(
         String titulo,
         LocalDateTime dataHora,
         String local,
-        List<String> pauta
+        List<String> pauta,
+        String tipo
 ) {}

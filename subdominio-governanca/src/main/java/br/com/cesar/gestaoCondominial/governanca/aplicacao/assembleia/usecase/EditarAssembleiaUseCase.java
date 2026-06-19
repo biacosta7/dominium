@@ -2,6 +2,7 @@ package br.com.cesar.gestaoCondominial.governanca.aplicacao.assembleia.usecase;
 
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.Assembleia;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.AssembleiaId;
+import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.TipoAssembleia;
 import br.com.cesar.gestaoCondominial.governanca.dominio.assembleia.repository.AssembleiaRepository;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
@@ -26,7 +27,7 @@ public class EditarAssembleiaUseCase {
     }
 
     @Transactional
-    public Assembleia executar(Long sindicoId, Long assembleiaId, String titulo, LocalDateTime dataHora, String local, List<String> pauta) {
+    public Assembleia executar(Long sindicoId, Long assembleiaId, String titulo, LocalDateTime dataHora, String local, List<String> pauta, String tipo) {
         Usuario sindico = usuarioRepository.findById(sindicoId)
                 .orElseThrow(() -> new DomainException("Usuário não encontrado"));
 
@@ -37,7 +38,7 @@ public class EditarAssembleiaUseCase {
         Assembleia assembleia = assembleiaRepository.findById(new AssembleiaId(assembleiaId))
                 .orElseThrow(() -> new ResourceNotFoundException("Assembleia não encontrada"));
 
-        assembleia.editar(titulo, dataHora, local, pauta);
+        assembleia.editar(titulo, dataHora, local, pauta, tipo != null ? TipoAssembleia.valueOf(tipo) : null);
         return assembleiaRepository.save(assembleia);
     }
 }

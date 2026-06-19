@@ -47,7 +47,7 @@ public class GestaoDeAssembleiasSteps extends DominiumFuncionalidade {
     public void o_sindico_solicita_a_criacao_da_assembleia() {
         try {
             Assembleia assembleia = criarAssembleiaUseCase.executar(sindicoId, "Assembleia Geral", dataHoraContexto,
-                    "Salão de Festas", pautasContexto);
+                    "Salão de Festas", pautasContexto, "ORDINARIA");
             assembleiaIdContexto = assembleia.getId();
         } catch (RuntimeException e) {
             this.excecao = e;
