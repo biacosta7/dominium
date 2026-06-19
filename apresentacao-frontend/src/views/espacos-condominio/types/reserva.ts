@@ -1,3 +1,14 @@
+export interface FilaEspera {
+  id: string;
+  areaComumId: number;
+  nomeArea: string;
+  dataDesejada: string;
+  horaInicio: string;
+  horaFim: string;
+  status: string;
+  posicao: number;
+}
+
 export interface Reserva {
   reservaId: string;
   data: string;

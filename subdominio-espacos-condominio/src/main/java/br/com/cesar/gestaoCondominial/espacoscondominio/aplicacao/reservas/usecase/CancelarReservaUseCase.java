@@ -52,12 +52,12 @@ public class CancelarReservaUseCase {
             multa.setValor(new java.math.BigDecimal("50.00"));
             multa.setDescricao("Multa por cancelamento tardio de reserva");
             multa.setDataCriacao(LocalDateTime.now());
+            multa.setStatus(br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta.ABERTA);
+            multa.setTipoValor(br.com.cesar.gestaoCondominial.financeiro.dominio.multa.TipoValorMulta.FIXO);
+            multa.setReincidencia(0);
 
             multaRepository.save(multa);
         }
-
-        reserva.cancelar();
-        repository.save(reserva);
 
         Optional<FilaDeEspera> proximo = filaRepository.buscarProximoNaFila(
                 reserva.getAreaComumId(),
@@ -65,17 +65,19 @@ public class CancelarReservaUseCase {
                 reserva.getHoraInicio(),
                 reserva.getHoraFim());
 
-        proximo.ifPresent(fila -> {
+        if (proximo.isPresent()) {
+            FilaDeEspera fila = proximo.get();
             fila.setStatus(FilaDeEspera.StatusFila.PROMOVIDO);
             filaRepository.salvar(fila);
 
             UnidadeId unidadeId = unidadeRepository.findAll().stream()
-                    .filter(u -> u.getInquilino() != null && u.getInquilino().getId().equals(fila.getUsuarioId()))
+                    .filter(u -> (u.getInquilino() != null && u.getInquilino().getId().equals(fila.getUsuarioId().getValor()))
+                            || (u.getProprietario() != null && u.getProprietario().getId().equals(fila.getUsuarioId().getValor())))
                     .map(u -> u.getId())
                     .findFirst()
                     .orElse(null);
 
-            Reserva novaReserva = Reserva.promoverDeFila(
+            Reserva novaReserva = Reserva.criar(
                     ReservaId.novo(),
                     fila.getAreaComumId(),
                     unidadeId,
@@ -83,13 +85,19 @@ public class CancelarReservaUseCase {
                     fila.getDataDesejada(),
                     fila.getHoraInicio(),
                     fila.getHoraFim());
+            novaReserva.ativar();
 
+            // Remove the old reservation completely as requested
+            repository.delete(reserva.getId());
             repository.save(novaReserva);
 
             notificacaoService.enviar(fila.getUsuarioId().getValor(),
                     "Sua reserva para a área " + reserva.getAreaComumId().getValor() +
-                            " foi promovida da fila de espera! Você tem 24h para confirmar.",
+                            " foi promovida da fila de espera!",
                     br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
-        });
+        } else {
+            reserva.cancelar();
+            repository.save(reserva);
+        }
     }
 }

@@ -650,6 +650,11 @@ public class DominiumFuncionalidade {
                                         || r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO))
                         .collect(Collectors.toList());
             }
+
+            @Override
+            public void delete(ReservaId id) {
+                db.remove(id.getValor());
+            }
         };
 
         filaDeEsperaRepository = new FilaDeEsperaRepository() {
@@ -678,13 +683,28 @@ public class DominiumFuncionalidade {
             }
 
             @Override
-            public Optional<FilaDeEspera> buscarProximoNaFila(AreaComumId areaId, LocalDate data, LocalTime inicio,
+            public List<FilaDeEspera> listarPorUsuario(UsuarioId usuarioId) {
+                return db.values().stream()
+                        .filter(f -> f.getUsuarioId().equals(usuarioId)
+                                && f.getStatus() == FilaDeEspera.StatusFila.AGUARDANDO)
+                        .sorted(Comparator.comparing(FilaDeEspera::getDataCadastro))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public List<FilaDeEspera> listarPorSlot(AreaComumId areaId, LocalDate data, LocalTime inicio,
                     LocalTime fim) {
                 return db.values().stream()
                         .filter(f -> f.getAreaComumId().equals(areaId) && f.getDataDesejada().equals(data)
                                 && f.getStatus() == FilaDeEspera.StatusFila.AGUARDANDO)
                         .sorted(Comparator.comparing(FilaDeEspera::getDataCadastro))
-                        .findFirst();
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public Optional<FilaDeEspera> buscarProximoNaFila(AreaComumId areaId, LocalDate data, LocalTime inicio,
+                    LocalTime fim) {
+                return listarPorSlot(areaId, data, inicio, fim).stream().findFirst();
             }
         };
 

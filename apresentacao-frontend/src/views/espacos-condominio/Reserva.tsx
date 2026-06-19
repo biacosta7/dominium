@@ -3,8 +3,9 @@ import Calendario from "./components/Calendario";
 import Disponibilidade from "./components/Disponibilidade";
 import ModalReserva from "./components/ModalReserva";
 import ReservaCard from "./components/ReservaCard";
-import { buscarReservas, cancelarReserva, criarReserva, atualizarReserva } from "./services/reservaService";
-import type { Reserva, DiaCalendario, DisponibilidadeArea, AreaCatalogo } from "./types/reserva";
+import FilaCard from "./components/FilaCard";
+import { buscarReservas, buscarFilaEspera, cancelarReserva, criarReserva, atualizarReserva, entrarNaFila } from "./services/reservaService";
+import type { Reserva, FilaEspera, DiaCalendario, DisponibilidadeArea, AreaCatalogo } from "./types/reserva";
 import "./Reserva.css";
 
 interface ReservaProps {
@@ -20,6 +21,7 @@ const areasCatalogo: AreaCatalogo[] = [
 
 export default function ReservaView({ onVoltar }: ReservaProps) {
   const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [filaEspera, setFilaEspera] = useState<FilaEspera[]>([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [diaSelecionado, setDiaSelecionado] = useState<DiaCalendario | null>(null);
   const [reservaEmEdicao, setReservaEmEdicao] = useState<Reserva | null>(null);
@@ -57,8 +59,28 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
     }
   };
 
+  const carregarFilaEspera = async () => {
+    try {
+      const response = await buscarFilaEspera(1);
+      const mappedFila: FilaEspera[] = response.data.map((item: any) => ({
+        id: item.id,
+        areaComumId: item.areaComumId,
+        nomeArea: item.nomeArea,
+        dataDesejada: item.dataDesejada,
+        horaInicio: item.horaInicio,
+        horaFim: item.horaFim,
+        status: item.status,
+        posicao: item.posicao,
+      }));
+      setFilaEspera(mappedFila);
+    } catch (error) {
+      console.error("Erro ao carregar fila de espera", error);
+    }
+  };
+
   useEffect(() => {
     carregarReservas();
+    carregarFilaEspera();
   }, []);
 
   const handleCancelar = async (id: string) => {
@@ -66,6 +88,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
       await cancelarReserva(id);
       showToast("Reserva cancelada com sucesso!");
       carregarReservas();
+      carregarFilaEspera();
       if (diaSelecionado) {
         // Reset selected day details to reflect changes
         setDiaSelecionado(null);
@@ -102,8 +125,28 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
           horaInicio: form.horaInicio.includes(":") && form.horaInicio.split(":").length === 2 ? `${form.horaInicio}:00` : form.horaInicio,
           horaFim: form.horaFim.includes(":") && form.horaFim.split(":").length === 2 ? `${form.horaFim}:00` : form.horaFim
         };
-        await criarReserva(payload);
-        showToast("Nova reserva realizada!");
+
+        try {
+          await criarReserva(payload);
+          showToast("Nova reserva realizada!");
+        } catch (error: any) {
+          const conflito = error?.status === 409
+            || (error?.message && error.message.toLowerCase().includes("conflito"));
+
+          if (conflito) {
+            await entrarNaFila({
+              areaComumId: payload.areaComumId,
+              usuarioId: payload.usuarioId,
+              data: payload.data,
+              horaInicio: payload.horaInicio,
+              horaFim: payload.horaFim,
+            });
+            showToast("Horário ocupado! Adicionado à lista de espera com sucesso.");
+            carregarFilaEspera();
+          } else {
+            throw error;
+          }
+        }
       }
       setModalAberto(false);
       setReservaEmEdicao(null);
@@ -141,18 +184,18 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
     const primeiroDiaMes = new Date(ano, mes, 1);
     const ultimoDiaMes = new Date(ano, mes + 1, 0);
     const totalDias = ultimoDiaMes.getDate();
-    
+
     const diaInicioSemana = primeiroDiaMes.getDay(); // 0 is Sunday, 1 is Monday, etc.
     let diaAtual = 1;
     const hoje = new Date();
-    
+
     for (let w = 0; w < 6; w++) {
       const semana: DiaCalendario[] = [];
       let temDiaMesAtual = false;
-      
+
       for (let d = 0; d < 7; d++) {
         const indexDia = w * 7 + d;
-        
+
         if (indexDia < diaInicioSemana) {
           const dataAnterior = new Date(ano, mes, 0);
           const diaAnterior = dataAnterior.getDate() - (diaInicioSemana - indexDia - 1);
@@ -168,7 +211,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
           const reservasDoDia = reservasAtuais.filter(
             (r) => r.data === dataStr && r.status !== "CANCELADA"
           );
-          
+
           semana.push({
             dia: diaAtual,
             mesAtual: true,
@@ -186,7 +229,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
           diaAtual++;
         }
       }
-      
+
       if (w < 5 || temDiaMesAtual) {
         semanas.push(semana);
       }
@@ -217,7 +260,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
   return (
     <div className="reservas-container">
       {toast && <div className="toast">{toast}</div>}
-      
+
       <div className="content">
         <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
@@ -324,6 +367,24 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
             )}
           </div>
 
+          {/* Lista de Espera */}
+          <div className="col-fila card">
+            <div className="card-title-row">
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span className="card-title">Lista de Espera</span>
+                <span className="badge badge-yellow">{filaEspera.length}</span>
+              </div>
+            </div>
+
+            {filaEspera.length === 0 ? (
+              <p className="lista-vazia">Você não está em nenhuma fila de espera.</p>
+            ) : (
+              filaEspera.map((item) => (
+                <FilaCard key={item.id} item={item} />
+              ))
+            )}
+          </div>
+
           {/* Disponibilidade */}
           <div className="col-disponibilidade card">
             <div className="card-title-row">
@@ -349,4 +410,5 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
     </div>
   );
 }
+
 

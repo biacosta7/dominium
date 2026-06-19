@@ -24,4 +24,6 @@ public interface ReservaRepository {
             LocalTime inicio,
             LocalTime fim
     );
+
+    void delete(ReservaId id);
 }
