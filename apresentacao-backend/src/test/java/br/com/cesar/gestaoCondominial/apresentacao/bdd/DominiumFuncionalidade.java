@@ -708,6 +708,18 @@ public class DominiumFuncionalidade {
                         .filter(o -> o.getUnidadeId() != null && o.getUnidadeId().getValor().equals(unidadeId))
                         .collect(java.util.stream.Collectors.toList());
             }
+
+            @Override
+            public Ocorrencia atualizar(Long id, Ocorrencia o) {
+                o.setId(id);
+                db.put(id, o);
+                return o;
+            }
+
+            @Override
+            public void deletar(Long id) {
+                db.remove(id);
+            }
         };
 
         tipoOcorrenciaRepository = new TipoOcorrenciaRepository() {
@@ -728,15 +740,6 @@ public class DominiumFuncionalidade {
             @Override
             public Optional<TipoOcorrencia> findByNome(String nome) {
                 return tipos.stream().filter(t -> t.getNome().equals(nome)).findFirst();
-            public Ocorrencia atualizar(Long id, Ocorrencia o) {
-                o.setId(id);
-                db.put(id, o);
-                return o;
-            }
-
-            @Override
-            public void deletar(Long id) {
-                db.remove(id);
             }
         };
 

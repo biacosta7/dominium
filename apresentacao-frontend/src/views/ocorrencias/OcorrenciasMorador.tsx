@@ -160,6 +160,9 @@ const OcorrenciasMorador: React.FC = () => {
                       </div>
                       <div className="ocm-card-desc">{oc.descricao}</div>
                       <div className="ocm-card-date">Registrada em {formatarData(oc.dataRegistro)}</div>
+                      {oc.valorMulta != null && (
+                        <div className="ocm-multa-valor">Multa prevista: {formatarMoeda(oc.valorMulta)}</div>
+                      )}
                     </div>
                     <div
                       className="ocm-status-dot"
@@ -322,6 +325,12 @@ const OcorrenciasMorador: React.FC = () => {
                       ? formatarMoeda(ocorrenciaDetalhe.valorMulta)
                       : 'Advertência'}
                   </span>
+                </div>
+              )}
+              {ocorrenciaDetalhe.penalidade !== 'MULTA' && ocorrenciaDetalhe.valorMulta != null && (
+                <div className="ocm-detalhe-item">
+                  <span className="ocm-detalhe-label">Multa prevista</span>
+                  <span>{formatarMoeda(ocorrenciaDetalhe.valorMulta)}</span>
                 </div>
               )}
             </div>

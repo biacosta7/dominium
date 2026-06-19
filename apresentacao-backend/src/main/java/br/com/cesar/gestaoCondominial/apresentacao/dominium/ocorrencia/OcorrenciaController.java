@@ -39,7 +39,7 @@ public class OcorrenciaController {
             EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase,
             OcorrenciaRepository ocorrenciaRepository,
             MultaRepository multaRepository,
-            TipoOcorrenciaRepository tipoOcorrenciaRepository),
+            TipoOcorrenciaRepository tipoOcorrenciaRepository,
             EditarOcorrenciaUseCase editarOcorrenciaUseCase,
             DeletarOcorrenciaUseCase deletarOcorrenciaUseCase) {
         this.gerenciarOcorrenciaUseCase = gerenciarOcorrenciaUseCase;

@@ -180,6 +180,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
         );
     }
 
+    @Override
     public Ocorrencia atualizar(Long id, Ocorrencia ocorrencia) {
         ocorrencia.setId(id);
         return update(ocorrencia);
