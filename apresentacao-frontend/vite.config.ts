@@ -38,6 +38,14 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/funcionarios': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/ordens-servico': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
