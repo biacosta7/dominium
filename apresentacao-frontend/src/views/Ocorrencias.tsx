@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ModalOcorrencia } from '../components/ModalOcorrencia';
-import { listarOcorrencias, criarOcorrencia, encerrarOcorrencia } from '../services/ocorrenciaService';
+import { listarOcorrencias, criarOcorrencia, encerrarOcorrencia, editarOcorrencia, deletarOcorrencia } from '../services/ocorrenciaService';
 import './Ocorrencias.css';
 
 const statusClasses: Record<string, string> = {
@@ -72,7 +72,11 @@ export const Ocorrencias: React.FC = () => {
 
   const salvar = async (dados: any) => {
     try {
-      await criarOcorrencia(dados);
+      if (ocorrenciaEdicao) {
+        await editarOcorrencia(ocorrenciaEdicao.id, dados);
+      } else {
+        await criarOcorrencia(dados);
+      }
       fecharModal();
       carregar();
     } catch (e: any) {
@@ -87,6 +91,16 @@ export const Ocorrencias: React.FC = () => {
       carregar();
     } catch (e: any) {
       alert('Erro ao encerrar ocorrência: ' + e.message);
+      }
+  };
+  
+  const deletar = async (id: number | string) => {
+    if (!confirm('Tem certeza que deseja excluir esta ocorrência?')) return;
+    try {
+      await deletarOcorrencia(id);
+      carregar();
+    } catch (e: any) {
+      alert('Erro ao deletar ocorrência: ' + e.message);
     }
   };
 
@@ -99,7 +113,6 @@ export const Ocorrencias: React.FC = () => {
 
   return (
     <div className="admin-content ocorrencias-content" style={{ padding: '32px' }}>
-      {/* Header Row */}
       <div className="content-header">
         <div>
           <h1>Ocorrências e Multas</h1>
@@ -113,7 +126,6 @@ export const Ocorrencias: React.FC = () => {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="filters-row" id="filters-row">
         <select
           className="filter-select"
@@ -128,20 +140,17 @@ export const Ocorrencias: React.FC = () => {
           ))}
         </select>
         <input type="date" className="filter-date" id="filter-date" />
-
         <button className="btn-atualizar" onClick={carregar} title="Recarregar lista">
           🔄
         </button>
       </div>
 
-      {/* Error Banner */}
       {erro && (
         <div className="error-banner" id="error-banner">
           ⚠️ {erro}
         </div>
       )}
 
-      {/* Table */}
       <div className="table-wrapper" id="table-ocorrencias">
         {carregando ? (
           <div className="loading-state">Carregando ocorrências...</div>
@@ -192,6 +201,14 @@ export const Ocorrencias: React.FC = () => {
                     >
                       {oc.status === 'ENCERRADA' ? '👁️' : '✏️'}
                     </button>
+                    <button
+                      className="btn-acao btn-deletar"
+                      title="Excluir"
+                      id={`btn-deletar-${oc.id}`}
+                      onClick={() => deletar(oc.id)}
+                    >
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -207,7 +224,6 @@ export const Ocorrencias: React.FC = () => {
         )}
       </div>
 
-      {/* Modal */}
       {modalAberto && (
         <ModalOcorrencia
           ocorrencia={ocorrenciaEdicao}

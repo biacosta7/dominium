@@ -38,7 +38,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
             ocorrencia.setTipo(rs.getString("tipo"));
             ocorrencia.setDescricao(rs.getString("descricao"));
             ocorrencia.setUnidadeId(new UnidadeId(rs.getLong("unidade_id")));
-            
+
             Long usuarioId = rs.getLong("usuario_id");
             if (usuarioId != null && usuarioId > 0) {
                 Usuario relator = usuarioRepository.findById(usuarioId).orElse(null);
@@ -178,5 +178,15 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
                 getRowMapper(),
                 unidadeId
         );
+    }
+
+    public Ocorrencia atualizar(Long id, Ocorrencia ocorrencia) {
+        ocorrencia.setId(id);
+        return update(ocorrencia);
+    }
+
+    @Override
+    public void deletar(Long id) {
+        jdbcTemplate.update("DELETE FROM ocorrencias WHERE id = ?", id);
     }
 }

@@ -1,17 +1,11 @@
 const BASE_URL = 'http://localhost:8080';
 
-// ───────────────────────────────────────────────
-// GET /ocorrencias — lista todas
-// ───────────────────────────────────────────────
 export async function listarOcorrencias() {
   const res = await fetch(`${BASE_URL}/ocorrencias`);
   if (!res.ok) throw new Error(`Erro ${res.status} ao buscar ocorrências`);
   return res.json();
 }
 
-// ───────────────────────────────────────────────
-// POST /ocorrencias — cria nova ocorrência
-// ───────────────────────────────────────────────
 export async function criarOcorrencia(dados: any) {
   const res = await fetch(`${BASE_URL}/ocorrencias`, {
     method: 'POST',
@@ -22,9 +16,23 @@ export async function criarOcorrencia(dados: any) {
   return res.json();
 }
 
-// ───────────────────────────────────────────────
-// PATCH /ocorrencias/{id}/status — atualiza status
-// ───────────────────────────────────────────────
+export async function editarOcorrencia(id: number | string, dados: any) {
+  const res = await fetch(`${BASE_URL}/ocorrencias/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados),
+  });
+  if (!res.ok) throw new Error(`Erro ${res.status} ao editar ocorrência`);
+  return res.json();
+}
+
+export async function deletarOcorrencia(id: number | string) {
+  const res = await fetch(`${BASE_URL}/ocorrencias/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error(`Erro ${res.status} ao deletar ocorrência`);
+}
+
 export async function atualizarStatusOcorrencia(id: number | string, status: string) {
   const res = await fetch(`${BASE_URL}/ocorrencias/${id}/status`, {
     method: 'PATCH',
@@ -35,9 +43,6 @@ export async function atualizarStatusOcorrencia(id: number | string, status: str
   return res.json();
 }
 
-// ───────────────────────────────────────────────
-// POST /ocorrencias/{id}/encerrar — encerra
-// ───────────────────────────────────────────────
 export async function encerrarOcorrencia(id: number | string, dados: any) {
   const res = await fetch(`${BASE_URL}/ocorrencias/${id}/encerrar`, {
     method: 'POST',

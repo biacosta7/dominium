@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository("funcionarioRepositoryJdbc")
 public class FuncionarioRepositoryImpl implements FuncionarioRepository {
 
     private final JdbcTemplate jdbcTemplate;
