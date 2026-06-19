@@ -37,7 +37,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
             ocorrencia.setId(rs.getLong("id"));
             ocorrencia.setDescricao(rs.getString("descricao"));
             ocorrencia.setUnidadeId(new UnidadeId(rs.getLong("unidade_id")));
-            
+
             Long usuarioId = rs.getLong("usuario_id");
             if (usuarioId != null && usuarioId > 0) {
                 Usuario relator = usuarioRepository.findById(usuarioId).orElse(null);
@@ -88,27 +88,27 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, ocorrencia.getDescricao());
             ps.setLong(2, ocorrencia.getUnidadeId().getValor());
-            
+
             if (ocorrencia.getRelator() != null && ocorrencia.getRelator().getId() != null) {
                 ps.setLong(3, ocorrencia.getRelator().getId());
             } else {
                 ps.setNull(3, Types.BIGINT);
             }
-            
+
             if (ocorrencia.getDataRegistro() != null) {
                 ps.setTimestamp(4, Timestamp.valueOf(ocorrencia.getDataRegistro()));
             } else {
                 ps.setNull(4, Types.TIMESTAMP);
             }
-            
+
             ps.setString(5, ocorrencia.getStatus().name());
-            
+
             if (ocorrencia.getPenalidade() != null) {
                 ps.setString(6, ocorrencia.getPenalidade().name());
             } else {
                 ps.setNull(6, Types.VARCHAR);
             }
-            
+
             ps.setString(7, ocorrencia.getObservacaoSindico());
 
             return ps;
@@ -164,5 +164,16 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
                 "SELECT * FROM ocorrencias ORDER BY data_registro DESC",
                 getRowMapper()
         );
+    }
+
+    @Override
+    public Ocorrencia atualizar(Long id, Ocorrencia ocorrencia) {
+        ocorrencia.setId(id);
+        return update(ocorrencia);
+    }
+
+    @Override
+    public void deletar(Long id) {
+        jdbcTemplate.update("DELETE FROM ocorrencias WHERE id = ?", id);
     }
 }

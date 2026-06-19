@@ -5,6 +5,8 @@ import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.Encer
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.OcorrenciaRequestDTO;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto.OcorrenciaResponseDTO;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.AtualizarStatusOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.DeletarOcorrenciaUseCase;
+import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.EditarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.EncerrarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
@@ -24,16 +26,22 @@ public class OcorrenciaController {
     private final AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase;
     private final EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase;
     private final OcorrenciaRepository ocorrenciaRepository;
+    private final EditarOcorrenciaUseCase editarOcorrenciaUseCase;
+    private final DeletarOcorrenciaUseCase deletarOcorrenciaUseCase;
 
     public OcorrenciaController(
             GerenciarOcorrenciaUseCase gerenciarOcorrenciaUseCase,
             AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase,
             EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase,
-            OcorrenciaRepository ocorrenciaRepository) {
+            OcorrenciaRepository ocorrenciaRepository,
+            EditarOcorrenciaUseCase editarOcorrenciaUseCase,
+            DeletarOcorrenciaUseCase deletarOcorrenciaUseCase) {
         this.gerenciarOcorrenciaUseCase = gerenciarOcorrenciaUseCase;
         this.atualizarStatusOcorrenciaUseCase = atualizarStatusOcorrenciaUseCase;
         this.encerrarOcorrenciaUseCase = encerrarOcorrenciaUseCase;
         this.ocorrenciaRepository = ocorrenciaRepository;
+        this.editarOcorrenciaUseCase = editarOcorrenciaUseCase;
+        this.deletarOcorrenciaUseCase = deletarOcorrenciaUseCase;
     }
 
     @GetMapping
@@ -49,6 +57,20 @@ public class OcorrenciaController {
     public ResponseEntity<OcorrenciaResponseDTO> criar(@Valid @RequestBody OcorrenciaRequestDTO request) {
         Ocorrencia ocorrencia = gerenciarOcorrenciaUseCase.executar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponseDTO(ocorrencia));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OcorrenciaResponseDTO> editar(
+            @PathVariable Long id,
+            @Valid @RequestBody OcorrenciaRequestDTO request) {
+        Ocorrencia ocorrencia = editarOcorrenciaUseCase.executar(id, request);
+        return ResponseEntity.ok(mapToResponseDTO(ocorrencia));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        deletarOcorrenciaUseCase.executar(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
