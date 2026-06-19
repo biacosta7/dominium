@@ -75,19 +75,29 @@ public class JdbcFilaDeEsperaRepository implements FilaDeEsperaRepository {
     }
 
     @Override
-    public Optional<FilaDeEspera> buscarProximoNaFila(AreaComumId areaId, LocalDate data, LocalTime inicio, LocalTime fim) {
-        // Regra: Ordem cronológica de cadastro para o mesmo período ou que conflite
+    public List<FilaDeEspera> listarPorUsuario(UsuarioId usuarioId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM fila_espera WHERE usuario_id = ? AND status = 'AGUARDANDO' ORDER BY data_cadastro ASC",
+                rowMapper,
+                usuarioId.getValor());
+    }
+
+    @Override
+    public List<FilaDeEspera> listarPorSlot(AreaComumId areaId, LocalDate data, LocalTime inicio, LocalTime fim) {
         String sql = "SELECT * FROM fila_espera WHERE area_comum_id = ? AND data_desejada = ? AND status = 'AGUARDANDO' " +
                 "AND ((hora_inicio < ? AND hora_fim > ?) OR (hora_inicio < ? AND hora_fim > ?) OR (hora_inicio >= ? AND hora_fim <= ?)) " +
-                "ORDER BY data_cadastro ASC LIMIT 1";
-        
-        List<FilaDeEspera> results = jdbcTemplate.query(sql, rowMapper, 
-            areaId.getValor(), 
-            data, 
-            fim, inicio,
-            fim, inicio,
-            inicio, fim);
-            
-        return results.stream().findFirst();
+                "ORDER BY data_cadastro ASC";
+
+        return jdbcTemplate.query(sql, rowMapper,
+                areaId.getValor(),
+                data,
+                fim, inicio,
+                fim, inicio,
+                inicio, fim);
+    }
+
+    @Override
+    public Optional<FilaDeEspera> buscarProximoNaFila(AreaComumId areaId, LocalDate data, LocalTime inicio, LocalTime fim) {
+        return listarPorSlot(areaId, data, inicio, fim).stream().findFirst();
     }
 }

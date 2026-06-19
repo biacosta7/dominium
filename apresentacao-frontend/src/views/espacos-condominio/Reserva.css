@@ -138,6 +138,7 @@
   grid-template-columns: minmax(280px, 1fr) minmax(260px, 340px);
   grid-template-areas:
     'calendario lista'
+    'calendario fila'
     'calendario disponibilidade';
   gap: 20px;
 }
@@ -150,6 +151,10 @@
   grid-area: lista;
 }
 
+.col-fila {
+  grid-area: fila;
+}
+
 .col-disponibilidade {
   grid-area: disponibilidade;
 }
@@ -160,6 +165,7 @@
     grid-template-areas:
       'calendario'
       'lista'
+      'fila'
       'disponibilidade';
   }
 }
@@ -427,6 +433,33 @@
   flex-direction: column;
   gap: 6px;
   align-items: flex-end;
+}
+
+.fila-card {
+  position: relative;
+}
+
+.fila-posicao {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.fila-color-bar {
+  background: #f59e0b;
+}
+
+.fila-status {
+  font-size: 11px;
+  color: #b45309;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
 /* Disponibilidade */

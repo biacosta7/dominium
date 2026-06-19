@@ -21,7 +21,18 @@ export const criarReserva = async (dados: any) => {
     },
     body: JSON.stringify(dados)
   });
-  if (!res.ok) throw new Error("Erro ao criar reserva");
+  if (!res.ok) {
+    let message = "Erro ao criar reserva";
+    try {
+      const body = await res.json();
+      message = body.message || message;
+    } catch {
+      // mantém mensagem padrão
+    }
+    const error = new Error(message) as Error & { status?: number };
+    error.status = res.status;
+    throw error;
+  }
   const data = await res.json();
   return { data };
 };
@@ -38,4 +49,27 @@ export const atualizarReserva = async (id: string, data: string, horaInicio: str
   if (!res.ok) throw new Error("Erro ao atualizar reserva");
   const result = await res.json();
   return { data: result };
+};
+
+export const entrarNaFila = async (dados: {
+  areaComumId: number;
+  usuarioId: number;
+  data: string;
+  horaInicio: string;
+  horaFim: string;
+}) => {
+  const res = await fetch("/api/fila", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados),
+  });
+  if (!res.ok) throw new Error("Erro ao entrar na fila de espera");
+  return res.json();
+};
+
+export const buscarFilaEspera = async (usuarioId: number) => {
+  const res = await fetch(`/api/fila/usuario/${usuarioId}`);
+  if (!res.ok) throw new Error("Erro ao buscar fila de espera");
+  const data = await res.json();
+  return { data };
 };
