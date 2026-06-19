@@ -57,6 +57,8 @@ export default function AssembleiasAdmin() {
     .filter((a) => a.status === 'AGENDADA' && new Date(a.dataHora) >= agora)
     .sort((a, b) => new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime())[0];
 
+  const assembleiasAgendadas = assembleias.filter((a) => a.status === 'AGENDADA');
+
   const historico = assembleias
     .filter((a) => a.id !== proximaAssembleia?.id)
     .sort((a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime());
@@ -99,7 +101,7 @@ export default function AssembleiasAdmin() {
           <p className="assembleias-sub">Gestão de pautas, votos e resultados</p>
         </div>
         <div className="assembleias-header-actions">
-          {proximaAssembleia && (
+          {assembleiasAgendadas.length > 0 && (
             <button className="btn-secundario" onClick={() => setModalPautaAberto(true)}>
               Adicionar Pauta
             </button>
@@ -151,11 +153,11 @@ export default function AssembleiasAdmin() {
         </>
       )}
 
-      {modalPautaAberto && proximaAssembleia && (
+      {modalPautaAberto && (
         <ModalCriarPauta
-          assembleiaId={proximaAssembleia.id}
+          assembleias={assembleiasAgendadas}
           onClose={() => setModalPautaAberto(false)}
-          onCriada={carregarPautas}
+          onCriada={() => Promise.all([carregarPautas(), carregarAssembleias()])}
         />
       )}
 

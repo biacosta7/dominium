@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import type { Assembleia } from '../types/assembleia';
 import type { CriarPautaRequest, TipoMaioria, TipoQuorum } from '../types/pauta';
 import { pautaService } from '../services/pautaService';
 
 interface Props {
-  assembleiaId: number;
+  assembleias: Assembleia[];
   onClose: () => void;
   onCriada: () => void;
 }
 
-export default function ModalCriarPauta({ assembleiaId, onClose, onCriada }: Props) {
+export default function ModalCriarPauta({ assembleias, onClose, onCriada }: Props) {
+  const [assembleiaIdSelecionada, setAssembleiaIdSelecionada] = useState<number | ''>('');
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [maioria, setMaioria] = useState<TipoMaioria>('SIMPLES');
@@ -17,6 +19,10 @@ export default function ModalCriarPauta({ assembleiaId, onClose, onCriada }: Pro
   const [erro, setErro] = useState('');
 
   async function handleSubmit() {
+    if (assembleiaIdSelecionada === '') {
+      setErro('Selecione uma assembleia para vincular a pauta');
+      return;
+    }
     if (!titulo.trim()) {
       setErro('Título é obrigatório');
       return;
@@ -25,7 +31,7 @@ export default function ModalCriarPauta({ assembleiaId, onClose, onCriada }: Pro
     setErro('');
     try {
       const payload: CriarPautaRequest = {
-        assembleiaId,
+        assembleiaId: assembleiaIdSelecionada,
         titulo,
         descricao,
         quorum,
@@ -41,6 +47,13 @@ export default function ModalCriarPauta({ assembleiaId, onClose, onCriada }: Pro
     }
   }
 
+  function formatarDataHora(dataHora: string) {
+    return new Date(dataHora).toLocaleString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -50,6 +63,20 @@ export default function ModalCriarPauta({ assembleiaId, onClose, onCriada }: Pro
         </div>
 
         <div className="modal-body">
+          <label className="field-label">ASSEMBLEIA VINCULADA</label>
+          <select
+            className="field-input"
+            value={assembleiaIdSelecionada}
+            onChange={(e) => setAssembleiaIdSelecionada(e.target.value === '' ? '' : Number(e.target.value))}
+          >
+            <option value="">Selecione uma assembleia...</option>
+            {assembleias.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.titulo} — {formatarDataHora(a.dataHora)}
+              </option>
+            ))}
+          </select>
+
           <label className="field-label">TÍTULO DA PAUTA</label>
           <input
             className="field-input"

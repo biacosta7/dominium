@@ -1009,7 +1009,7 @@ public class DominiumFuncionalidade {
         editarAssembleiaUseCase = new EditarAssembleiaUseCase(assembleiaRepository, usuarioRepository);
 
         // ── Pautas e Votações ─────────────────────────────────────────────────────
-        abrirPautaUseCase = new AbrirPautaUseCase(pautaRepository);
+        abrirPautaUseCase = new AbrirPautaUseCase(pautaRepository, assembleiaRepository);
         listarPautasUseCase = new ListarPautasUseCase(pautaRepository);
         votarUseCase = new VotarUseCase(votoRepository, pautaRepository, regraVotacao);
         listarVotosUseCase = new ListarVotosUseCase(votoRepository);
