@@ -19,7 +19,7 @@ public record FuncionarioResponse(
 ) {
     public static FuncionarioResponse from(Funcionario f) {
         return new FuncionarioResponse(
-                f.getId().getValor().toString(),
+                f.getId().getValor() != null ? f.getId().getValor().toString() : null,
                 f.getNome(),
                 f.getCpf(),
                 f.getEmail(),
