@@ -285,6 +285,20 @@
   color: var(--success);
 }
 
+.advertencia-badge {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.td-tipo {
+  font-size: 13px;
+  color: var(--gray-600);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .multa-sem {
   color: var(--gray-300);
 }

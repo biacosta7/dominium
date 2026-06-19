@@ -52,3 +52,21 @@ export async function encerrarOcorrencia(id: number | string, dados: any) {
   if (!res.ok) throw new Error(`Erro ${res.status} ao encerrar ocorrência`);
   return res.json();
 }
+
+// ───────────────────────────────────────────────
+// GET /tipos-ocorrencia — lista tipos com valores
+// ───────────────────────────────────────────────
+export async function listarTiposOcorrencia() {
+  const res = await fetch(`${BASE_URL}/tipos-ocorrencia`);
+  if (!res.ok) throw new Error(`Erro ${res.status} ao buscar tipos de ocorrência`);
+  return res.json();
+}
+
+// ───────────────────────────────────────────────
+// GET /ocorrencias/unidade/{id} — por unidade
+// ───────────────────────────────────────────────
+export async function listarOcorrenciasPorUnidade(unidadeId: number) {
+  const res = await fetch(`${BASE_URL}/ocorrencias/unidade/${unidadeId}`);
+  if (!res.ok) throw new Error(`Erro ${res.status} ao buscar ocorrências da unidade`);
+  return res.json();
+}

@@ -2,7 +2,9 @@ package br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase;
 
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.TipoPenalidade;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.TipoOcorrencia;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.TipoOcorrenciaRepository;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.usecase.CreateMultaManualUseCase;
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.multa.dto.CreateMultaRequestDTO;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.TipoValorMulta;
@@ -13,15 +15,22 @@ import java.math.BigDecimal;
 @Service
 public class EncerrarOcorrenciaUseCase {
 
+    private static final BigDecimal VALOR_PADRAO = BigDecimal.valueOf(150.00);
+
     private final OcorrenciaRepository repository;
+    private final TipoOcorrenciaRepository tipoOcorrenciaRepository;
     private final CreateMultaManualUseCase createMultaUseCase;
 
-    public EncerrarOcorrenciaUseCase(OcorrenciaRepository repository, CreateMultaManualUseCase createMultaUseCase) {
+    public EncerrarOcorrenciaUseCase(
+            OcorrenciaRepository repository,
+            TipoOcorrenciaRepository tipoOcorrenciaRepository,
+            CreateMultaManualUseCase createMultaUseCase) {
         this.repository = repository;
+        this.tipoOcorrenciaRepository = tipoOcorrenciaRepository;
         this.createMultaUseCase = createMultaUseCase;
     }
 
-    public Ocorrencia executar(Long ocorrenciaId, String penalidadeStr, String observacao, BigDecimal valorMulta) {
+    public Ocorrencia executar(Long ocorrenciaId, String penalidadeStr, String observacao, BigDecimal valorMultaOverride) {
         Ocorrencia ocorrencia = repository.buscarPorId(ocorrenciaId)
                 .orElseThrow(() -> new IllegalArgumentException("Ocorrência não encontrada com o ID: " + ocorrenciaId));
 
@@ -38,16 +47,31 @@ public class EncerrarOcorrenciaUseCase {
         Ocorrencia salva = repository.salvar(ocorrencia);
 
         if (penalidade == TipoPenalidade.MULTA) {
+            BigDecimal valorBase = resolverValorBase(salva, valorMultaOverride);
+            String descricaoMulta = "Multa: " + (salva.getTipo() != null ? salva.getTipo() : "Outros");
+
             CreateMultaRequestDTO multaDTO = new CreateMultaRequestDTO();
             multaDTO.setOcorrenciaId(salva.getId());
             multaDTO.setUnidadeId(salva.getUnidadeId().getValor());
-            multaDTO.setDescricao("Multa gerada automaticamente. Ocorrência: " + salva.getDescricao());
-            multaDTO.setValor(valorMulta != null ? valorMulta : BigDecimal.valueOf(150.00));
+            multaDTO.setDescricao(descricaoMulta);
+            multaDTO.setValor(valorBase);
             multaDTO.setTipoValor(TipoValorMulta.FIXO);
 
             createMultaUseCase.execute(multaDTO);
         }
 
         return salva;
+    }
+
+    private BigDecimal resolverValorBase(Ocorrencia ocorrencia, BigDecimal override) {
+        if (override != null) {
+            return override;
+        }
+        if (ocorrencia.getTipo() != null) {
+            return tipoOcorrenciaRepository.findByNome(ocorrencia.getTipo())
+                    .map(TipoOcorrencia::getValorBaseMulta)
+                    .orElse(VALOR_PADRAO);
+        }
+        return VALOR_PADRAO;
     }
 }

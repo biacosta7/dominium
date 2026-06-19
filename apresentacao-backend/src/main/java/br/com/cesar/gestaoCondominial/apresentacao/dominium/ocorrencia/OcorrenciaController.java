@@ -11,6 +11,8 @@ import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.E
 import br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.usecase.GerenciarOcorrenciaUseCase;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.TipoOcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ public class OcorrenciaController {
     private final AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase;
     private final EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase;
     private final OcorrenciaRepository ocorrenciaRepository;
+    private final MultaRepository multaRepository;
+    private final TipoOcorrenciaRepository tipoOcorrenciaRepository;
     private final EditarOcorrenciaUseCase editarOcorrenciaUseCase;
     private final DeletarOcorrenciaUseCase deletarOcorrenciaUseCase;
 
@@ -34,12 +38,16 @@ public class OcorrenciaController {
             AtualizarStatusOcorrenciaUseCase atualizarStatusOcorrenciaUseCase,
             EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase,
             OcorrenciaRepository ocorrenciaRepository,
+            MultaRepository multaRepository,
+            TipoOcorrenciaRepository tipoOcorrenciaRepository),
             EditarOcorrenciaUseCase editarOcorrenciaUseCase,
             DeletarOcorrenciaUseCase deletarOcorrenciaUseCase) {
         this.gerenciarOcorrenciaUseCase = gerenciarOcorrenciaUseCase;
         this.atualizarStatusOcorrenciaUseCase = atualizarStatusOcorrenciaUseCase;
         this.encerrarOcorrenciaUseCase = encerrarOcorrenciaUseCase;
         this.ocorrenciaRepository = ocorrenciaRepository;
+        this.multaRepository = multaRepository;
+        this.tipoOcorrenciaRepository = tipoOcorrenciaRepository;
         this.editarOcorrenciaUseCase = editarOcorrenciaUseCase;
         this.deletarOcorrenciaUseCase = deletarOcorrenciaUseCase;
     }
@@ -48,6 +56,14 @@ public class OcorrenciaController {
     public ResponseEntity<List<OcorrenciaResponseDTO>> listarTodas() {
         List<Ocorrencia> ocorrencias = ocorrenciaRepository.listarTodas();
         List<OcorrenciaResponseDTO> dtos = ocorrencias.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/unidade/{unidadeId}")
+    public ResponseEntity<List<OcorrenciaResponseDTO>> listarPorUnidade(@PathVariable Long unidadeId) {
+        List<OcorrenciaResponseDTO> dtos = ocorrenciaRepository.listarPorUnidade(unidadeId).stream()
                 .map(this::mapToResponseDTO)
                 .toList();
         return ResponseEntity.ok(dtos);
@@ -97,6 +113,7 @@ public class OcorrenciaController {
     private OcorrenciaResponseDTO mapToResponseDTO(Ocorrencia ocorrencia) {
         OcorrenciaResponseDTO dto = new OcorrenciaResponseDTO();
         dto.setId(ocorrencia.getId());
+        dto.setTipo(ocorrencia.getTipo());
         dto.setDescricao(ocorrencia.getDescricao());
         if (ocorrencia.getUnidadeId() != null) {
             dto.setUnidadeId(ocorrencia.getUnidadeId().getValor());
@@ -113,6 +130,22 @@ public class OcorrenciaController {
             dto.setPenalidade(ocorrencia.getPenalidade().name());
         }
         dto.setObservacaoSindico(ocorrencia.getObservacaoSindico());
+
+        if (ocorrencia.getId() != null) {
+            multaRepository.findByOcorrenciaId(ocorrencia.getId())
+                    .stream()
+                    .findFirst()
+                    .ifPresentOrElse(
+                            m -> dto.setValorMulta(m.getValor()),
+                            () -> {
+                                if (ocorrencia.getTipo() != null) {
+                                    tipoOcorrenciaRepository.findByNome(ocorrencia.getTipo())
+                                            .ifPresent(t -> dto.setValorMulta(t.getValorBaseMulta()));
+                                }
+                            }
+                    );
+        }
+
         return dto;
     }
 }

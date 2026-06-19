@@ -35,6 +35,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
         return (rs, rowNum) -> {
             Ocorrencia ocorrencia = new Ocorrencia();
             ocorrencia.setId(rs.getLong("id"));
+            ocorrencia.setTipo(rs.getString("tipo"));
             ocorrencia.setDescricao(rs.getString("descricao"));
             ocorrencia.setUnidadeId(new UnidadeId(rs.getLong("unidade_id")));
 
@@ -72,6 +73,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
     private Ocorrencia insert(Ocorrencia ocorrencia) {
         String sql = """
             INSERT INTO ocorrencias (
+                tipo,
                 descricao,
                 unidade_id,
                 usuario_id,
@@ -79,37 +81,38 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
                 status,
                 penalidade,
                 observacao_sindico
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, ocorrencia.getDescricao());
-            ps.setLong(2, ocorrencia.getUnidadeId().getValor());
+            ps.setString(1, ocorrencia.getTipo());
+            ps.setString(2, ocorrencia.getDescricao());
+            ps.setLong(3, ocorrencia.getUnidadeId().getValor());
 
             if (ocorrencia.getRelator() != null && ocorrencia.getRelator().getId() != null) {
-                ps.setLong(3, ocorrencia.getRelator().getId());
+                ps.setLong(4, ocorrencia.getRelator().getId());
             } else {
-                ps.setNull(3, Types.BIGINT);
+                ps.setNull(4, Types.BIGINT);
             }
 
             if (ocorrencia.getDataRegistro() != null) {
-                ps.setTimestamp(4, Timestamp.valueOf(ocorrencia.getDataRegistro()));
+                ps.setTimestamp(5, Timestamp.valueOf(ocorrencia.getDataRegistro()));
             } else {
-                ps.setNull(4, Types.TIMESTAMP);
+                ps.setNull(5, Types.TIMESTAMP);
             }
 
-            ps.setString(5, ocorrencia.getStatus().name());
+            ps.setString(6, ocorrencia.getStatus().name());
 
             if (ocorrencia.getPenalidade() != null) {
-                ps.setString(6, ocorrencia.getPenalidade().name());
+                ps.setString(7, ocorrencia.getPenalidade().name());
             } else {
-                ps.setNull(6, Types.VARCHAR);
+                ps.setNull(7, Types.VARCHAR);
             }
 
-            ps.setString(7, ocorrencia.getObservacaoSindico());
+            ps.setString(8, ocorrencia.getObservacaoSindico());
 
             return ps;
         }, keyHolder);
@@ -123,7 +126,8 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
     private Ocorrencia update(Ocorrencia ocorrencia) {
         String sql = """
             UPDATE ocorrencias
-               SET descricao = ?,
+               SET tipo = ?,
+                   descricao = ?,
                    unidade_id = ?,
                    usuario_id = ?,
                    data_registro = ?,
@@ -135,6 +139,7 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
 
         jdbcTemplate.update(
                 sql,
+                ocorrencia.getTipo(),
                 ocorrencia.getDescricao(),
                 ocorrencia.getUnidadeId() != null ? ocorrencia.getUnidadeId().getValor() : null,
                 ocorrencia.getRelator() != null ? ocorrencia.getRelator().getId() : null,
@@ -167,6 +172,14 @@ public class OcorrenciaRepositoryImpl implements OcorrenciaRepository {
     }
 
     @Override
+    public List<Ocorrencia> listarPorUnidade(Long unidadeId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM ocorrencias WHERE unidade_id = ? ORDER BY data_registro DESC",
+                getRowMapper(),
+                unidadeId
+        );
+    }
+
     public Ocorrencia atualizar(Long id, Ocorrencia ocorrencia) {
         ocorrencia.setId(id);
         return update(ocorrencia);

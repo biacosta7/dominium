@@ -1,11 +1,20 @@
 package br.com.cesar.gestaoCondominial.operacional.aplicacao.ocorrencia.dto;
 
 public class OcorrenciaRequestDTO {
+    private String tipo;
     private String descricao;
     private Long unidadeId;
     private String penalidade;
 
     public OcorrenciaRequestDTO() {
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getDescricao() {

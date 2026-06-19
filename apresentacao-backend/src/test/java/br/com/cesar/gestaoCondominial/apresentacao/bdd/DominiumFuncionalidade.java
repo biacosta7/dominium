@@ -61,7 +61,9 @@ import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.Ocorrencia;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.TipoOcorrencia;
 import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.OcorrenciaRepository;
+import br.com.cesar.gestaoCondominial.operacional.dominio.ocorrencia.repository.TipoOcorrenciaRepository;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaCondominial;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.TaxaId;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.repository.TaxaCondominialRepository;
@@ -192,6 +194,7 @@ public class DominiumFuncionalidade {
     protected ConfirmarReservaPromovidaUseCase confirmarReservaPromovidaUseCase;
 
     // ── Use Cases: Ocorrências ───────────────────────────────────────────────────
+    protected TipoOcorrenciaRepository tipoOcorrenciaRepository;
     protected GerenciarOcorrenciaUseCase gerenciarOcorrenciaUseCase;
     protected EncerrarOcorrenciaUseCase encerrarOcorrenciaUseCase;
 
@@ -700,6 +703,31 @@ public class DominiumFuncionalidade {
             }
 
             @Override
+            public List<Ocorrencia> listarPorUnidade(Long unidadeId) {
+                return db.values().stream()
+                        .filter(o -> o.getUnidadeId() != null && o.getUnidadeId().getValor().equals(unidadeId))
+                        .collect(java.util.stream.Collectors.toList());
+            }
+        };
+
+        tipoOcorrenciaRepository = new TipoOcorrenciaRepository() {
+            private final List<TipoOcorrencia> tipos = List.of(
+                new TipoOcorrencia(1L, "Barulho Excessivo",             new java.math.BigDecimal("150.00")),
+                new TipoOcorrencia(2L, "Descarte Irregular",            new java.math.BigDecimal("200.00")),
+                new TipoOcorrencia(3L, "Vandalismo",                    new java.math.BigDecimal("500.00")),
+                new TipoOcorrencia(4L, "Limpeza",                       new java.math.BigDecimal("100.00")),
+                new TipoOcorrencia(5L, "Uso Indevido de Área Comum",    new java.math.BigDecimal("250.00")),
+                new TipoOcorrencia(6L, "Estacionamento Irregular",      new java.math.BigDecimal("120.00")),
+                new TipoOcorrencia(7L, "Animais sem Guia",              new java.math.BigDecimal("80.00")),
+                new TipoOcorrencia(8L, "Outros",                        new java.math.BigDecimal("150.00"))
+            );
+
+            @Override
+            public List<TipoOcorrencia> findAll() { return tipos; }
+
+            @Override
+            public Optional<TipoOcorrencia> findByNome(String nome) {
+                return tipos.stream().filter(t -> t.getNome().equals(nome)).findFirst();
             public Ocorrencia atualizar(Long id, Ocorrencia o) {
                 o.setId(id);
                 db.put(id, o);
@@ -1026,7 +1054,7 @@ public class DominiumFuncionalidade {
 
         // ── Ocorrências ──────────────────────────────────────────────────────────
         gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository, unidadeRepository);
-        encerrarOcorrenciaUseCase = new EncerrarOcorrenciaUseCase(ocorrenciaRepository, createMultaManualUseCase);
+        encerrarOcorrenciaUseCase = new EncerrarOcorrenciaUseCase(ocorrenciaRepository, tipoOcorrenciaRepository, createMultaManualUseCase);
 
         // ── Funcionários ─────────────────────────────────────────────────────────
         cadastrarFuncionarioUseCase = new CadastrarFuncionarioUseCase(funcionarioRepository, usuarioRepository);
