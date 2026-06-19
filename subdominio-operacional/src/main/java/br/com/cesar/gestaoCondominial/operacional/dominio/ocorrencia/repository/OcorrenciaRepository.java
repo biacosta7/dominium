@@ -8,4 +8,6 @@ public interface OcorrenciaRepository {
     Ocorrencia salvar(Ocorrencia ocorrencia);
     Optional<Ocorrencia> buscarPorId(Long id);
     List<Ocorrencia> listarTodas();
+    Ocorrencia atualizar(Long id, Ocorrencia ocorrencia);
+    void deletar(Long id);
 }

@@ -698,6 +698,18 @@ public class DominiumFuncionalidade {
             public List<Ocorrencia> listarTodas() {
                 return List.copyOf(db.values());
             }
+
+            @Override
+            public Ocorrencia atualizar(Long id, Ocorrencia o) {
+                o.setId(id);
+                db.put(id, o);
+                return o;
+            }
+
+            @Override
+            public void deletar(Long id) {
+                db.remove(id);
+            }
         };
 
         areaComumRepository = new AreaComumRepository() {
@@ -1013,7 +1025,7 @@ public class DominiumFuncionalidade {
         confirmarReservaPromovidaUseCase = new ConfirmarReservaPromovidaUseCase(reservaRepository);
 
         // ── Ocorrências ──────────────────────────────────────────────────────────
-        gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository);
+        gerenciarOcorrenciaUseCase = new GerenciarOcorrenciaUseCase(ocorrenciaRepository, unidadeRepository);
         encerrarOcorrenciaUseCase = new EncerrarOcorrenciaUseCase(ocorrenciaRepository, createMultaManualUseCase);
 
         // ── Funcionários ─────────────────────────────────────────────────────────

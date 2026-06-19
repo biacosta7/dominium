@@ -1,0 +1,361 @@
+/* ==========================================================================
+   OCORRÊNCIAS PAGE
+   ========================================================================== */
+.ocorrencias-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--gray-50);
+  margin-left: 260px;
+  min-height: 100vh;
+}
+
+/* ---------- Top Bar ---------- */
+.topbar {
+  height: 60px;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  flex-shrink: 0;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: var(--gray-400);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-current {
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+.breadcrumb-sep {
+  color: var(--gray-300);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar input {
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+  background-color: var(--gray-50);
+  transition: all var(--transition-fast);
+}
+
+.search-bar input:focus {
+  background-color: #ffffff;
+  border-color: var(--primary);
+  width: 260px;
+}
+
+.search-bar svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+}
+
+.topbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #6366f1;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ---------- Content ---------- */
+.ocorrencias-content {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-header h1 {
+  font-size: 26px;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--gray-500);
+}
+
+.btn-registrar {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.btn-registrar:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- Filters ---------- */
+.filters-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-select,
+.filter-date {
+  padding: 8px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-700);
+  background-color: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.filter-select:focus,
+.filter-date:focus {
+  border-color: var(--primary);
+}
+
+/* ---------- Table ---------- */
+.table-wrapper {
+  background-color: #ffffff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.ocorrencias-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ocorrencias-table thead {
+  background-color: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.ocorrencias-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-500);
+}
+
+.ocorrencias-table td {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.ocorrencias-table tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.ocorrencias-table tbody tr:hover {
+  background-color: var(--gray-50);
+}
+
+.ocorrencias-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.td-id {
+  font-weight: 600;
+  color: var(--gray-500);
+  font-size: 12px;
+}
+
+.td-unidade {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.td-descricao {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-vazio {
+  text-align: center;
+  color: var(--gray-400);
+  padding: 40px 16px !important;
+  font-size: 14px;
+}
+
+/* ---------- Status Badges ---------- */
+.status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.status-recurso {
+  background-color: var(--warning-light);
+  color: #b45309;
+}
+
+.status-pendente {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.status-aberto {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.status-resolvido {
+  background-color: var(--gray-100);
+  color: var(--gray-500);
+}
+
+/* ---------- Multa Badges ---------- */
+.multa-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.multa-valor {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+.multa-paga {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.multa-sem {
+  color: var(--gray-300);
+}
+
+/* ---------- Action Buttons ---------- */
+.td-acoes {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-acao {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.btn-acao:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.btn-excluir:hover {
+  border-color: var(--danger);
+  background-color: var(--danger-light);
+}
+
+/* ---------- Refresh Button ---------- */
+.btn-atualizar {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all var(--transition-fast);
+}
+
+.btn-atualizar:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+/* ---------- Loading State ---------- */
+.loading-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--gray-400);
+  font-size: 14px;
+}
+
+/* ---------- Error Banner ---------- */
+.error-banner {
+  background-color: var(--danger-light);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  color: #991b1b;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+

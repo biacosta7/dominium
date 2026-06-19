@@ -9,6 +9,7 @@ import {
   Search, Bell, Plus, Users, DollarSign, AlertTriangle,
   FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
+import { Ocorrencias } from './Ocorrencias';
 
 interface DashboardAdminProps {
   userEmail: string;
@@ -337,6 +338,9 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
         </header>
 
         {/* Content Container */}
+        {activeMenu === 'Ocorrências' ? (
+          <Ocorrencias />
+        ) : (
         <div className="admin-content">
           {activeMenu === 'Assembleias' ? (
             <AssembleiasAdmin />
@@ -583,6 +587,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
             </>
           )}
         </div>
+        )}
       </main>
 
       {/* ====================================
