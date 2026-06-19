@@ -128,8 +128,10 @@ public class GestaoDeUnidadesSteps extends DominiumFuncionalidade {
     public void o_sistema_inativa_a_unidade_com_sucesso(String p1) {
         assertNull(this.excecao, "A inativação não deveria ter falhado.");
 
-        boolean aindaExiste = unidadeRepository.findById(unidadeIdContexto).isPresent();
-        assertFalse(aindaExiste, "A unidade deveria ter sido removida do repositório.");
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto)
+                .orElseThrow(() -> new RuntimeException("Unidade não encontrada após inativação."));
+        assertEquals(StatusAdimplencia.INATIVO, unidade.getStatus(),
+                "A unidade deveria estar com status INATIVO após a inativação.");
     }
 
     @Then("o sistema informa que a {string} não pode ser removida se possuir débitos ativos")
