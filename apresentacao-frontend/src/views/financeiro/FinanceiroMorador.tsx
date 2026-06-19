@@ -23,19 +23,29 @@ export default function FinanceiroMorador() {
     setLoading(true);
     setError(null);
     try {
-      // 1. Resolve Unit 102 - Bloco A (Ana Lima's Unit)
       const units = await financeiroService.fetchUnits();
-      const myUnit = units.find(u => u.numero === '102' && u.bloco === 'A');
+      const usuariosResponse = await fetch('/usuarios');
+      if (!usuariosResponse.ok) throw new Error('Erro ao identificar o morador.');
+      const usuarios: Array<{ id: number; email: string }> = await usuariosResponse.json();
+      const emailAtual = localStorage.getItem('dominium_userEmail');
+      const usuarioAtual = usuarios.find(u => u.email === emailAtual);
+      const myUnit = units.find(u =>
+        u.proprietarioId === usuarioAtual?.id || u.inquilinoId === usuarioAtual?.id
+      );
       
       if (!myUnit) {
-        throw new Error('Unidade Apto 102 - Bloco A não encontrada no banco de dados.');
+        throw new Error('Nenhuma unidade vinculada ao morador conectado.');
       }
       setUnidade(myUnit);
 
       // 2. Fetch fees for my unit from /api/taxas/unidade/{id}
       const resTaxas = await fetch(`/api/taxas/unidade/${myUnit.id}`);
       if (!resTaxas.ok) throw new Error('Erro ao carregar taxas condominiais.');
-      const dataTaxas: Taxa[] = await resTaxas.json();
+      const taxasBackend = await resTaxas.json();
+      const dataTaxas: Taxa[] = taxasBackend.map((taxa: Omit<Taxa, 'status'> & { status: string }) => ({
+        ...taxa,
+        status: (taxa.status === 'PAGA' ? 'PAGO' : taxa.status) as Taxa['status'],
+      }));
       
       // Sort taxas by due date descending
       dataTaxas.sort((a, b) => new Date(b.dataVencimento).getTime() - new Date(a.dataVencimento).getTime());
@@ -310,10 +320,6 @@ export default function FinanceiroMorador() {
                   <span>Cota Condominial Base</span>
                   <span>{formatarMoeda(selectedTaxa.valorBase)}</span>
                 </div>
-                <div className="comp-item">
-                  <span>Fundo de Reserva ordinária</span>
-                  <span>{formatarMoeda(selectedTaxa.valorBase * 0.1)}</span> {/* approx 10% */}
-                </div>
                 {selectedTaxa.valorMultas > 0 && (
                   <div className="comp-item" style={{ color: 'var(--danger)' }}>
                     <span>Multas e Juros por Atraso</span>
@@ -322,7 +328,7 @@ export default function FinanceiroMorador() {
                 )}
                 <div className="comp-total-row">
                   <span>Valor Total</span>
-                  <span>{formatarMoeda(selectedTaxa.valorTotal + (selectedTaxa.valorBase * 0.1))}</span>
+                  <span>{formatarMoeda(selectedTaxa.valorTotal)}</span>
                 </div>
               </div>
 

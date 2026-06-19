@@ -6,6 +6,7 @@ import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.RecursoId;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.StatusRecurso;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.repository.RecursoRepository;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,11 +32,15 @@ public class JulgarRecursoUseCase {
 
         if (dto.getStatus() == StatusRecurso.DEFERIDO) {
             if (dto.isCancelarMulta()) {
-                multa.setValor(BigDecimal.ZERO); // Zerando o valor para representar cancelamento
+                multa.setValor(BigDecimal.ZERO);
+                multa.setStatus(StatusMulta.CANCELADA);
             } else if (dto.getNovoValorMulta() != null) {
                 multa.setValor(dto.getNovoValorMulta());
+                multa.setStatus(StatusMulta.ABERTA);
             }
-            multaRepository.save(multa);
+        } else {
+            multa.setStatus(StatusMulta.RECURSO_INDEFERIDO);
         }
+        multaRepository.save(multa);
     }
 }

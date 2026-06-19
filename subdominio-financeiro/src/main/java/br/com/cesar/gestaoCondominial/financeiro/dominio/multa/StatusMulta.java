@@ -4,5 +4,6 @@ public enum StatusMulta {
     ABERTA,
     PAGA,
     CONTESTADA,
+    RECURSO_INDEFERIDO,
     CANCELADA
 }

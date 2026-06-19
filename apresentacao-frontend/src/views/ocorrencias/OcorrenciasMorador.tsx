@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ModalOcorrencia } from '../../components/ModalOcorrencia';
 import { listarOcorrenciasPorUnidade, criarOcorrencia } from '../../services/ocorrenciaService';
-import { listarMultasPorUnidade, contestarMulta } from '../../services/multaService';
+import { listarMultasPorUnidade, abrirRecurso as enviarRecursoMulta } from '../../services/multaService';
 import './OcorrenciasMorador.css';
-
-const UNIDADE_ID = 1;
 
 const statusLabels: Record<string, string> = {
   ABERTA: 'Aberto',
@@ -22,6 +20,7 @@ const multaStatusLabels: Record<string, string> = {
   ABERTA: 'Pendente',
   PAGA: 'Paga',
   CONTESTADA: 'Em recurso',
+  RECURSO_INDEFERIDO: 'Recurso indeferido',
   CANCELADA: 'Multa Cancelada',
 };
 
@@ -29,6 +28,7 @@ const multaStatusColors: Record<string, string> = {
   ABERTA: '#ef4444',
   PAGA: '#22c55e',
   CONTESTADA: '#f59e0b',
+  RECURSO_INDEFERIDO: '#ef4444',
   CANCELADA: '#22c55e',
 };
 
@@ -48,7 +48,7 @@ function formatarMoeda(valor: number) {
 function prazoRecurso(dataCriacao: string) {
   if (!dataCriacao) return null;
   const d = new Date(dataCriacao);
-  d.setDate(d.getDate() + 30);
+  d.setDate(d.getDate() + 15);
   return d.toLocaleDateString('pt-BR');
 }
 
@@ -69,6 +69,7 @@ const OcorrenciasMorador: React.FC = () => {
   const [recursoMultaId, setRecursoMultaId] = useState<number | null>(null);
   const [justificativa, setJustificativa] = useState('');
   const [enviandoRecurso, setEnviandoRecurso] = useState(false);
+  const [usuarioId, setUsuarioId] = useState(1);
 
   // detail modal state
   const [ocorrenciaDetalhe, setOcorrenciaDetalhe] = useState<any | null>(null);
@@ -76,9 +77,24 @@ const OcorrenciasMorador: React.FC = () => {
   const carregar = useCallback(async () => {
     setCarregando(true);
     try {
+      const [usuariosResponse, unidadesResponse] = await Promise.all([
+        fetch('/usuarios'),
+        fetch('/unidades'),
+      ]);
+      const usuarios = usuariosResponse.ok ? await usuariosResponse.json() : [];
+      const unidades = unidadesResponse.ok ? await unidadesResponse.json() : [];
+      const emailAtual = localStorage.getItem('dominium_userEmail');
+      const usuarioAtual = usuarios.find((u: any) => u.email === emailAtual);
+      const unidadeAtual = unidades.find((u: any) =>
+        u.proprietarioId === usuarioAtual?.id || u.inquilinoId === usuarioAtual?.id
+      );
+      const idUsuario = usuarioAtual?.id ?? 1;
+      const idUnidade = unidadeAtual?.id ?? 1;
+      setUsuarioId(idUsuario);
+
       const [ocs, ms] = await Promise.all([
-        listarOcorrenciasPorUnidade(UNIDADE_ID),
-        listarMultasPorUnidade(UNIDADE_ID),
+        listarOcorrenciasPorUnidade(idUnidade),
+        listarMultasPorUnidade(idUnidade),
       ]);
       setOcorrencias(ocs);
       setMultas(ms);
@@ -111,11 +127,12 @@ const OcorrenciasMorador: React.FC = () => {
     setJustificativa('');
   };
 
-  const enviarRecurso = async () => {
-    if (!recursoMultaId || !justificativa.trim()) return;
+  const enviarRecurso = async (event?: React.FormEvent) => {
+    event?.preventDefault();
+    if (recursoMultaId === null || !justificativa.trim()) return;
     setEnviandoRecurso(true);
     try {
-      await contestarMulta(recursoMultaId, justificativa);
+      await enviarRecursoMulta(recursoMultaId, usuarioId, justificativa);
       setRecursoMultaId(null);
       carregar();
     } catch (e: any) {
@@ -192,10 +209,10 @@ const OcorrenciasMorador: React.FC = () => {
                       <span>≡</span>
                     </div>
                     <div className="ocm-card-body">
-                      {m.status === 'CONTESTADA' || m.status === 'CANCELADA' ? (
+                      {m.status === 'CONTESTADA' || m.status === 'RECURSO_INDEFERIDO' || m.status === 'CANCELADA' ? (
                         <>
                           <div className="ocm-card-title">
-                            Recurso Julgado — Multa #{String(m.id).padStart(4, '0')} ({m.descricao?.replace('Multa: ', '')})
+                            {m.status === 'CONTESTADA' ? 'Recurso em Análise' : 'Recurso Julgado'} — Multa #{String(m.id).padStart(4, '0')} ({m.descricao?.replace('Multa: ', '')})
                           </div>
                           {m.justificativaContestacao && (
                             <div className="ocm-card-desc">
@@ -207,8 +224,13 @@ const OcorrenciasMorador: React.FC = () => {
                               <strong>Decisão do Síndico:</strong> Recurso aceito. A multa foi cancelada e não constará no próximo boleto.
                             </div>
                           )}
+                          {m.status === 'RECURSO_INDEFERIDO' && (
+                            <div className="ocm-decision-box">
+                              <strong>Decisão do Síndico:</strong> recurso indeferido; a multa permanece válida.
+                            </div>
+                          )}
                           {m.dataContestacao && (
-                            <div className="ocm-card-date">Julgado em {formatarData(m.dataContestacao)}</div>
+                            <div className="ocm-card-date">Recurso enviado em {formatarData(m.dataContestacao)}</div>
                           )}
                         </>
                       ) : (
@@ -357,7 +379,7 @@ const OcorrenciasMorador: React.FC = () => {
       {/* Recurso Modal */}
       {recursoMultaId !== null && (
         <div className="ocm-overlay" onClick={() => setRecursoMultaId(null)}>
-          <div className="ocm-recurso-modal" onClick={(e) => e.stopPropagation()}>
+          <form className="ocm-recurso-modal" onSubmit={enviarRecurso} onClick={(e) => e.stopPropagation()}>
             <h3>Abrir Recurso</h3>
             <p>Descreva sua defesa para contestar esta multa:</p>
             <textarea
@@ -367,18 +389,18 @@ const OcorrenciasMorador: React.FC = () => {
               onChange={(e) => setJustificativa(e.target.value)}
             />
             <div className="ocm-recurso-footer">
-              <button className="ocm-btn-cancelar" onClick={() => setRecursoMultaId(null)}>
+              <button type="button" className="ocm-btn-cancelar" onClick={() => setRecursoMultaId(null)}>
                 Cancelar
               </button>
               <button
+                type="submit"
                 className="ocm-btn-enviar"
-                onClick={enviarRecurso}
                 disabled={enviandoRecurso || !justificativa.trim()}
               >
                 {enviandoRecurso ? 'Enviando...' : 'Enviar Recurso'}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </div>

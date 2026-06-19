@@ -24,7 +24,8 @@ export default function FinanceiroAdmin() {
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState<string>('TODAS');
   
   // Modal States
-  const [modalType, setModalType] = useState<'gerar-taxa' | 'novo-orcamento' | 'nova-despesa' | 'ver-despesa' | 'ver-orcamento' | null>(null);
+  const [modalType, setModalType] = useState<'gerar-taxa' | 'editar-taxa' | 'novo-orcamento' | 'nova-despesa' | 'ver-despesa' | 'ver-orcamento' | null>(null);
+  const [selectedTaxa, setSelectedTaxa] = useState<Taxa | null>(null);
   const [selectedDespesa, setSelectedDespesa] = useState<Despesa | null>(null);
 
   
@@ -239,6 +240,27 @@ export default function FinanceiroAdmin() {
     }
   };
 
+  const handleAtualizarTaxaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTaxa) return;
+    setFormError(null);
+    setFormSubmitting(true);
+    try {
+      await financeiroService.atualizarTaxa(
+        selectedTaxa.id,
+        Number(formValorBase),
+        Number(formValorMultas),
+      );
+      setModalType(null);
+      setSelectedTaxa(null);
+      loadInitialData();
+    } catch (err: any) {
+      setFormError(err.message || 'Erro ao atualizar taxa.');
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
   // Open modal triggers
   const openGerarTaxaModal = () => {
     setFormUnidadeId('');
@@ -247,6 +269,14 @@ export default function FinanceiroAdmin() {
     setFormDataVencimento(new Date().toISOString().split('T')[0]);
     setFormError(null);
     setModalType('gerar-taxa');
+  };
+
+  const openEditarTaxaModal = (taxa: Taxa) => {
+    setSelectedTaxa(taxa);
+    setFormValorBase(String(taxa.valorBase));
+    setFormValorMultas(String(taxa.valorMultas));
+    setFormError(null);
+    setModalType('editar-taxa');
   };
 
   const openNovoOrcamentoModal = () => {
@@ -430,13 +460,22 @@ export default function FinanceiroAdmin() {
                             <td>
                               <div className="actions-cell" style={{ justifyContent: 'center' }}>
                                 {taxa.status !== 'PAGO' && (
-                                  <button 
-                                    className="action-btn-circle success"
-                                    title="Registrar pagamento"
-                                    onClick={() => handleRegistrarPagamentoTaxa(taxa.id)}
-                                  >
-                                    <CheckCircle size={16} />
-                                  </button>
+                                  <>
+                                    <button
+                                      className="action-btn-circle"
+                                      title="Atualizar valor da taxa"
+                                      onClick={() => openEditarTaxaModal(taxa)}
+                                    >
+                                      <FileText size={15} />
+                                    </button>
+                                    <button
+                                      className="action-btn-circle success"
+                                      title="Registrar pagamento"
+                                      onClick={() => handleRegistrarPagamentoTaxa(taxa.id)}
+                                    >
+                                      <CheckCircle size={16} />
+                                    </button>
+                                  </>
                                 )}
                               </div>
                             </td>
@@ -704,6 +743,53 @@ export default function FinanceiroAdmin() {
                 </button>
                 <button type="submit" className="save-btn" disabled={formSubmitting}>
                   {formSubmitting ? 'Gerando...' : 'Gerar Taxa'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ATUALIZAR TAXA MODAL */}
+      {modalType === 'editar-taxa' && selectedTaxa && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h2>Atualizar Taxa</h2>
+              <button className="close-btn" onClick={() => setModalType(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleAtualizarTaxaSubmit}>
+              <div className="form-row">
+                <div className="form-group-half">
+                  <label>Valor Base (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formValorBase}
+                    onChange={(e) => setFormValorBase(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group-half">
+                  <label>Multas/Juros (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formValorMultas}
+                    onChange={(e) => setFormValorMultas(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+              {formError && <div className="modal-error-message">{formError}</div>}
+              <div className="modal-footer">
+                <button type="button" className="cancel-btn" onClick={() => setModalType(null)}>Cancelar</button>
+                <button type="submit" className="save-btn" disabled={formSubmitting}>
+                  {formSubmitting ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
               </div>
             </form>
