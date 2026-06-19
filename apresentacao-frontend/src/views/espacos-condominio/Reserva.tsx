@@ -134,23 +134,15 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
             || (error?.message && error.message.toLowerCase().includes("conflito"));
 
           if (conflito) {
-            const entrar = window.confirm(
-              "Este horário já está preenchido. Deseja entrar na lista de espera?"
-            );
-
-            if (entrar) {
-              await entrarNaFila({
-                areaComumId: payload.areaComumId,
-                usuarioId: payload.usuarioId,
-                data: payload.data,
-                horaInicio: payload.horaInicio,
-                horaFim: payload.horaFim,
-              });
-              showToast("Você entrou na lista de espera!");
-              carregarFilaEspera();
-            } else {
-              showToast("Reserva não realizada.");
-            }
+            await entrarNaFila({
+              areaComumId: payload.areaComumId,
+              usuarioId: payload.usuarioId,
+              data: payload.data,
+              horaInicio: payload.horaInicio,
+              horaFim: payload.horaFim,
+            });
+            showToast("Horário ocupado! Adicionado à lista de espera com sucesso.");
+            carregarFilaEspera();
           } else {
             throw error;
           }

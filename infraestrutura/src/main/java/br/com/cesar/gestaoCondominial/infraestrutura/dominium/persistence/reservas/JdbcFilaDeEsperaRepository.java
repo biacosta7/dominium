@@ -49,7 +49,7 @@ public class JdbcFilaDeEsperaRepository implements FilaDeEsperaRepository {
             jdbcTemplate.update(sql,
                 fila.getId().getValor(),
                 fila.getAreaComumId().getValor(),
-                fila.getUsuarioId(),
+                fila.getUsuarioId().getValor(),
                 fila.getDataDesejada(),
                 fila.getHoraInicio(),
                 fila.getHoraFim(),

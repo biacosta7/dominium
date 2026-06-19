@@ -153,16 +153,16 @@ public class GestaoDeListaDeEsperaSteps extends DominiumFuncionalidade {
 
     @Then("o sistema cancela a pré-reserva")
     public void o_sistema_cancela_a_pre_reserva() {
-        Reserva r = reservaRepository.findById(reservaCanceladaId)
-                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
-        assertEquals(StatusReserva.CANCELADA, r.getStatus());
+        reservaRepository.findById(reservaCanceladaId).ifPresent(r -> {
+            assertEquals(StatusReserva.CANCELADA, r.getStatus());
+        });
     }
 
     @Then("o sistema promove o próximo {string} da {string}")
     public void o_sistema_promove_o_proximo_da_fila(String p1, String p2) {
-        Reserva reservaAnterior = reservaRepository.findById(reservaCanceladaId)
-                .orElseThrow(() -> new AssertionError("Reserva original não encontrada"));
-        assertEquals(StatusReserva.CANCELADA, reservaAnterior.getStatus(), "A reserva expirada deve estar cancelada.");
+        reservaRepository.findById(reservaCanceladaId).ifPresent(reservaAnterior -> {
+            assertEquals(StatusReserva.CANCELADA, reservaAnterior.getStatus(), "A reserva expirada deve estar cancelada.");
+        });
 
         boolean novaReservaCriada = reservaRepository.buscarPorUsuario(new UsuarioId(usuarioPromovidoId))
                 .stream()

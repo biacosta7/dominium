@@ -640,6 +640,11 @@ public class DominiumFuncionalidade {
                                         || r.getStatus() == StatusReserva.AGUARDANDO_CONFIRMACAO))
                         .collect(Collectors.toList());
             }
+
+            @Override
+            public void delete(ReservaId id) {
+                db.remove(id.getValor());
+            }
         };
 
         filaDeEsperaRepository = new FilaDeEsperaRepository() {

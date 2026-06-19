@@ -109,4 +109,9 @@ public class JdbcReservaRepository implements ReservaRepository {
                 fim, inicio,
                 inicio, fim);
     }
+
+    @Override
+    public void delete(ReservaId id) {
+        jdbcTemplate.update("DELETE FROM reservas WHERE id = ?", id.getValor());
+    }
 }
