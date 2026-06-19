@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ModalOcorrencia } from '../components/ModalOcorrencia';
 import { listarOcorrencias, criarOcorrencia, encerrarOcorrencia, editarOcorrencia, deletarOcorrencia } from '../services/ocorrenciaService';
+import { listarRecursos, julgarRecurso, type RecursoMulta } from '../services/multaService';
 import './Ocorrencias.css';
 
 const statusClasses: Record<string, string> = {
@@ -31,6 +32,7 @@ function formatarMoeda(valor: number) {
 
 export const Ocorrencias: React.FC = () => {
   const [ocorrencias, setOcorrencias] = useState<any[]>([]);
+  const [recursos, setRecursos] = useState<RecursoMulta[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
@@ -41,8 +43,12 @@ export const Ocorrencias: React.FC = () => {
     try {
       setCarregando(true);
       setErro(null);
-      const dados = await listarOcorrencias();
+      const [dados, dadosRecursos] = await Promise.all([
+        listarOcorrencias(),
+        listarRecursos().catch(() => []),
+      ]);
       setOcorrencias(dados);
+      setRecursos(dadosRecursos);
     } catch (e: any) {
       setErro('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
       console.error(e);
@@ -101,6 +107,17 @@ export const Ocorrencias: React.FC = () => {
       carregar();
     } catch (e: any) {
       alert('Erro ao deletar ocorrência: ' + e.message);
+    }
+  };
+
+  const julgar = async (recurso: RecursoMulta, status: 'DEFERIDO' | 'INDEFERIDO') => {
+    const justificativa = window.prompt('Informe a justificativa da decisão:');
+    if (!justificativa?.trim()) return;
+    try {
+      await julgarRecurso(recurso.id, status, justificativa.trim());
+      carregar();
+    } catch (e: any) {
+      alert('Erro ao julgar recurso: ' + e.message);
     }
   };
 
@@ -222,6 +239,52 @@ export const Ocorrencias: React.FC = () => {
             </tbody>
           </table>
         )}
+      </div>
+
+      <div className="content-header" style={{ marginTop: '32px' }}>
+        <div>
+          <h2>Recursos contra Multas</h2>
+          <p className="subtitle">Análise e julgamento das contestações dos moradores</p>
+        </div>
+      </div>
+
+      <div className="table-wrapper">
+        <table className="ocorrencias-table">
+          <thead>
+            <tr>
+              <th>MULTA</th>
+              <th>MORADOR</th>
+              <th>MOTIVO</th>
+              <th>STATUS</th>
+              <th>AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recursos.map((recurso) => (
+              <tr key={recurso.id}>
+                <td>#{String(recurso.multaId).padStart(4, '0')}</td>
+                <td>#{recurso.moradorId}</td>
+                <td>{recurso.motivo}</td>
+                <td>
+                  <span className={`status-badge ${recurso.status === 'PENDENTE' ? 'status-pendente' : 'status-resolvido'}`}>
+                    {recurso.status}
+                  </span>
+                </td>
+                <td className="td-acoes">
+                  {recurso.status === 'PENDENTE' ? (
+                    <>
+                      <button className="btn-acao" title="Deferir e cancelar multa" onClick={() => julgar(recurso, 'DEFERIDO')}>✓</button>
+                      <button className="btn-acao btn-deletar" title="Indeferir recurso" onClick={() => julgar(recurso, 'INDEFERIDO')}>✕</button>
+                    </>
+                  ) : recurso.justificativaSindico || 'Julgado'}
+                </td>
+              </tr>
+            ))}
+            {recursos.length === 0 && (
+              <tr><td colSpan={5} className="td-vazio">Nenhum recurso registrado.</td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {modalAberto && (

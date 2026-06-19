@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -26,8 +27,8 @@ public class RecursoRepositoryImpl implements RecursoRepository {
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
-                recurso.getId().getValue(),
-                recurso.getMultaId(),
+                recurso.getId().getValue().toString(),
+                recurso.getMultaId().getValor(),
                 recurso.getMoradorId(),
                 recurso.getMotivo(),
                 recurso.getDataSolicitacao(),
@@ -43,21 +44,26 @@ public class RecursoRepositoryImpl implements RecursoRepository {
                 recurso.getStatus().name(),
                 recurso.getJustificativaSindico(),
                 recurso.getDataDecisao(),
-                recurso.getId().getValue()
+                recurso.getId().getValue().toString()
         );
     }
 
     @Override
     public Optional<Recurso> buscarPorId(RecursoId id) {
         String sql = "SELECT * FROM recurso_multa WHERE id = ?";
-        return jdbcTemplate.query(sql, this::mapRowToRecurso, id.getValue()).stream().findFirst();
+        return jdbcTemplate.query(sql, this::mapRowToRecurso, id.getValue().toString()).stream().findFirst();
+    }
+
+    @Override
+    public List<Recurso> listarTodos() {
+        return jdbcTemplate.query("SELECT * FROM recurso_multa ORDER BY data_solicitacao DESC", this::mapRowToRecurso);
     }
 
         private Recurso mapRowToRecurso(ResultSet rs, int rowNum) throws SQLException {
         return new Recurso(
-                new RecursoId(rs.getObject("id", UUID.class)),
+                new RecursoId(UUID.fromString(rs.getString("id"))),
                 new MultaId(rs.getLong("multa_id")),
-                rs.getObject("morador_id", UUID.class),
+                rs.getLong("morador_id"),
                 rs.getString("motivo"),
                 rs.getTimestamp("data_solicitacao").toLocalDateTime(),
                 StatusRecurso.valueOf(rs.getString("status")),

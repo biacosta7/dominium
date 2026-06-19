@@ -75,7 +75,11 @@ export const financeiroService = {
   async fetchTaxas(): Promise<Taxa[]> {
     const res = await fetch('/api/taxas');
     if (!res.ok) throw new Error('Erro ao buscar taxas condominiais');
-    return res.json();
+    const taxas = await res.json();
+    return taxas.map((taxa: Omit<Taxa, 'status'> & { status: string }) => ({
+      ...taxa,
+      status: (taxa.status === 'PAGA' ? 'PAGO' : taxa.status) as Taxa['status'],
+    })) as Taxa[];
   },
 
   async gerarTaxa(data: {
@@ -103,6 +107,19 @@ export const financeiroService = {
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(errText || 'Erro ao registrar pagamento de taxa');
+    }
+    return res.json();
+  },
+
+  async atualizarTaxa(id: number, novoValorBase: number, novasMultas: number): Promise<Taxa> {
+    const res = await fetch(`/api/taxas/${id}/valor`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ novoValorBase, novasMultas }),
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'Erro ao atualizar taxa condominial');
     }
     return res.json();
   },

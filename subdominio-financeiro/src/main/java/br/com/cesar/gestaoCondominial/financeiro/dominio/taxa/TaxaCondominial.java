@@ -1,6 +1,7 @@
 package br.com.cesar.gestaoCondominial.financeiro.dominio.taxa;
 
 import br.com.cesar.gestaoCondominial.moradores.dominio.unidade.UnidadeId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.taxa.decorator.TaxaDecorator;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -22,7 +23,7 @@ public class TaxaCondominial {
         this.unidadeId = unidadeId;
         this.valorBase = valorBase;
         this.valorMultas = valorMultas != null ? valorMultas : BigDecimal.ZERO;
-        this.valorTotal = this.valorBase.add(this.valorMultas);
+        this.valorTotal = calcularTotal();
         this.dataVencimento = dataVencimento;
         this.status = StatusTaxa.PENDENTE;
     }
@@ -57,12 +58,18 @@ public class TaxaCondominial {
         }
         this.valorBase = novoValorBase;
         this.valorMultas = novasMultas != null ? novasMultas : BigDecimal.ZERO;
-        this.valorTotal = this.valorBase.add(this.valorMultas);
+        this.valorTotal = calcularTotal();
     }
 
     public void verificarAtraso() {
         if (this.status == StatusTaxa.PENDENTE && LocalDate.now().isAfter(this.dataVencimento)) {
             this.status = StatusTaxa.ATRASADA;
         }
+    }
+
+    private BigDecimal calcularTotal() {
+        TaxaDecorator.Calculo calculo = () -> valorBase;
+        calculo = new TaxaDecorator.Multas(calculo, valorMultas);
+        return calculo.calcular();
     }
 }
