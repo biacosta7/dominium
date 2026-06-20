@@ -5,6 +5,8 @@ import MoradoresAdmin from './moradores/MoradoresAdmin';
 import { Unidades } from './Unidades';
 import FinanceiroAdmin from './financeiro/FinanceiroAdmin';
 import FuncionariosAdmin from './funcionarios/FuncionariosAdmin';
+import DocumentosAdmin from './comunicacao/DocumentosAdmin';
+import NotificacoesAdmin from './comunicacao/NotificacoesAdmin';
 
 import {
   Bell, Plus, Users, DollarSign, AlertTriangle, FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
@@ -360,6 +362,10 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
               <FinanceiroAdmin />
             ) : activeMenu === 'Funcionários' ? (
               <FuncionariosAdmin />
+            ) : activeMenu === 'Documentos' ? (
+              <DocumentosAdmin />
+            ) : activeMenu === 'Notificações' ? (
+              <NotificacoesAdmin />
             ) : (
               <>
                 <div className="admin-welcome-row">

@@ -267,6 +267,11 @@ public class DominiumFuncionalidade {
                         .filter(n -> n.getUsuarioId().equals(usuarioId))
                         .collect(Collectors.toList());
             }
+
+            @Override
+            public List<Notificacao> findAll() {
+                return List.copyOf(db.values());
+            }
         };
 
         notificacaoService = (usuarioId, mensagem, tipo) -> {

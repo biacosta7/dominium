@@ -3,6 +3,7 @@ package br.com.cesar.gestaoCondominial.apresentacao.dominium.documento;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.dto.DocumentoResponse;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.dto.VersaoDocumentoResponse;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
+import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notificacao.usecase.EnviarNotificacaoUseCase;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.CategoriaDocumento;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import org.springframework.http.ContentDisposition;
@@ -27,6 +28,7 @@ public class DocumentoController {
     private final ListarDocumentosUseCase listarUseCase;
     private final BaixarDocumentoUseCase baixarUseCase;
     private final ObterHistoricoDocumentoUseCase historicoUseCase;
+    private final EnviarNotificacaoUseCase enviarNotificacaoUseCase;
     private final ExceptionHandler exceptionHandler;
 
     public DocumentoController(CadastrarDocumentoUseCase cadastrarUseCase,
@@ -35,6 +37,7 @@ public class DocumentoController {
                                ListarDocumentosUseCase listarUseCase,
                                BaixarDocumentoUseCase baixarUseCase,
                                ObterHistoricoDocumentoUseCase historicoUseCase,
+                               EnviarNotificacaoUseCase enviarNotificacaoUseCase,
                                ExceptionHandler exceptionHandler) {
         this.cadastrarUseCase = cadastrarUseCase;
         this.atualizarUseCase = atualizarUseCase;
@@ -42,6 +45,7 @@ public class DocumentoController {
         this.listarUseCase = listarUseCase;
         this.baixarUseCase = baixarUseCase;
         this.historicoUseCase = historicoUseCase;
+        this.enviarNotificacaoUseCase = enviarNotificacaoUseCase;
         this.exceptionHandler = exceptionHandler;
     }
 
@@ -58,6 +62,12 @@ public class DocumentoController {
                 DocumentoComVersao resultado = cadastrarUseCase.executar(
                         sindicoId, nome, categoria, dataValidade,
                         arquivo.getOriginalFilename(), arquivo.getBytes()
+                );
+                enviarNotificacaoUseCase.executar(
+                        sindicoId,
+                        "O síndico publicou um novo documento: " + nome,
+                        "GERAL",
+                        "MORADOR"
                 );
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(DocumentoResponse.from(resultado.documento(), resultado.ultimaVersao()));
