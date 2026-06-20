@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notificacao.usecase.MarcarComoLidaUseCase;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.NotificacaoId;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
 
-    private Long notificacaoIdContexto;
+    private NotificacaoId notificacaoIdContexto;
     private Long usuarioIdContexto;
     private String tipoEventoContexto;
 
@@ -37,9 +38,7 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
             String mensagem = gerarMensagem(this.tipoEventoContexto);
 
             // Usar o serviço de notificação para criar a notificação
-            notificacaoService.enviar(usuarioIdContexto, mensagem,
-                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao
-                            .valueOf(tipoNotificacao.name()));
+            notificacaoService.enviar(usuarioIdContexto, mensagem, tipoNotificacao);
 
             // Buscar a notificação criada
             List<Notificacao> notificacoes = notificacaoRepository.findByUsuarioId(usuarioIdContexto);
@@ -76,11 +75,7 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
         morador = usuarioRepository.save(morador);
         usuarioIdContexto = morador.getId();
 
-        Notificacao notificacao = new Notificacao();
-        notificacao.setUsuarioId(usuarioIdContexto);
-        notificacao.setMensagem("Notificação de teste");
-        notificacao.setTipo(TipoNotificacao.GERAL);
-        notificacao.setLida(false);
+        Notificacao notificacao = Notificacao.criar(usuarioIdContexto, "Notificação de teste", TipoNotificacao.GERAL);
 
         notificacao = notificacaoRepository.save(notificacao);
         notificacaoIdContexto = notificacao.getId();
@@ -90,7 +85,7 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
     public void o_morador_solicita_marcar_a_notificacao_como_lida() {
         try {
             MarcarComoLidaUseCase marcarComoLidaUseCase = new MarcarComoLidaUseCase(notificacaoRepository);
-            marcarComoLidaUseCase.executar(notificacaoIdContexto, usuarioIdContexto);
+            marcarComoLidaUseCase.executar(notificacaoIdContexto.getValor(), usuarioIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }
@@ -125,11 +120,7 @@ public class GestaoDeNotificacoesSteps extends DominiumFuncionalidade {
         morador = usuarioRepository.save(morador);
         usuarioIdContexto = morador.getId();
 
-        Notificacao notificacao = new Notificacao();
-        notificacao.setUsuarioId(usuarioIdContexto);
-        notificacao.setMensagem("Notificação de teste");
-        notificacao.setTipo(TipoNotificacao.GERAL);
-        notificacao.setLida(false);
+        Notificacao notificacao = Notificacao.criar(usuarioIdContexto, "Notificação de teste", TipoNotificacao.GERAL);
 
         notificacao = notificacaoRepository.save(notificacao);
         notificacaoIdContexto = notificacao.getId();

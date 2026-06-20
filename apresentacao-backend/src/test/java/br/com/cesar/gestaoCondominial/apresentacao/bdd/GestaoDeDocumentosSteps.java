@@ -3,7 +3,7 @@ package br.com.cesar.gestaoCondominial.apresentacao.bdd;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.*;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 import io.cucumber.datatable.DataTable;
@@ -21,7 +21,7 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
 
     private Long usuarioLogadoId;
     private Documento ultimoDocumentoSalvo;
-    private List<Documento> listagemResultado;
+    private List<DocumentoComVersao> listagemResultado;
     private List<NotificationEntry> notificacoesEnviadas = new ArrayList<>();
 
     private static class NotificationEntry {
@@ -58,7 +58,7 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
     @When("o síndico cadastra o documento {string} na categoria {string}")
     public void o_sindico_cadastra_o_documento_na_categoria(String nome, String categoria) {
         try {
-            ultimoDocumentoSalvo = cadastrarDocumentoUseCase.executar(usuarioLogadoId, nome, CategoriaDocumento.valueOf(categoria), LocalDate.now().plusYears(1), nome + ".pdf", "conteudo".getBytes());
+            ultimoDocumentoSalvo = cadastrarDocumentoUseCase.executar(usuarioLogadoId, nome, CategoriaDocumento.valueOf(categoria), LocalDate.now().plusYears(1), nome + ".pdf", "conteudo".getBytes()).documento();
         } catch (RuntimeException e) {
             excecao = e;
         }
@@ -99,7 +99,7 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
         sindico.setTipo(TipoUsuario.SINDICO);
         sindico = usuarioRepository.save(sindico);
 
-        ultimoDocumentoSalvo = cadastrarDocumentoUseCase.executar(sindico.getId(), nome, CategoriaDocumento.ATA, LocalDate.now().plusYears(1), nome + ".pdf", "conteudo".getBytes());
+        ultimoDocumentoSalvo = cadastrarDocumentoUseCase.executar(sindico.getId(), nome, CategoriaDocumento.ATA, LocalDate.now().plusYears(1), nome + ".pdf", "conteudo".getBytes()).documento();
     }
 
     @When("o síndico atualiza o arquivo do documento {string}")
@@ -162,12 +162,12 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
             statusNormalizado = statusNormalizado.substring(0, statusNormalizado.length() - 1);
         }
         final String finalStatus = statusNormalizado;
-        assertTrue(listagemResultado.stream().allMatch(d -> d.getStatus().name().equals(finalStatus)));
+        assertTrue(listagemResultado.stream().allMatch(d -> d.documento().getStatus().name().equals(finalStatus)));
     }
 
     @Then("o documento {string} não deve aparecer na lista")
     public void o_documento_nao_deve_aparecer_na_lista(String nome) {
-        assertTrue(listagemResultado.stream().noneMatch(d -> d.getNome().equals(nome)));
+        assertTrue(listagemResultado.stream().noneMatch(d -> d.documento().getNome().equals(nome)));
     }
 
     @Given("existe um documento {string} cadastrado com status {string}")
@@ -206,8 +206,8 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
 
     @Then("o documento não aparece na listagem padrão")
     public void o_documento_nao_aparece_na_listagem_padrao() {
-        List<Documento> ativos = listarDocumentosUseCase.executar(false);
-        assertTrue(ativos.stream().noneMatch(d -> d.getId().equals(ultimoDocumentoSalvo.getId())));
+        List<DocumentoComVersao> ativos = listarDocumentosUseCase.executar(false);
+        assertTrue(ativos.stream().noneMatch(d -> d.documento().getId().equals(ultimoDocumentoSalvo.getId())));
     }
 
     @Given("existe um documento {string} com status {string}")
@@ -222,7 +222,7 @@ public class GestaoDeDocumentosSteps extends DominiumFuncionalidade {
 
     @Then("o documento {string} deve ser exibido no histórico")
     public void o_documento_deve_ser_exibido_no_historico(String nome) {
-        assertTrue(listagemResultado.stream().anyMatch(d -> d.getNome().equals(nome)));
+        assertTrue(listagemResultado.stream().anyMatch(d -> d.documento().getNome().equals(nome)));
     }
 
     @Given("existe um documento {string} com validade para {string}")
