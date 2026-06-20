@@ -149,3 +149,29 @@ Na **Gestão de Funcionários**, o `FuncionarioRepositoryValidacaoProxy` adicion
 | `subdominio-operacional/.../dominio/funcionario/repository/FuncionarioRepository.java` | Interface comum implementada pelo Proxy e pelo objeto real (*Subject*) |
 | `subdominio-operacional/.../infraestrutura/funcionario/FuncionarioRepositoryImpl.java` | Implementação JDBC real (*RealSubject*), qualificada como `funcionarioRepositoryJdbc` |
 | `subdominio-operacional/.../aplicacao/funcionario/proxy/FuncionarioRepositoryValidacaoProxy.java` | Proxy de validação: bloqueia automaticamente funcionários com contrato vencido ao serem buscados |
+
+### Iterator
+
+**Implementado por:** Sofia Gomes Tenório
+
+**Motivação:**
+Na Gestão de Reservas de Espaços Comuns, a classe `PoliticaReserva` precisa validar a criação ou atualização de novas reservas. Para isso, ela deve iterar sobre as reservas existentes e ativas no mesmo período para verificar disponibilidade, conflito de horários ou capacidade máxima excedida. O padrão **Iterator** foi escolhido para desacoplar a lógica de validação de regras de negócio de como a coleção de reservas existentes é estruturada internamente (por exemplo, encapsulando se é mantida como `List`, `Set`, `Map` ou outra coleção na memória), permitindo percorrer os dados de forma uniforme e simplificada.
+
+**Como foi implementado:**
+A implementação segue a estrutura clássica do padrão Iterator:
+1. A interface `ReservaIterator` define os métodos clássicos `hasNext()` e `next()` para navegar pela coleção de reservas de forma abstrata.
+2. A classe `ReservaCollection` atua como a estrutura agregadora, encapsulando a lista bruta (`List<Reserva> reservas`) e fornecendo o método `iterator()`.
+3. A classe `ReservaListIterator` é a implementação concreta do iterador, mantendo o controle do cursor de iteração (`position`) sobre a lista interna de reservas.
+4. O método `validarNovaReserva` em `PoliticaReserva` foi projetado para receber o iterador (`ReservaIterator`) em vez da lista concreta, consumindo os elementos de maneira abstrata.
+5. Nos casos de uso `CriarReservaUseCase` e `AtualizarReservaUseCase`, após buscar as reservas existentes no banco de dados, cria-se a `ReservaCollection` e o iterador é gerado e passado para o método de validação da política de reserva.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaIterator.java` | Interface do iterador (*Iterator*) |
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaCollection.java` | Agregador de dados (*Aggregate*) |
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaListIterator.java` | Implementador concreto do iterador (*ConcreteIterator*) |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/service/PoliticaReserva.java` | Cliente que consome o iterador para validar políticas de agendamento |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/CriarReservaUseCase.java` | Instancia e passa o iterador durante a criação de uma reserva |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/AtualizarReservaUseCase.java` | Instancia e passa o iterador durante a atualização de uma reserva |
