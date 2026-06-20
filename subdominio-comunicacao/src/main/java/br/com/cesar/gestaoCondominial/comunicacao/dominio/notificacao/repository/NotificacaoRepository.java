@@ -9,4 +9,5 @@ public interface NotificacaoRepository {
     Notificacao save(Notificacao n);
     Optional<Notificacao> findById(NotificacaoId id);
     List<Notificacao> findByUsuarioId(Long usuarioId);
+    List<Notificacao> findAll();
 }

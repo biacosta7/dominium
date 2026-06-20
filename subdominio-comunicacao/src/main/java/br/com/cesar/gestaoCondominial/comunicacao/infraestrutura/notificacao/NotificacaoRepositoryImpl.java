@@ -94,4 +94,12 @@ public class NotificacaoRepositoryImpl implements NotificacaoRepository {
             rowMapper, usuarioId
         );
     }
+
+    @Override
+    public List<Notificacao> findAll() {
+        return jdbcTemplate.query(
+            "SELECT * FROM notificacoes ORDER BY criada_em DESC",
+            rowMapper
+        );
+    }
 }
