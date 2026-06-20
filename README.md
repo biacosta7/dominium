@@ -177,6 +177,27 @@ O caso de uso `RegistrarDespesaUseCase` recebe a interface `PoliticaFinanceiraSt
 | `subdominio-financeiro/.../dominio/financeiro/strategy/PoliticaFinanceiraRigidaStrategy.java` | Estratégia concreta: Política rígida |
 | `subdominio-financeiro/.../aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java` | Contexto que utiliza a estratégia (*Context*) |
 
+### Decorator
+
+**Implementado por:** George Neto
+
+**Motivação:**
+Nas histórias de Gestão de Recursos Contra Multas e Gestão de Taxa Condominial, era necessário acrescentar regras ao comportamento principal sem concentrar todas as validações e cálculos nos casos de uso ou nas entidades. O padrão **Decorator** foi escolhido para envolver a operação-base com comportamentos adicionais, permitindo compor validações e parcelas do cálculo de maneira desacoplada e facilitando futuras extensões sem modificar o núcleo das funcionalidades, em conformidade com o Princípio Aberto/Fechado (OCP).
+
+**Como foi implementado:**
+Na **Gestão de Recursos Contra Multas**, a classe `RecursoDecorator` define a interface funcional `Abertura`, que representa o componente do padrão. A implementação `Validacao` atua como Decorator concreto: recebe outra `Abertura`, verifica se a multa está aberta e se o prazo máximo de 15 dias ainda não expirou e, somente após essas validações, delega a execução para a operação decorada. O `AbrirRecursoUseCase` cria a operação-base responsável por registrar a contestação e persistir o recurso, envolvendo-a com o Decorator antes da execução.
+
+Na **Gestão de Taxa Condominial**, a classe `TaxaDecorator` define a interface funcional `Calculo`. A implementação `Multas` envolve o cálculo-base e adiciona o valor de multas e juros. A entidade `TaxaCondominial` compõe esse cálculo tanto na geração quanto na atualização da taxa, mantendo o valor-base independente dos acréscimos e obtendo o valor total pela cadeia decorada.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| `subdominio-financeiro/.../aplicacao/recurso/decorator/RecursoDecorator.java` | Define o componente `Abertura` e o Decorator concreto de validação do recurso |
+| `subdominio-financeiro/.../aplicacao/recurso/usecase/AbrirRecursoUseCase.java` | Cria a operação-base e aplica o Decorator antes de abrir o recurso (*Client*) |
+| `subdominio-financeiro/.../dominio/taxa/decorator/TaxaDecorator.java` | Define o componente `Calculo` e o Decorator concreto que adiciona multas e juros |
+| `subdominio-financeiro/.../dominio/taxa/TaxaCondominial.java` | Compõe e utiliza o cálculo decorado na geração e atualização da taxa (*Client*) |
+
 
 ### Iterator
 
