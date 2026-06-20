@@ -14,7 +14,7 @@ public record NotificacaoResponse(
 ) {
     public static NotificacaoResponse from(Notificacao n) {
         return new NotificacaoResponse(
-                n.getId(),
+                n.getId() != null ? n.getId().getValor() : null,
                 n.getUsuarioId(),
                 n.getMensagem(),
                 n.getTipo().name(),

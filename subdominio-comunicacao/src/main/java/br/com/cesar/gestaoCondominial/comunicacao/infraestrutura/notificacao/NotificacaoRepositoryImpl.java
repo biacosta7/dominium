@@ -1,6 +1,7 @@
 package br.com.cesar.gestaoCondominial.comunicacao.infraestrutura.notificacao;
 
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.NotificacaoId;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,47 +25,64 @@ public class NotificacaoRepositoryImpl implements NotificacaoRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Notificacao> rowMapper = (rs, rowNum) -> {
-        Notificacao n = new Notificacao();
-        n.setId(rs.getLong("id"));
-        n.setUsuarioId(rs.getLong("usuario_id"));
-        n.setMensagem(rs.getString("mensagem"));
-        n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
-        n.setLida(rs.getBoolean("lida"));
-        n.setCriadaEm(rs.getTimestamp("criada_em").toLocalDateTime());
-        return n;
-    };
+    private final RowMapper<Notificacao> rowMapper = (rs, rowNum) ->
+        Notificacao.reconstituir(
+            NotificacaoId.de(rs.getLong("id")),
+            rs.getLong("usuario_id"),
+            rs.getString("mensagem"),
+            TipoNotificacao.valueOf(rs.getString("tipo")),
+            rs.getBoolean("lida"),
+            rs.getTimestamp("criada_em").toLocalDateTime()
+        );
 
     @Override
     public Notificacao save(Notificacao n) {
         if (n.getId() == null) {
-            String sql = "INSERT INTO notificacoes (usuario_id, mensagem, tipo, lida, criada_em) VALUES (?,?,?,?,?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, n.getUsuarioId());
-                ps.setString(2, n.getMensagem());
-                ps.setString(3, n.getTipo().name());
-                ps.setBoolean(4, n.isLida());
-                ps.setTimestamp(5, Timestamp.valueOf(n.getCriadaEm()));
-                return ps;
-            }, keyHolder);
-            if (keyHolder.getKey() != null) {
-                n.setId(keyHolder.getKey().longValue());
-            }
+            return inserir(n);
         } else {
-            jdbcTemplate.update(
-                "UPDATE notificacoes SET lida = ? WHERE id = ?",
-                n.isLida(), n.getId()
-            );
+            atualizar(n);
+            return n;
         }
-        return n;
+    }
+
+    private Notificacao inserir(Notificacao n) {
+        String sql = "INSERT INTO notificacoes (usuario_id, mensagem, tipo, lida, criada_em) VALUES (?,?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, n.getUsuarioId());
+            ps.setString(2, n.getMensagem());
+            ps.setString(3, n.getTipo().name());
+            ps.setBoolean(4, n.isLida());
+            ps.setTimestamp(5, Timestamp.valueOf(n.getCriadaEm()));
+            return ps;
+        }, keyHolder);
+
+        Long idGerado = keyHolder.getKey() != null ? keyHolder.getKey().longValue() : null;
+        if (idGerado == null) {
+            throw new IllegalStateException("Falha ao obter ID gerado para Notificacao");
+        }
+        return Notificacao.reconstituir(
+            NotificacaoId.de(idGerado),
+            n.getUsuarioId(),
+            n.getMensagem(),
+            n.getTipo(),
+            n.isLida(),
+            n.getCriadaEm()
+        );
+    }
+
+    private void atualizar(Notificacao n) {
+        jdbcTemplate.update(
+            "UPDATE notificacoes SET lida = ? WHERE id = ?",
+            n.isLida(), n.getId().getValor()
+        );
     }
 
     @Override
-    public Optional<Notificacao> findById(Long id) {
+    public Optional<Notificacao> findById(NotificacaoId id) {
         List<Notificacao> results = jdbcTemplate.query(
-            "SELECT * FROM notificacoes WHERE id = ?", rowMapper, id
+            "SELECT * FROM notificacoes WHERE id = ?", rowMapper, id.getValor()
         );
         return results.stream().findFirst();
     }

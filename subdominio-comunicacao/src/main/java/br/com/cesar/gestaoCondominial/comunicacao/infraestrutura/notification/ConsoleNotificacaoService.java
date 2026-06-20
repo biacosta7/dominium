@@ -1,13 +1,19 @@
 package br.com.cesar.gestaoCondominial.comunicacao.infraestrutura.notification;
 
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import org.springframework.stereotype.Service;
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao;
 
+/**
+ * Implementação concreta do Template Method.
+ *
+ * Responsabilidade: imprimir a notificação no console (útil para desenvolvimento e testes).
+ * Não persiste no banco — sobrescreve apenas o passo de despacho.
+ */
 @Service
-public class ConsoleNotificacaoService implements NotificacaoService {
+public class ConsoleNotificacaoService extends NotificacaoServiceTemplate {
+
     @Override
-    public void enviar(Long usuarioId, String mensagem, TipoNotificacao tipo) {
+    protected void despachar(Long usuarioId, String mensagem, TipoNotificacao tipo) {
         System.out.println("[NOTIFICAÇÃO] [" + tipo + "] Usuário ID: " + usuarioId + " -> " + mensagem);
     }
 }
