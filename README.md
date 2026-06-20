@@ -149,3 +149,30 @@ Na **Gestão de Funcionários**, o `FuncionarioRepositoryValidacaoProxy` adicion
 | `subdominio-operacional/.../dominio/funcionario/repository/FuncionarioRepository.java` | Interface comum implementada pelo Proxy e pelo objeto real (*Subject*) |
 | `subdominio-operacional/.../infraestrutura/funcionario/FuncionarioRepositoryImpl.java` | Implementação JDBC real (*RealSubject*), qualificada como `funcionarioRepositoryJdbc` |
 | `subdominio-operacional/.../aplicacao/funcionario/proxy/FuncionarioRepositoryValidacaoProxy.java` | Proxy de validação: bloqueia automaticamente funcionários com contrato vencido ao serem buscados |
+
+### Strategy
+
+**Implementado por:** Beatriz Costa
+
+**Motivação:**
+Na gestão financeira de um condomínio, o fluxo de aprovação e autorização de despesas pode variar de forma dinâmica dependendo das regras e da rigidez administrativa do próprio condomínio. Em vez de acoplar o processo de registro de despesas a regras rígidas codificadas diretamente nas classes de serviço ou utilizar desvios condicionais baseados em tipos de despesas ordinárias/extraordinárias, emprega-se o padrão **Strategy**. Isso permite desacoplar a definição da política financeira ([PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java)) da lógica de registro de despesas ([RegistrarDespesaUseCase](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java)), facilitando a substituição dinâmica de políticas (ex: Flexível, Conservadora, Rígida) e permitindo a extensão para novos tipos de políticas sem a necessidade de modificar o caso de uso existente (respeitando o Princípio Aberto/Fechado - OCP).
+
+**Como foi implementado:**
+A implementação define uma interface [PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) contendo o método `determinarStatusInicial`, responsável por avaliar uma despesa associada a um determinado orçamento e retornar o seu status inicial ([StatusDespesa](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/StatusDespesa.java)).
+
+Três classes concretas de estratégia implementam esse comportamento:
+1. [PoliticaFinanceiraFlexivelStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraFlexivelStrategy.java): Qualquer despesa com saldo orçamentário disponível é aprovada imediatamente.
+2. [PoliticaFinanceiraConservadoraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraConservadoraStrategy.java) (Estratégia `@Primary` padrão): Segue as regras padrão do condomínio, onde despesas extraordinárias que superam um limite de R$ 5.000,00 ficam pendentes para votação em assembleia.
+3. [PoliticaFinanceiraRigidaStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraRigidaStrategy.java): Exige que todas as despesas extraordinárias (independente de valor) e quaisquer despesas ordinárias que excedam R$ 10.000,00 fiquem pendentes de aprovação/auditoria manual pelo síndico.
+
+O caso de uso [RegistrarDespesaUseCase](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java) recebe a interface [PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) por injeção de dependência e delega a ela a responsabilidade de decidir se a despesa deve nascer aprovada ou pendente. A anotação `@Primary` do Spring garante que a política conservadora padrão seja selecionada por padrão, preservando toda a compatibilidade com a base de código e testes existentes.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| [PoliticaFinanceiraStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) | Interface da estratégia (*Strategy*) |
+| [PoliticaFinanceiraFlexivelStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraFlexivelStrategy.java) | Estratégia concreta: Política flexível |
+| [PoliticaFinanceiraConservadoraStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraConservadoraStrategy.java) | Estratégia concreta: Política conservadora (Padrão) |
+| [PoliticaFinanceiraRigidaStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraRigidaStrategy.java) | Estratégia concreta: Política rígida |
+| [RegistrarDespesaUseCase.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java) | Contexto que utiliza a estratégia (*Context*) |
