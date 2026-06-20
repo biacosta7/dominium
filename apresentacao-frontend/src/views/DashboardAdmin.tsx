@@ -88,12 +88,24 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
     }).format(val);
   };
 
+  const getTodayFormatted = () => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    };
+    const formatted = today.toLocaleDateString('pt-BR', options);
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
+
   // Calculate unpaid taxes
   const unpaidList = taxas
     .filter(t => t.status !== 'PAGO')
     .map(t => {
       const due = new Date(t.dataVencimento);
-      const diffTime = Math.max(0, new Date('2026-03-05').getTime() - due.getTime());
+      const diffTime = Math.max(0, new Date().getTime() - due.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return {
         unitId: t.unidadeId,
@@ -359,7 +371,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
               <div className="admin-welcome-row">
                 <div className="admin-welcome">
                   <h1>Bom dia, Marco 👋</h1>
-                  <p>Quinta-feira, 05 de março de 2026 · Residencial Parque Verde</p>
+                  <p>{getTodayFormatted()} · Residencial Parque Verde</p>
                 </div>
                 <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
                   <Plus size={16} /> Novo Registro
