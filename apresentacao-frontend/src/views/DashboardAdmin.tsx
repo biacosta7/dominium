@@ -7,8 +7,7 @@ import FinanceiroAdmin from './financeiro/FinanceiroAdmin';
 import FuncionariosAdmin from './funcionarios/FuncionariosAdmin';
 
 import {
-  Search, Bell, Plus, Users, DollarSign, AlertTriangle,
-  FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
+  Bell, Plus, Users, DollarSign, AlertTriangle, FileText, Briefcase, Settings, ArrowRight, X, TrendingUp
 } from 'lucide-react';
 import { Ocorrencias } from './Ocorrencias';
 
@@ -337,11 +336,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
           </div>
 
           <div className="admin-topbar-actions">
-            <div className="search-bar">
-              <Search size={16} />
-              <input type="text" placeholder="Buscar..." />
-            </div>
-
             <button className="icon-button">
               <Bell size={18} />
             </button>
