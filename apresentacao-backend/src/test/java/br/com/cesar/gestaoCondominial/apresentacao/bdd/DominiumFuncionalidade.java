@@ -994,7 +994,7 @@ public class DominiumFuncionalidade {
         vincularMoradorUseCase = new CreateVinculoMoradorUseCase(vinculoMoradorRepository, unidadeRepository,
                 usuarioRepository, createUsuarioUseCase);
         ReflectionTestUtils.setField(vincularMoradorUseCase, "maxMoradores", 5);
-        updateVinculoMoradorUseCase = new UpdateVinculoMoradorUseCase(vinculoMoradorRepository);
+        updateVinculoMoradorUseCase = new UpdateVinculoMoradorUseCase(vinculoMoradorRepository, usuarioRepository);
         endVinculoMoradorUseCase = new EndVinculoMoradorUseCase(vinculoMoradorRepository, usuarioRepository);
         getVinculosPorUnidadeUseCase = new GetVinculosPorUnidadeUseCase(vinculoMoradorRepository);
 

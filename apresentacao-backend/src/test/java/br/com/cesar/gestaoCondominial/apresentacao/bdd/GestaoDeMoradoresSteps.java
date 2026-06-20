@@ -65,8 +65,15 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
 
     @When("o síndico ou titular solicita adicionar o {string}")
     public void o_sindico_ou_titular_solicita_adicionar(String p1) {
+        if (requesterIdContexto == null) {
+            Usuario defaultRequester = new Usuario();
+            defaultRequester.setNome("Default Sindico");
+            defaultRequester.setTipo(br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario.SINDICO);
+            defaultRequester = usuarioRepository.save(defaultRequester);
+            requesterIdContexto = defaultRequester.getId();
+        }
         try {
-            vincularMoradorUseCase.execute(unidadeIdContexto.getValor(), vinculoRequest);
+            vincularMoradorUseCase.execute(unidadeIdContexto.getValor(), vinculoRequest, requesterIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }
@@ -171,10 +178,17 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
 
     @When("o síndico atualiza o vínculo do morador para {string}")
     public void o_sindico_atualiza_o_vinculo_do_morador_para(String novoTipo) {
+        if (requesterIdContexto == null) {
+            Usuario defaultRequester = new Usuario();
+            defaultRequester.setNome("Default Sindico");
+            defaultRequester.setTipo(br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario.SINDICO);
+            defaultRequester = usuarioRepository.save(defaultRequester);
+            requesterIdContexto = defaultRequester.getId();
+        }
         VinculoRequestDTO updateRequest = new VinculoRequestDTO();
         updateRequest.setTipo(TipoVinculo.valueOf(novoTipo.toUpperCase()));
         try {
-            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest);
+            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest, requesterIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }

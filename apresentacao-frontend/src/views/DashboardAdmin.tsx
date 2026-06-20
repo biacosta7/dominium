@@ -23,15 +23,21 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [modalType, setModalType] = useState<'novo-registro' | 'inadimplentes' | null>(null);
 
-  // Dynamic backend states
   const [taxas, setTaxas] = useState<any[]>([]);
   const [unidades, setUnidades] = useState<any[]>([]);
   const [vinculos, setVinculos] = useState<any[]>([]);
   const [orcamentos, setOrcamentos] = useState<any[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     async function loadDashboardData() {
       try {
+        const resUser = await fetch('/usuarios');
+        if (resUser.ok) {
+          const allUsers = await resUser.json();
+          const loggedUser = allUsers.find((u: any) => u.email === userEmail);
+          setCurrentUser(loggedUser);
+        }
         const resTaxas = await fetch('/api/taxas');
         if (resTaxas.ok) {
           const dataTaxas = await resTaxas.json();
@@ -41,7 +47,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
         if (resUnits.ok) {
           const dataUnits = await resUnits.json();
           setUnidades(dataUnits);
-          
+
           const fetchedPromises = dataUnits.map((u: any) =>
             fetch(`/api/unidades/${u.id}/moradores`).then(r => r.ok ? r.json() : []).catch(() => [])
           );
@@ -90,17 +96,16 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
 
   const getTodayFormatted = () => {
     const today = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     };
     const formatted = today.toLocaleDateString('pt-BR', options);
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
-  // Calculate unpaid taxes
   const unpaidList = taxas
     .filter(t => t.status !== 'PAGO')
     .map(t => {
@@ -128,7 +133,6 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
   const totalDespesasCalculadas = budget2026 ? budget2026.valorGasto : 0;
   const saldoCalculado = totalReceitaCalculada - totalDespesasCalculadas;
 
-  // Dynamic states for interactive demo
   const [activities, setActivities] = useState([
     { id: 1, text: 'Apto 304 realizou pagamento de R$ 580,00 — Cota março', time: 'há 12min', color: '#10b981' },
     { id: 2, text: 'Ocorrência registrada — Barulho excessivo Apto 508 às 23h', time: 'há 3h', color: '#ef4444' },
@@ -326,9 +330,7 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
         </div>
       </aside>
 
-      {/* Main Panel */}
       <main className="admin-main">
-        {/* Topbar */}
         <header className="admin-topbar">
           <div className="admin-breadcrumb">
             Dominium › <strong>{activeMenu}</strong>
@@ -350,264 +352,252 @@ export const DashboardAdmin: React.FC<DashboardAdminProps> = ({ userEmail, onLog
           </div>
         </header>
 
-        {/* Content Container */}
         {activeMenu === 'Ocorrências' ? (
           <Ocorrencias />
         ) : (
-        <div className="admin-content">
-          {activeMenu === 'Assembleias' ? (
-            <AssembleiasAdmin />
-          ) : activeMenu === 'Moradores' ? (
-            <MoradoresAdmin />
-          ) : activeMenu === 'Unidades' ? (
-            <Unidades />
-          ) : activeMenu === 'Financeiro' ? (
-            <FinanceiroAdmin />
-          ) : activeMenu === 'Funcionários' ? (
-            <FuncionariosAdmin />
-          ) : (
-            <>
-              {/* Welcome Row */}
-              <div className="admin-welcome-row">
-                <div className="admin-welcome">
-                  <h1>Bom dia, Marco 👋</h1>
-                  <p>{getTodayFormatted()} · Residencial Parque Verde</p>
-                </div>
-                <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
-                  <Plus size={16} /> Novo Registro
-                </button>
-              </div>
-
-              {/* Metrics row */}
-              <section className="metrics-row">
-                <div className="metric-card">
-                  <div className="metric-card-header">
-                    <div className="metric-icon-box" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
-                      <DollarSign size={18} />
-                    </div>
+          <div className="admin-content">
+            {activeMenu === 'Assembleias' ? (
+              <AssembleiasAdmin />
+            ) : activeMenu === 'Moradores' ? (
+              <MoradoresAdmin requesterId={currentUser?.id} />
+            ) : activeMenu === 'Unidades' ? (
+              <Unidades />
+            ) : activeMenu === 'Financeiro' ? (
+              <FinanceiroAdmin />
+            ) : activeMenu === 'Funcionários' ? (
+              <FuncionariosAdmin />
+            ) : (
+              <>
+                <div className="admin-welcome-row">
+                  <div className="admin-welcome">
+                    <h1>Bom dia, Marco 👋</h1>
+                    <p>{getTodayFormatted()} · Residencial Parque Verde</p>
                   </div>
-                  <div className="metric-card-content">
-                    <h2>{formatarMoeda(totalReceitaCalculada)}</h2>
-                    <p>Receita mensal</p>
-                  </div>
-                  <div className="metric-card-footer" style={{ color: 'var(--success)' }}>
-                    Faturamento atual
-                  </div>
+                  <button className="new-record-btn" onClick={() => setModalType('novo-registro')}>
+                    <Plus size={16} /> Novo Registro
+                  </button>
                 </div>
 
-                <div className="metric-card">
-                  <div className="metric-card-header">
-                    <div className="metric-icon-box" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)' }}>
-                      <Users size={18} />
-                    </div>
-                  </div>
-                  <div className="metric-card-content">
-                    <h2>{inadimplentesCount}</h2>
-                    <p>Inadimplentes</p>
-                  </div>
-                  <div className="metric-card-footer" style={{ color: 'var(--danger)' }}>
-                    Cota em atraso ou pendente
-                  </div>
-                </div>
-
-                <div className="metric-card">
-                  <div className="metric-card-header">
-                    <div className="metric-icon-box" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
-                      <AlertTriangle size={18} />
-                    </div>
-                  </div>
-                  <div className="metric-card-content">
-                    <h2>2</h2>
-                    <p>Ocorrências abertas</p>
-                  </div>
-                  <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                    Aguardando análise
-                  </div>
-                </div>
-
-                <div className="metric-card">
-                  <div className="metric-card-header">
-                    <div className="metric-icon-box" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6' }}>
-                      <Users size={18} />
-                    </div>
-                  </div>
-                  <div className="metric-card-content">
-                    <h2>1</h2>
-                    <p>Assembleia próxima</p>
-                  </div>
-                  <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
-                    Em 8 dias
-                  </div>
-                </div>
-              </section>
-
-              {/* Content Layout */}
-              <div className="admin-grid-layout">
-                {/* Left Column */}
-                <div className="admin-left-col">
-                  {/* Financial Chart Card */}
-                  <div className="card-box">
-                    <div className="card-box-header">
-                      <h3>Fluxo Financeiro — 2026</h3>
-                      <div className="toggle-group">
-                        <button
-                          className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
-                          onClick={() => setChartMode('receitas')}
-                        >
-                          Receitas
-                        </button>
-                        <button
-                          className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
-                          onClick={() => setChartMode('despesas')}
-                        >
-                          Despesas
-                        </button>
+                <section className="metrics-row">
+                  <div className="metric-card">
+                    <div className="metric-card-header">
+                      <div className="metric-icon-box" style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
+                        <DollarSign size={18} />
                       </div>
                     </div>
+                    <div className="metric-card-content">
+                      <h2>{formatarMoeda(totalReceitaCalculada)}</h2>
+                      <p>Receita mensal</p>
+                    </div>
+                    <div className="metric-card-footer" style={{ color: 'var(--success)' }}>
+                      Faturamento atual
+                    </div>
+                  </div>
 
-                    <div className="chart-container">
-                      <div className="bars-wrapper">
-                        {/* Render dynamic columns depending on toggle */}
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '82px' : '65px', backgroundColor: 'var(--primary)' }}></div>
-                          <span>Jan</span>
-                        </div>
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '98px' : '55px', backgroundColor: 'var(--primary)' }}></div>
-                          <span>Fev</span>
-                        </div>
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '92px' : '70px', backgroundColor: 'var(--primary)' }}></div>
-                          <span>Mar</span>
-                        </div>
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '30px' : '20px', backgroundColor: 'var(--gray-300)' }}></div>
-                          <span>Abr</span>
-                        </div>
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '45px' : '32px', backgroundColor: 'var(--gray-300)' }}></div>
-                          <span>Mai</span>
-                        </div>
-                        <div className="chart-bar-group">
-                          <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '25px' : '15px', backgroundColor: 'var(--gray-300)' }}></div>
-                          <span>Jun</span>
+                  <div className="metric-card">
+                    <div className="metric-card-header">
+                      <div className="metric-icon-box" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)' }}>
+                        <Users size={18} />
+                      </div>
+                    </div>
+                    <div className="metric-card-content">
+                      <h2>{inadimplentesCount}</h2>
+                      <p>Inadimplentes</p>
+                    </div>
+                    <div className="metric-card-footer" style={{ color: 'var(--danger)' }}>
+                      Cota em atraso ou pendente
+                    </div>
+                  </div>
+
+                  <div className="metric-card">
+                    <div className="metric-card-header">
+                      <div className="metric-icon-box" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
+                        <AlertTriangle size={18} />
+                      </div>
+                    </div>
+                    <div className="metric-card-content">
+                      <h2>2</h2>
+                      <p>Ocorrências abertas</p>
+                    </div>
+                    <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
+                      Aguardando análise
+                    </div>
+                  </div>
+
+                  <div className="metric-card">
+                    <div className="metric-card-header">
+                      <div className="metric-icon-box" style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)', color: '#14b8a6' }}>
+                        <Users size={18} />
+                      </div>
+                    </div>
+                    <div className="metric-card-content">
+                      <h2>1</h2>
+                      <p>Assembleia próxima</p>
+                    </div>
+                    <div className="metric-card-footer" style={{ color: 'var(--gray-400)' }}>
+                      Em 8 dias
+                    </div>
+                  </div>
+                </section>
+
+                <div className="admin-grid-layout">
+                  <div className="admin-left-col">
+                    <div className="card-box">
+                      <div className="card-box-header">
+                        <h3>Fluxo Financeiro — 2026</h3>
+                        <div className="toggle-group">
+                          <button
+                            className={`toggle-btn ${chartMode === 'receitas' ? 'active' : ''}`}
+                            onClick={() => setChartMode('receitas')}
+                          >
+                            Receitas
+                          </button>
+                          <button
+                            className={`toggle-btn ${chartMode === 'despesas' ? 'active' : ''}`}
+                            onClick={() => setChartMode('despesas')}
+                          >
+                            Despesas
+                          </button>
                         </div>
                       </div>
 
-                      <div className="chart-stats">
-                        <div className="chart-stat-item">
-                          <span className="chart-stat-label">Receita</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>{formatarMoeda(totalReceitaCalculada)}</span>
+                      <div className="chart-container">
+                        <div className="bars-wrapper">
+                          {/* Render dynamic columns depending on toggle */}
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '82px' : '65px', backgroundColor: 'var(--primary)' }}></div>
+                            <span>Jan</span>
+                          </div>
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '98px' : '55px', backgroundColor: 'var(--primary)' }}></div>
+                            <span>Fev</span>
+                          </div>
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '92px' : '70px', backgroundColor: 'var(--primary)' }}></div>
+                            <span>Mar</span>
+                          </div>
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '30px' : '20px', backgroundColor: 'var(--gray-300)' }}></div>
+                            <span>Abr</span>
+                          </div>
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '45px' : '32px', backgroundColor: 'var(--gray-300)' }}></div>
+                            <span>Mai</span>
+                          </div>
+                          <div className="chart-bar-group">
+                            <div className="chart-bar-fill" style={{ height: chartMode === 'receitas' ? '25px' : '15px', backgroundColor: 'var(--gray-300)' }}></div>
+                            <span>Jun</span>
+                          </div>
                         </div>
-                        <div className="chart-stat-item">
-                          <span className="chart-stat-label">Despesas</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>{formatarMoeda(totalDespesasCalculadas)}</span>
-                        </div>
-                        <div className="chart-stat-item">
-                          <span className="chart-stat-label">Saldo</span>
-                          <span className="chart-stat-value" style={{ color: 'var(--success)' }}>{formatarMoeda(saldoCalculado)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Recent Activity Card */}
-                  <div className="card-box">
-                    <div className="card-box-header">
-                      <h3>Atividade Recente</h3>
-                    </div>
-                    <div className="activity-list">
-                      {activities.map((act) => (
-                        <div className="activity-item" key={act.id}>
-                          <div className="activity-content">
-                            <div className="activity-dot" style={{ backgroundColor: act.color }}></div>
-                            <span className="activity-text">{act.text}</span>
+                        <div className="chart-stats">
+                          <div className="chart-stat-item">
+                            <span className="chart-stat-label">Receita</span>
+                            <span className="chart-stat-value" style={{ color: 'var(--primary-hover)' }}>{formatarMoeda(totalReceitaCalculada)}</span>
                           </div>
-                          <span className="activity-time">{act.time}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="admin-right-col">
-                  {/* Upcoming Events Card */}
-                  <div className="card-box">
-                    <div className="card-box-header">
-                      <h3>Próximos Eventos</h3>
-                      <span style={{ fontSize: '12px', color: 'var(--primary)', cursor: 'pointer' }}>Calendário</span>
-                    </div>
-                    <div className="agenda-column" style={{ gap: '0' }}>
-                      <div className="agenda-card">
-                        <div className="agenda-left">
-                          <div className="agenda-date" style={{ backgroundColor: '#8b5cf6' }}>
-                            <span className="day">13</span>
-                            <span className="month">MAR</span>
+                          <div className="chart-stat-item">
+                            <span className="chart-stat-label">Despesas</span>
+                            <span className="chart-stat-value" style={{ color: 'var(--gray-700)' }}>{formatarMoeda(totalDespesasCalculadas)}</span>
                           </div>
-                          <div className="agenda-details">
-                            <h4>Assembleia Ordinária</h4>
-                            <p>19h · Salão de Festas · 3 pautas</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="agenda-card" style={{ marginBottom: 0 }}>
-                        <div className="agenda-left">
-                          <div className="agenda-date" style={{ backgroundColor: '#14b8a6' }}>
-                            <span className="day">15</span>
-                            <span className="month">MAR</span>
-                          </div>
-                          <div className="agenda-details">
-                            <h4>Vencimento Cotas</h4>
-                            <p>120 unidades · R$ 580,00/unid</p>
+                          <div className="chart-stat-item">
+                            <span className="chart-stat-label">Saldo</span>
+                            <span className="chart-stat-value" style={{ color: 'var(--success)' }}>{formatarMoeda(saldoCalculado)}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Debtors List Card */}
-                  <div className="card-box">
-                    <div className="card-box-header">
-                      <h3>Inadimplência</h3>
-                      <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>{inadimplentesCount} unidades</span>
-                    </div>
-                    {unpaidList.length === 0 ? (
-                      <div style={{ padding: '20px 0', textAlign: 'center', color: 'var(--gray-400)', fontSize: '13px' }}>
-                        Nenhuma pendência financeira pendente.
+                    {/* Recent Activity Card */}
+                    <div className="card-box">
+                      <div className="card-box-header">
+                        <h3>Atividade Recente</h3>
                       </div>
-                    ) : (
-                      <>
-                        <div className="debt-list">
-                          {unpaidList.slice(0, 3).map((item, idx) => (
-                            <div className="debt-item" key={idx}>
-                              <div className="debt-item-info">
-                                <h4>{item.unitLabel} · {item.name}</h4>
-                                <p>Venc. {item.dateLabel} · {item.days} dias em atraso</p>
-                              </div>
-                              <span className="debt-amount">{formatarMoeda(item.amount)}</span>
+                      <div className="activity-list">
+                        {activities.map((act) => (
+                          <div className="activity-item" key={act.id}>
+                            <div className="activity-content">
+                              <div className="activity-dot" style={{ backgroundColor: act.color }}></div>
+                              <span className="activity-text">{act.text}</span>
                             </div>
-                          ))}
+                            <span className="activity-time">{act.time}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin-right-col">
+                    <div className="card-box">
+                      <div className="card-box-header">
+                        <h3>Próximos Eventos</h3>
+                        <span style={{ fontSize: '12px', color: 'var(--primary)', cursor: 'pointer' }}>Calendário</span>
+                      </div>
+                      <div className="agenda-column" style={{ gap: '0' }}>
+                        <div className="agenda-card">
+                          <div className="agenda-left">
+                            <div className="agenda-date" style={{ backgroundColor: '#8b5cf6' }}>
+                              <span className="day">13</span>
+                              <span className="month">MAR</span>
+                            </div>
+                            <div className="agenda-details">
+                              <h4>Assembleia Ordinária</h4>
+                              <p>19h · Salão de Festas · 3 pautas</p>
+                            </div>
+                          </div>
                         </div>
 
-                        <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
-                          Ver todos os {inadimplentesCount} <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
-                        </span>
-                      </>
-                    )}
+                        <div className="agenda-card" style={{ marginBottom: 0 }}>
+                          <div className="agenda-left">
+                            <div className="agenda-date" style={{ backgroundColor: '#14b8a6' }}>
+                              <span className="day">15</span>
+                              <span className="month">MAR</span>
+                            </div>
+                            <div className="agenda-details">
+                              <h4>Vencimento Cotas</h4>
+                              <p>120 unidades · R$ 580,00/unid</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-box">
+                      <div className="card-box-header">
+                        <h3>Inadimplência</h3>
+                        <span className="status-badge" style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', fontSize: '11px' }}>{inadimplentesCount} unidades</span>
+                      </div>
+                      {unpaidList.length === 0 ? (
+                        <div style={{ padding: '20px 0', textAlign: 'center', color: 'var(--gray-400)', fontSize: '13px' }}>
+                          Nenhuma pendência financeira pendente.
+                        </div>
+                      ) : (
+                        <>
+                          <div className="debt-list">
+                            {unpaidList.slice(0, 3).map((item, idx) => (
+                              <div className="debt-item" key={idx}>
+                                <div className="debt-item-info">
+                                  <h4>{item.unitLabel} · {item.name}</h4>
+                                  <p>Venc. {item.dateLabel} · {item.days} dias em atraso</p>
+                                </div>
+                                <span className="debt-amount">{formatarMoeda(item.amount)}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <span className="view-all-link" onClick={() => setModalType('inadimplentes')}>
+                            Ver todos os {inadimplentesCount} <ArrowRight size={14} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
         )}
       </main>
 
-      {/* ====================================
-          MODALS IMPLEMENTATION
-          ==================================== */}
       {modalType === 'novo-registro' && (
         <div className="modal-overlay">
           <div className="modal-card">

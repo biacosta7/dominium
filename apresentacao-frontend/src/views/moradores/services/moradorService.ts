@@ -19,7 +19,7 @@ export const moradorService = {
     telefone: string;
     cpf: string;
     tipoViculo: 'TITULAR' | 'DEPENDENTE';
-  }): Promise<Vinculo> {
+  }, requesterId?: number): Promise<Vinculo> {
     const payload = {
       novoUsuario: {
         nome: data.nome,
@@ -34,7 +34,10 @@ export const moradorService = {
 
     const res = await fetch(`/api/unidades/${unidadeId}/moradores`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
+      },
       body: JSON.stringify(payload)
     });
 
@@ -54,7 +57,8 @@ export const moradorService = {
       telefone: string;
       cpf: string;
       tipoViculo: 'TITULAR' | 'DEPENDENTE';
-    }
+    },
+    requesterId?: number
   ): Promise<void> {
     // 1. Update Vínculo Type
     const vinculoPayload = {
@@ -62,7 +66,10 @@ export const moradorService = {
     };
     const vinculoRes = await fetch(`/api/moradores/${vinculoId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
+      },
       body: JSON.stringify(vinculoPayload)
     });
     if (!vinculoRes.ok) {
@@ -90,11 +97,11 @@ export const moradorService = {
     }
   },
 
-  async removeMorador(vinculoId: number): Promise<void> {
+  async removeMorador(vinculoId: number, requesterId?: number): Promise<void> {
     const res = await fetch(`/api/moradores/${vinculoId}`, {
       method: 'DELETE',
       headers: {
-        'X-Requester-Id': '1' // Requester ID header required by the controller
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
       }
     });
     if (!res.ok) {
