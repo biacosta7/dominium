@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Eye, X, Users, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Eye, X, Users, Loader2, AlertCircle, Check } from 'lucide-react';
 import { moradorService } from './services/moradorService';
 import type { Vinculo, Unidade } from './types/morador';
 import './MoradoresAdmin.css';
@@ -147,6 +147,17 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
     }
   };
 
+  const handleHomologar = async (vinculoId: number, name: string) => {
+    if (window.confirm(`Deseja homologar (aprovar) o cadastro de ${name}?`)) {
+      try {
+        await moradorService.homologarMorador(vinculoId, requesterId);
+        loadData();
+      } catch (err: any) {
+        alert(err.message || 'Erro ao homologar morador.');
+      }
+    }
+  };
+
   const handleDelete = async (vinculoId: number, name: string) => {
     if (window.confirm(`Tem certeza que deseja remover o vínculo de ${name}?`)) {
       try {
@@ -274,6 +285,15 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
                       </td>
                       <td>
                         <div className="action-buttons-group">
+                          {vinculo.status === 'INATIVO' && (
+                            <button
+                              className="action-btn homologar-btn"
+                              title="Homologar Cadastro"
+                              onClick={() => handleHomologar(vinculo.id, vinculo.usuario.nome)}
+                            >
+                              <Check size={14} />
+                            </button>
+                          )}
                           <button
                             className="action-btn key-btn"
                             title="Visualizar Informações"

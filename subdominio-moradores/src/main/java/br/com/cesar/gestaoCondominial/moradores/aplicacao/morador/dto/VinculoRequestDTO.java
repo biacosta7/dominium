@@ -2,6 +2,7 @@ package br.com.cesar.gestaoCondominial.moradores.aplicacao.morador.dto;
 
 import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.dto.UsuarioRequestDTO;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.moradores.dominio.morador.StatusVinculo;
 
 import lombok.Data;
 
@@ -14,4 +15,6 @@ public class VinculoRequestDTO {
     private UsuarioRequestDTO novoUsuario;
 
     private TipoVinculo tipo;
+
+    private StatusVinculo status;
 }

@@ -44,26 +44,29 @@ public class CreateVinculoMoradorUseCase {
 
     @Transactional
     public VinculoResponseDTO execute(Long unidadeId, VinculoRequestDTO request, Long requesterId) {
-        if (requesterId == null) {
-            throw new IllegalArgumentException("Id do solicitante é obrigatório");
-        }
-
-        Usuario requester = usuarioRepository.findById(requesterId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário solicitante não encontrado"));
-
         Unidade unidade = unidadeRepository.findById(new UnidadeId(unidadeId))
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada"));
 
-        if (requester.getTipo() != TipoUsuario.SINDICO) {
-            List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId,
-                    StatusVinculo.ATIVO);
-            boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()
-                    .anyMatch(v -> v.getTipo() == TipoVinculo.TITULAR &&
-                            v.getUnidade().getId().equals(unidade.getId()));
+        StatusVinculo finalStatus = StatusVinculo.ATIVO;
 
-            if (!isTitularDaMesmaUnidade) {
-                throw new IllegalStateException("Apenas o titular da unidade ou o síndico podem adicionar um morador");
+        if (requesterId != null) {
+            Usuario requester = usuarioRepository.findById(requesterId)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário solicitante não encontrado"));
+
+            if (requester.getTipo() != TipoUsuario.SINDICO) {
+                List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId,
+                        StatusVinculo.ATIVO);
+                boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()
+                        .anyMatch(v -> v.getTipo() == TipoVinculo.TITULAR &&
+                                v.getUnidade().getId().equals(unidade.getId()));
+
+                if (!isTitularDaMesmaUnidade) {
+                    throw new IllegalStateException("Apenas o titular da unidade ou o síndico podem adicionar um morador");
+                }
             }
+        } else {
+            // Self-registration (pending homologação)
+            finalStatus = StatusVinculo.INATIVO;
         }
 
         long currentMoradores = vinculoMoradorRepository.countByUnidadeIdAndStatus(unidadeId, StatusVinculo.ATIVO);
@@ -91,7 +94,7 @@ public class CreateVinculoMoradorUseCase {
                 .unidade(unidade)
                 .usuario(usuario)
                 .tipo(request.getTipo())
-                .status(StatusVinculo.ATIVO)
+                .status(finalStatus)
                 .build();
 
         VinculoMorador saved = vinculoMoradorRepository.save(novoVinculo);

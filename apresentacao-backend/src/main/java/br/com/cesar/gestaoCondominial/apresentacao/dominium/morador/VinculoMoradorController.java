@@ -48,7 +48,7 @@ public class VinculoMoradorController {
     public ResponseEntity<?> addMorador(
             @PathVariable Long unidadeId,
             @RequestBody VinculoRequestDTO request,
-            @RequestHeader("X-Requester-Id") Long requesterId) {
+            @RequestHeader(value = "X-Requester-Id", required = false) Long requesterId) {
         return exceptionHandler.withHandler(() -> {
             VinculoResponseDTO response = createVinculoMoradorUseCase.execute(unidadeId, request, requesterId);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

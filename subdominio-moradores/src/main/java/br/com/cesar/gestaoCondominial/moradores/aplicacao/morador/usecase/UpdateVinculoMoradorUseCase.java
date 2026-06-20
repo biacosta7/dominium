@@ -54,6 +54,9 @@ public class UpdateVinculoMoradorUseCase {
         if (request.getTipo() != null) {
             vinculo.setTipo(request.getTipo());
         }
+        if (request.getStatus() != null) {
+            vinculo.setStatus(request.getStatus());
+        }
 
         VinculoMorador updated = vinculoMoradorRepository.save(vinculo);
 

@@ -32,3 +32,13 @@ Feature: Gestão de Moradores
      When o síndico atualiza o vínculo do morador para "TITULAR"
      Then o vínculo do morador é atualizado para "TITULAR" com sucesso
 
+  Scenario: Autocadastro de morador aguarda homologação do síndico
+    Given um morador solicita autocadastro para a unidade
+     When a solicitação é processada sem ID do solicitante
+     Then o vínculo do morador é criado com status "INATIVO"
+
+  Scenario: Síndico homologa autocadastro de morador
+    Given um vínculo de morador "INATIVO" na unidade
+     When o síndico homologa o vínculo do morador
+     Then o vínculo do morador fica com status "ATIVO" com sucesso
+

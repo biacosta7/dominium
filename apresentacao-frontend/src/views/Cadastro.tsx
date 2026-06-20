@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { ArrowRight, CheckCircle } from 'lucide-react';
+import { moradorService } from './moradores/services/moradorService';
 
 interface CadastroProps {
   onNavigate: (view: 'login-morador' | 'login-admin' | 'cadastro') => void;
@@ -17,17 +18,54 @@ export const Cadastro: React.FC<CadastroProps> = ({ onNavigate }) => {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (senha !== confirmarSenha) {
       setError('As senhas não coincidem.');
       return;
     }
     
-    // Simulate successful registration
-    setIsSuccess(true);
+    setLoading(true);
     setError('');
+
+    try {
+      // 1. Fetch all units to find the matching one
+      const units = await moradorService.fetchUnits();
+      const matchedUnit = units.find(
+        (u) =>
+          u.bloco.trim().toUpperCase() === bloco.trim().toUpperCase() &&
+          u.numero.trim() === apto.trim()
+      );
+
+      if (!matchedUnit) {
+        throw new Error(`Unidade não encontrada: Bloco ${bloco} - Apto ${apto}. Verifique os dados ou fale com o síndico.`);
+      }
+
+      // Self-registration defaults to TITULAR vinculo type (pending homologação)
+      const tipoVinculo = 'TITULAR';
+
+      // 2. Create user and relationship with status INATIVO (requesterId = null)
+      await moradorService.addMorador(
+        matchedUnit.id,
+        {
+          nome,
+          email,
+          telefone: '',
+          cpf,
+          tipoViculo: tipoVinculo,
+          senha,
+        },
+        null
+      );
+
+      setIsSuccess(true);
+    } catch (err: any) {
+      setError(err.message || 'Erro ao processar o cadastro.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (isSuccess) {
@@ -227,8 +265,8 @@ export const Cadastro: React.FC<CadastroProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <button type="submit" className="submit-btn" style={{ marginTop: '10px' }}>
-              Solicitar Cadastro <ArrowRight size={18} />
+            <button type="submit" className="submit-btn" style={{ marginTop: '10px' }} disabled={loading}>
+              {loading ? 'Solicitando...' : 'Solicitar Cadastro'} <ArrowRight size={18} />
             </button>
           </form>
 

@@ -11,16 +11,81 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
   const [email, setEmail] = useState('ana.lima@email.com');
   const [senha, setSenha] = useState('senha123');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'ana.lima@email.com' && senha === 'senha123') {
+    setError('');
+    setLoading(true);
+    try {
+      // 1. Fetch all users from backend to verify user existence and role
+      const usersRes = await fetch('/usuarios');
+      if (!usersRes.ok) {
+        throw new Error('Erro ao conectar com o servidor.');
+      }
+      const users = await usersRes.json();
+      const user = users.find(
+        (u: any) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
+      );
+
+      if (!user) {
+        setError('Credenciais inválidas.');
+        return;
+      }
+
+      // If user is SINDICO, bypass unit vinculo checks
+      if (user.tipo === 'SINDICO') {
+        if (senha === 'admin123') {
+          onLoginSuccess('admin', email);
+        } else {
+          setError('Credenciais inválidas.');
+        }
+        return;
+      }
+
+      // For morador users:
+      // Simple verification for the seed user
+      if (user.email === 'ana.lima@email.com' && senha !== 'senha123') {
+        setError('Credenciais inválidas.');
+        return;
+      }
+
+      // 2. Fetch all units and their residents to find this user's active relationship status
+      const unitsRes = await fetch('/unidades');
+      if (!unitsRes.ok) {
+        throw new Error('Erro ao carregar dados do condomínio.');
+      }
+      const units = await unitsRes.json();
+
+      let userVinculo: any = null;
+      for (const unit of units) {
+        const morRes = await fetch(`/api/unidades/${unit.id}/moradores`);
+        if (morRes.ok) {
+          const moradores = await morRes.json();
+          const found = moradores.find((m: any) => m.usuario.id === user.id);
+          if (found) {
+            userVinculo = found;
+            break;
+          }
+        }
+      }
+
+      if (!userVinculo) {
+        setError('Usuário não possui vínculo com nenhuma unidade.');
+        return;
+      }
+
+      if (userVinculo.status === 'INATIVO') {
+        setError('Sua conta está aguardando homologação do síndico.');
+        return;
+      }
+
+      // Successful login
       onLoginSuccess('morador', email);
-    } else if (email === 'sindico@residencial.com' && senha === 'admin123') {
-      // Allow seamless routing even if they used the wrong screen but correct admin details
-      onLoginSuccess('admin', email);
-    } else {
-      setError('Credenciais inválidas. Use ana.lima@email.com / senha123');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao realizar login.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,8 +161,8 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
               </span>
             </div>
 
-            <button type="submit" className="submit-btn">
-              Entrar <ArrowRight size={18} />
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'} <ArrowRight size={18} />
             </button>
           </form>
 
