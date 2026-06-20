@@ -1,15 +1,20 @@
 package br.com.cesar.gestaoCondominial.comunicacao.infraestrutura.notification;
 
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
-import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementação concreta do Template Method.
+ *
+ * Responsabilidade: persistir a notificação no banco de dados.
+ * Não realiza despacho externo — a entrega ao usuário é feita via consulta REST.
+ */
 @Service
 @Primary
-public class NotificacaoServiceImpl implements NotificacaoService {
+public class NotificacaoServiceImpl extends NotificacaoServiceTemplate {
 
     private final NotificacaoRepository notificacaoRepository;
 
@@ -18,10 +23,12 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
-    public void enviar(Long usuarioId, String mensagem, TipoNotificacao tipo) {
-        br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao tipoDominio =
-            br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao.valueOf(tipo.name());
-        Notificacao notificacao = Notificacao.criar(usuarioId, mensagem, tipoDominio);
+    protected void persistir(Notificacao notificacao) {
         notificacaoRepository.save(notificacao);
+    }
+
+    @Override
+    protected void despachar(Long usuarioId, String mensagem, TipoNotificacao tipo) {
+        // entrega é feita via consulta: o usuário busca suas notificações pela API
     }
 }

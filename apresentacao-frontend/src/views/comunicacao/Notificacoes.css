@@ -1,0 +1,219 @@
+/* ===== NOTIFICAÇÕES MODULE ===== */
+
+.notif-page {
+  padding: 0;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.notif-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--gray-900);
+}
+
+.notif-header p {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Section header */
+.notif-section-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.notif-section-bar h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-700);
+  margin: 0;
+}
+
+.notif-filter-label {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+/* Table */
+.notif-table-wrapper {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.notif-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.notif-table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.notif-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+
+.notif-table tr:last-child td {
+  border-bottom: none;
+}
+
+.notif-table tr:hover td {
+  background: var(--gray-50);
+}
+
+.notif-titulo {
+  font-weight: 600;
+  color: var(--gray-900);
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.notif-subtipo {
+  font-size: 11px;
+  color: var(--gray-400);
+}
+
+/* Read status */
+.notif-lida-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.notif-lida {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.notif-nao-lida {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Progress bar */
+.notif-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.notif-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+
+.notif-progress-label {
+  font-size: 11px;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+
+/* Regra info bar */
+.notif-regra-bar {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #1e40af;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.notif-regra-bar strong {
+  font-weight: 700;
+}
+
+/* Empty / loading */
+.notif-empty {
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--gray-400);
+}
+
+.notif-empty svg {
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.notif-empty p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.notif-loading {
+  text-align: center;
+  padding: 48px;
+  color: var(--gray-400);
+  font-size: 14px;
+}
+
+.notif-error {
+  background: var(--danger-light);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* Marcar lida button */
+.btn-mark-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--gray-500);
+  transition: all var(--transition-fast);
+}
+
+.btn-mark-read:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}

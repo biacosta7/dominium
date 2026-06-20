@@ -1,6 +1,7 @@
 package br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notificacao.usecase;
 
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.NotificacaoId;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.DomainException;
 import br.com.cesar.gestaoCondominial.dominio.dominium.exceptions.ResourceNotFoundException;
@@ -18,7 +19,7 @@ public class MarcarComoLidaUseCase {
 
     @Transactional
     public Notificacao executar(Long notificacaoId, Long usuarioId) {
-        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
+        Notificacao notificacao = notificacaoRepository.findById(NotificacaoId.de(notificacaoId))
                 .orElseThrow(() -> new ResourceNotFoundException("Notificação não encontrada"));
 
         if (!notificacao.getUsuarioId().equals(usuarioId)) {

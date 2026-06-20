@@ -79,9 +79,13 @@ import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.reposit
 import br.com.cesar.gestaoCondominial.espacoscondominio.dominio.reservas.repository.ReservaRepository;
 import br.com.cesar.gestaoCondominial.espacoscondominio.aplicacao.reservas.service.PoliticaReserva;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.NotificacaoService;
+import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.SindicoService;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.Notificacao;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.NotificacaoId;
+import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.repository.NotificacaoRepository;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.storage.ArmazenamentoDocumento;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.Documento;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.DocumentoId;
@@ -241,15 +245,17 @@ public class DominiumFuncionalidade {
 
             @Override
             public Notificacao save(Notificacao n) {
-                if (n.getId() == null)
-                    n.setId(currentId++);
-                db.put(n.getId(), n);
+                if (n.getId() == null) {
+                    n = Notificacao.reconstituir(NotificacaoId.de(currentId++),
+                            n.getUsuarioId(), n.getMensagem(), n.getTipo(), n.isLida(), n.getCriadaEm());
+                }
+                db.put(n.getId().getValor(), n);
                 return n;
             }
 
             @Override
-            public Optional<Notificacao> findById(Long id) {
-                return Optional.ofNullable(db.get(id));
+            public Optional<Notificacao> findById(NotificacaoId id) {
+                return Optional.ofNullable(db.get(id.getValor()));
             }
 
             @Override
@@ -261,17 +267,16 @@ public class DominiumFuncionalidade {
                         .filter(n -> n.getUsuarioId().equals(usuarioId))
                         .collect(Collectors.toList());
             }
+
+            @Override
+            public List<Notificacao> findAll() {
+                return List.copyOf(db.values());
+            }
         };
 
-        notificacaoService = new NotificacaoService() {
-            @Override
-            public void enviar(Long usuarioId, String mensagem,
-                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao tipo) {
-                br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao domainTipo = br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao
-                        .valueOf(tipo.name());
-                Notificacao n = Notificacao.criar(usuarioId, mensagem, domainTipo);
-                notificacaoRepository.save(n);
-            }
+        notificacaoService = (usuarioId, mensagem, tipo) -> {
+            Notificacao n = Notificacao.criar(usuarioId, mensagem, tipo);
+            notificacaoRepository.save(n);
         };
 
         unidadeRepository = new UnidadeRepository() {
@@ -1040,12 +1045,19 @@ public class DominiumFuncionalidade {
                 return new byte[0];
             }
         };
+        SindicoService sindicoService = sindicoId -> {
+            Usuario sindico = usuarioRepository.findById(sindicoId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + sindicoId));
+            if (sindico.getTipo() != TipoUsuario.SINDICO) {
+                throw new RuntimeException("Apenas o síndico pode realizar esta ação");
+            }
+        };
         cadastrarDocumentoUseCase = new CadastrarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
-                armazenamentoDocumento, usuarioRepository);
+                armazenamentoDocumento, sindicoService);
         atualizarDocumentoUseCase = new AtualizarDocumentoUseCase(documentoRepository, versaoDocumentoRepository,
-                armazenamentoDocumento, usuarioRepository);
-        listarDocumentosUseCase = new ListarDocumentosUseCase(documentoRepository);
-        inativarDocumentoUseCase = new InativarDocumentoUseCase(documentoRepository, usuarioRepository);
+                armazenamentoDocumento, sindicoService);
+        listarDocumentosUseCase = new ListarDocumentosUseCase(documentoRepository, versaoDocumentoRepository);
+        inativarDocumentoUseCase = new InativarDocumentoUseCase(documentoRepository, versaoDocumentoRepository, sindicoService);
         notificarDocumentosVencendoUseCase = new NotificarDocumentosVencendoUseCase(documentoRepository,
                 notificacaoService);
 
@@ -1053,7 +1065,7 @@ public class DominiumFuncionalidade {
         ServicoNotificacaoAssembleia servicoNotificacao = assembleia -> {
             this.notificacaoService.enviar(assembleia.getSindicoId(),
                     "Nova assembleia agendada: " + assembleia.getTitulo(),
-                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.NOVA_ASSEMBLEIA);
+                    TipoNotificacao.NOVA_ASSEMBLEIA);
         };
         RegraVotacao regraVotacao = new RegraVotacao(vinculoMoradorRepository, unidadeRepository);
         encerrarPautaUseCase = new EncerrarPautaUseCase(pautaRepository, votoRepository, regraVotacao);

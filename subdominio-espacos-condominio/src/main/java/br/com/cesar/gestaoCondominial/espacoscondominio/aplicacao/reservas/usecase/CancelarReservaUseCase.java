@@ -94,7 +94,7 @@ public class CancelarReservaUseCase {
             notificacaoService.enviar(fila.getUsuarioId().getValor(),
                     "Sua reserva para a área " + reserva.getAreaComumId().getValor() +
                             " foi promovida da fila de espera!",
-                    br.com.cesar.gestaoCondominial.comunicacao.aplicacao.notification.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
+                    br.com.cesar.gestaoCondominial.comunicacao.dominio.notificacao.TipoNotificacao.PROMOCAO_LISTA_ESPERA);
         } else {
             reserva.cancelar();
             repository.save(reserva);

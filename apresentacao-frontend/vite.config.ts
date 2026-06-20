@@ -46,6 +46,14 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/documentos': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/notificacoes': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
