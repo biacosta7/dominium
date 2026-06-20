@@ -1,14 +1,15 @@
 package br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.usecase;
 
 import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.dto.AbrirRecursoRequestDTO;
+import br.com.cesar.gestaoCondominial.financeiro.aplicacao.recurso.decorator.RecursoDecorator;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.Recurso;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.recurso.repository.RecursoRepository;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.Multa;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
+import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.StatusMulta;
 import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.repository.MultaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -19,19 +20,23 @@ public class AbrirRecursoUseCase {
     private final MultaRepository multaRepository;
 
     public UUID execute(AbrirRecursoRequestDTO dto) {
-            Multa multa = multaRepository.findById(new MultaId(dto.getMultaId()))
+        Multa multa = multaRepository.findById(new MultaId(dto.getMultaId()))
                 .orElseThrow(() -> new IllegalArgumentException("Multa não encontrada."));
-        if (multa.getDataCriacao() != null && multa.getDataCriacao().plusDays(15).isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Prazo máximo de 15 dias para recurso expirado.");
-        }
 
-        multa.setDataContestacao(LocalDateTime.now());
-        multa.setJustificativaContestacao(dto.getMotivo());
-        multaRepository.save(multa);
+        RecursoDecorator.Abertura abertura = (request, multaValidada) -> {
+            multaValidada.setStatus(StatusMulta.CONTESTADA);
+            multaValidada.setDataContestacao(java.time.LocalDateTime.now());
+            multaValidada.setJustificativaContestacao(request.getMotivo());
+            multaRepository.save(multaValidada);
 
-        Recurso recurso = Recurso.abrir(new MultaId(dto.getMultaId()), dto.getMoradorId(), dto.getMotivo());
-        recursoRepository.salvar(recurso);
+            Long moradorId = request.getUsuarioId() != null ? request.getUsuarioId() : 1L;
+            Recurso recurso = Recurso.abrir(
+                    new MultaId(request.getMultaId()), moradorId, request.getMotivo());
+            recursoRepository.salvar(recurso);
+            return recurso.getId().getValue();
+        };
 
-        return recurso.getId().getValue();
+        abertura = new RecursoDecorator.Validacao(abertura);
+        return abertura.abrir(dto, multa);
     }
 }

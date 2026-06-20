@@ -11,14 +11,14 @@ import br.com.cesar.gestaoCondominial.financeiro.dominio.multa.MultaId;
 public class Recurso {
     private RecursoId id;
     private MultaId multaId;
-    private UUID moradorId;
+    private Long moradorId;
     private String motivo;
     private LocalDateTime dataSolicitacao;
     private StatusRecurso status;
     private String justificativaSindico;
     private LocalDateTime dataDecisao;
 
-    public static Recurso abrir(MultaId multaId, UUID moradorId, String motivo) {
+    public static Recurso abrir(MultaId multaId, Long moradorId, String motivo) {
         if (motivo == null || motivo.trim().isEmpty()) {
             throw new IllegalArgumentException("O motivo do recurso é obrigatório.");
         }

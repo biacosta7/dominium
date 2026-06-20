@@ -1001,7 +1001,12 @@ public class DominiumFuncionalidade {
         // ── Financeiro ───────────────────────────────────────────────────────────
         rateioService = new RateioService(unidadeRepository);
         cadastrarOrcamentoUseCase = new CadastrarOrcamentoUseCase(orcamentoRepository);
-        registrarDespesaUseCase = new RegistrarDespesaUseCase(despesaRepository, orcamentoRepository, rateioService);
+        registrarDespesaUseCase = new RegistrarDespesaUseCase(
+                despesaRepository, 
+                orcamentoRepository, 
+                rateioService,
+                new br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.strategy.PoliticaFinanceiraConservadoraStrategy()
+        );
         aprovarDespesaExtraordinariaUseCase = new AprovarDespesaExtraordinariaUseCase(despesaRepository,
                 orcamentoRepository, rateioService);
         consultarSaldoUseCase = new ConsultarSaldoUseCase(orcamentoRepository);
