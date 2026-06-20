@@ -316,6 +316,12 @@
   border-color: rgba(37, 99, 235, 0.2);
 }
 
+.homologar-btn:hover {
+  background-color: rgba(22, 163, 74, 0.05);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.2);
+}
+
 .key-btn:hover {
   background-color: rgba(20, 184, 166, 0.05);
   color: #14b8a6;

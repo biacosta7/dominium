@@ -19,12 +19,13 @@ export const moradorService = {
     telefone: string;
     cpf: string;
     tipoViculo: 'TITULAR' | 'DEPENDENTE';
-  }): Promise<Vinculo> {
+    senha?: string;
+  }, requesterId?: number | null): Promise<Vinculo> {
     const payload = {
       novoUsuario: {
         nome: data.nome,
         email: data.email,
-        senha: '123456', // default password
+        senha: data.senha || '123456',
         telefone: data.telefone,
         cpf: data.cpf,
         tipo: 'MORADOR'
@@ -32,9 +33,18 @@ export const moradorService = {
       tipo: data.tipoViculo
     };
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    if (requesterId !== undefined && requesterId !== null) {
+      headers['X-Requester-Id'] = String(requesterId);
+    } else if (requesterId === undefined) {
+      headers['X-Requester-Id'] = '2';
+    }
+
     const res = await fetch(`/api/unidades/${unidadeId}/moradores`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(payload)
     });
 
@@ -54,15 +64,22 @@ export const moradorService = {
       telefone: string;
       cpf: string;
       tipoViculo: 'TITULAR' | 'DEPENDENTE';
-    }
+      status?: 'ATIVO' | 'INATIVO';
+    },
+    requesterId?: number
   ): Promise<void> {
-    // 1. Update Vínculo Type
-    const vinculoPayload = {
+    const vinculoPayload: any = {
       tipo: data.tipoViculo
     };
+    if (data.status) {
+      vinculoPayload.status = data.status;
+    }
     const vinculoRes = await fetch(`/api/moradores/${vinculoId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
+      },
       body: JSON.stringify(vinculoPayload)
     });
     if (!vinculoRes.ok) {
@@ -70,11 +87,10 @@ export const moradorService = {
       throw new Error(errText || 'Erro ao atualizar vínculo do morador');
     }
 
-    // 2. Update User details
     const usuarioPayload = {
       nome: data.nome,
       email: data.email,
-      senha: '', // blank/null is allowed since we updated the backend to allow blank passwords on update
+      senha: '',
       telefone: data.telefone,
       cpf: data.cpf,
       tipo: 'MORADOR'
@@ -90,16 +106,31 @@ export const moradorService = {
     }
   },
 
-  async removeMorador(vinculoId: number): Promise<void> {
+  async removeMorador(vinculoId: number, requesterId?: number): Promise<void> {
     const res = await fetch(`/api/moradores/${vinculoId}`, {
       method: 'DELETE',
       headers: {
-        'X-Requester-Id': '1' // Requester ID header required by the controller
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
       }
     });
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(errText || 'Erro ao remover morador');
+    }
+  },
+
+  async homologarMorador(vinculoId: number, requesterId?: number): Promise<void> {
+    const res = await fetch(`/api/moradores/${vinculoId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requester-Id': requesterId ? String(requesterId) : '2'
+      },
+      body: JSON.stringify({ status: 'ATIVO' })
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'Erro ao homologar morador');
     }
   }
 };

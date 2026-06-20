@@ -11,15 +11,35 @@ export const LoginAdmin: React.FC<LoginAdminProps> = ({ onLoginSuccess, onNaviga
   const [email, setEmail] = useState('sindico@residencial.com');
   const [senha, setSenha] = useState('admin123');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'sindico@residencial.com' && senha === 'admin123') {
-      onLoginSuccess('admin', email);
-    } else if (email === 'ana.lima@email.com' && senha === 'senha123') {
-      onLoginSuccess('morador', email);
-    } else {
-      setError('Credenciais administrativas inválidas. Use sindico@residencial.com / admin123');
+    setError('');
+    setLoading(true);
+    try {
+      const loginRes = await fetch('/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+
+      if (!loginRes.ok) {
+        setError('Credenciais administrativas inválidas.');
+        return;
+      }
+
+      const user = await loginRes.json();
+
+      if (user.tipo === 'SINDICO') {
+        onLoginSuccess('admin', email);
+      } else {
+        onLoginSuccess('morador', email);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Erro ao realizar login.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,8 +98,8 @@ export const LoginAdmin: React.FC<LoginAdminProps> = ({ onLoginSuccess, onNaviga
             </span>
           </div>
 
-          <button type="submit" className="submit-btn" style={{ padding: '15px' }}>
-            Entrar no Painel <ArrowRight size={18} />
+           <button type="submit" className="submit-btn" style={{ padding: '15px' }} disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar no Painel'} <ArrowRight size={18} />
           </button>
         </form>
 

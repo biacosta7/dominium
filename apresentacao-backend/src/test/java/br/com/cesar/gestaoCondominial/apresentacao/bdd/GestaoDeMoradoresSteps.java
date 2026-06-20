@@ -65,8 +65,15 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
 
     @When("o síndico ou titular solicita adicionar o {string}")
     public void o_sindico_ou_titular_solicita_adicionar(String p1) {
+        if (requesterIdContexto == null) {
+            Usuario defaultRequester = new Usuario();
+            defaultRequester.setNome("Default Sindico");
+            defaultRequester.setTipo(br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario.SINDICO);
+            defaultRequester = usuarioRepository.save(defaultRequester);
+            requesterIdContexto = defaultRequester.getId();
+        }
         try {
-            vincularMoradorUseCase.execute(unidadeIdContexto.getValor(), vinculoRequest);
+            vincularMoradorUseCase.execute(unidadeIdContexto.getValor(), vinculoRequest, requesterIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }
@@ -171,10 +178,17 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
 
     @When("o síndico atualiza o vínculo do morador para {string}")
     public void o_sindico_atualiza_o_vinculo_do_morador_para(String novoTipo) {
+        if (requesterIdContexto == null) {
+            Usuario defaultRequester = new Usuario();
+            defaultRequester.setNome("Default Sindico");
+            defaultRequester.setTipo(br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario.SINDICO);
+            defaultRequester = usuarioRepository.save(defaultRequester);
+            requesterIdContexto = defaultRequester.getId();
+        }
         VinculoRequestDTO updateRequest = new VinculoRequestDTO();
         updateRequest.setTipo(TipoVinculo.valueOf(novoTipo.toUpperCase()));
         try {
-            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest);
+            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest, requesterIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }
@@ -189,6 +203,92 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
 
         assertEquals(TipoVinculo.valueOf(tipoEsperado.toUpperCase()), vinculo.getTipo(),
                 "O tipo do vínculo deveria ter sido atualizado.");
+    }
+
+    @Given("um morador solicita autocadastro para a unidade")
+    public void um_morador_solicita_autocadastro_para_a_unidade() {
+        if (unidadeIdContexto == null) {
+            Unidade unidade = new Unidade();
+            unidade.setNumero("301");
+            unidade = unidadeRepository.save(unidade);
+            unidadeIdContexto = unidade.getId();
+        }
+        Usuario usuario = new Usuario();
+        usuario.setNome("Morador Autocadastro");
+        usuario = usuarioRepository.save(usuario);
+        moradorIdContexto = usuario.getId();
+
+        vinculoRequest = new VinculoRequestDTO();
+        vinculoRequest.setUsuarioId(moradorIdContexto);
+        vinculoRequest.setTipo(TipoVinculo.TITULAR);
+    }
+
+    @When("a solicitação é processada sem ID do solicitante")
+    public void a_solicitacao_e_processada_sem_id_do_solicitante() {
+        try {
+            var res = vincularMoradorUseCase.execute(unidadeIdContexto.getValor(), vinculoRequest, null);
+            vinculoIdContexto = res.getId();
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
+
+    @Then("o vínculo do morador é criado com status {string}")
+    public void o_vinculo_do_morador_e_criado_com_status(String statusEsperado) {
+        assertNull(this.excecao, "O autocadastro não deveria ter falhado.");
+        VinculoMorador vinculo = vinculoMoradorRepository.findById(vinculoIdContexto)
+                .orElseThrow(() -> new RuntimeException("Vínculo não encontrado"));
+        assertEquals(StatusVinculo.valueOf(statusEsperado.toUpperCase()), vinculo.getStatus(),
+                "O status do vínculo deveria ser " + statusEsperado);
+    }
+
+    @Given("um vínculo de morador {string} na unidade")
+    public void um_vinculo_de_morador_inativo_na_unidade(String status) {
+        if (unidadeIdContexto == null) {
+            Unidade unidade = new Unidade();
+            unidade.setNumero("302");
+            unidade = unidadeRepository.save(unidade);
+            unidadeIdContexto = unidade.getId();
+        }
+        Usuario usuario = new Usuario();
+        usuario.setNome("Morador Inativo");
+        usuario = usuarioRepository.save(usuario);
+        moradorIdContexto = usuario.getId();
+
+        VinculoMorador vinculo = new VinculoMorador();
+        vinculo.setUnidade(unidadeRepository.findById(unidadeIdContexto).orElseThrow());
+        vinculo.setUsuario(usuario);
+        vinculo.setTipo(TipoVinculo.TITULAR);
+        vinculo.setStatus(StatusVinculo.valueOf(status.toUpperCase()));
+        vinculo = vinculoMoradorRepository.save(vinculo);
+        vinculoIdContexto = vinculo.getId();
+    }
+
+    @When("o síndico homologa o vínculo do morador")
+    public void o_sindico_homologa_o_vinculo_do_morador() {
+        if (requesterIdContexto == null) {
+            Usuario defaultRequester = new Usuario();
+            defaultRequester.setNome("Default Sindico");
+            defaultRequester.setTipo(br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario.SINDICO);
+            defaultRequester = usuarioRepository.save(defaultRequester);
+            requesterIdContexto = defaultRequester.getId();
+        }
+        VinculoRequestDTO updateRequest = new VinculoRequestDTO();
+        updateRequest.setStatus(StatusVinculo.ATIVO);
+        try {
+            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest, requesterIdContexto);
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
+
+    @Then("o vínculo do morador fica com status {string} com sucesso")
+    public void o_vinculo_do_morador_fica_com_status_com_sucesso(String statusEsperado) {
+        assertNull(this.excecao, "A homologação não deveria ter falhado.");
+        VinculoMorador vinculo = vinculoMoradorRepository.findById(vinculoIdContexto)
+                .orElseThrow(() -> new RuntimeException("Vínculo não encontrado"));
+        assertEquals(StatusVinculo.valueOf(statusEsperado.toUpperCase()), vinculo.getStatus(),
+                "O status do vínculo deveria ter sido atualizado para " + statusEsperado);
     }
 }
 

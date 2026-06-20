@@ -47,9 +47,10 @@ public class VinculoMoradorController {
     @PostMapping("/unidades/{unidadeId}/moradores")
     public ResponseEntity<?> addMorador(
             @PathVariable Long unidadeId,
-            @RequestBody VinculoRequestDTO request) {
+            @RequestBody VinculoRequestDTO request,
+            @RequestHeader(value = "X-Requester-Id", required = false) Long requesterId) {
         return exceptionHandler.withHandler(() -> {
-            VinculoResponseDTO response = createVinculoMoradorUseCase.execute(unidadeId, request);
+            VinculoResponseDTO response = createVinculoMoradorUseCase.execute(unidadeId, request, requesterId);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         });
     }
@@ -65,9 +66,10 @@ public class VinculoMoradorController {
     @PutMapping("/moradores/{vinculoId}")
     public ResponseEntity<?> updateMorador(
             @PathVariable Long vinculoId,
-            @RequestBody VinculoRequestDTO request) {
+            @RequestBody VinculoRequestDTO request,
+            @RequestHeader("X-Requester-Id") Long requesterId) {
         return exceptionHandler.withHandler(() -> {
-            VinculoResponseDTO response = updateVinculoMoradorUseCase.execute(vinculoId, request);
+            VinculoResponseDTO response = updateVinculoMoradorUseCase.execute(vinculoId, request, requesterId);
             return ResponseEntity.ok(response);
         });
     }

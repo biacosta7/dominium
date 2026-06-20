@@ -11,16 +11,65 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
   const [email, setEmail] = useState('ana.lima@email.com');
   const [senha, setSenha] = useState('senha123');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'ana.lima@email.com' && senha === 'senha123') {
+    setError('');
+    setLoading(true);
+    try {
+      const loginRes = await fetch('/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+
+      if (!loginRes.ok) {
+        setError('Credenciais inválidas.');
+        return;
+      }
+
+      const user = await loginRes.json();
+
+      if (user.tipo === 'SINDICO') {
+        onLoginSuccess('admin', email);
+        return;
+      }
+
+      const unitsRes = await fetch('/unidades');
+      if (!unitsRes.ok) {
+        throw new Error('Erro ao carregar dados do condomínio.');
+      }
+      const units = await unitsRes.json();
+
+      let userVinculo: any = null;
+      for (const unit of units) {
+        const morRes = await fetch(`/api/unidades/${unit.id}/moradores`);
+        if (morRes.ok) {
+          const moradores = await morRes.json();
+          const found = moradores.find((m: any) => m.usuario.id === user.id);
+          if (found) {
+            userVinculo = found;
+            break;
+          }
+        }
+      }
+
+      if (!userVinculo) {
+        setError('Usuário não possui vínculo com nenhuma unidade.');
+        return;
+      }
+
+      if (userVinculo.status === 'INATIVO') {
+        setError('Sua conta está aguardando homologação do síndico.');
+        return;
+      }
+
       onLoginSuccess('morador', email);
-    } else if (email === 'sindico@residencial.com' && senha === 'admin123') {
-      // Allow seamless routing even if they used the wrong screen but correct admin details
-      onLoginSuccess('admin', email);
-    } else {
-      setError('Credenciais inválidas. Use ana.lima@email.com / senha123');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao realizar login.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,8 +145,8 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
               </span>
             </div>
 
-            <button type="submit" className="submit-btn">
-              Entrar <ArrowRight size={18} />
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'} <ArrowRight size={18} />
             </button>
           </form>
 

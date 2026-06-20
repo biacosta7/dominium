@@ -1,33 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Eye, X, Users, Loader2, AlertCircle, Check } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Eye, X, Users, Loader2, AlertCircle } from 'lucide-react';
 import { moradorService } from './services/moradorService';
-import type { Vinculo, Unidade } from './types/morador';
+import type { Vinculo } from './types/morador';
 import './MoradoresAdmin.css';
 
-interface MoradoresAdminProps {
-  requesterId?: number;
+interface MoradoresMoradorProps {
+  unidadeId: number;
+  requesterId: number;
+  unidadeNumero: string;
+  unidadeBloco?: string;
 }
 
-export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
+export default function MoradoresMorador({ unidadeId, requesterId, unidadeNumero, unidadeBloco }: MoradoresMoradorProps) {
   const [vinculos, setVinculos] = useState<Vinculo[]>([]);
-  const [units, setUnits] = useState<Unidade[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters state
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'ALL' | 'TITULAR' | 'DEPENDENTE'>('ALL');
 
-  // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVinculo, setSelectedVinculo] = useState<Vinculo | null>(null);
 
-  // Form states
   const [formName, setFormName] = useState('');
-  const [formUnit, setFormUnit] = useState(''); // text input to match "Ex: 304"
-  const [formType, setFormType] = useState<'TITULAR' | 'DEPENDENTE'>('TITULAR');
   const [formPhone, setFormPhone] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formCpf, setFormCpf] = useState('');
@@ -38,17 +34,10 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
     setLoading(true);
     setError(null);
     try {
-      const fetchedUnits = await moradorService.fetchUnits();
-      setUnits(fetchedUnits);
-
-      const fetchedVinculosPromises = fetchedUnits.map((u) =>
-        moradorService.fetchMoradoresDaUnidade(u.id).catch(() => [])
-      );
-      const lists = await Promise.all(fetchedVinculosPromises);
-      const allVinculos = lists.flat();
-      setVinculos(allVinculos);
+      const data = await moradorService.fetchMoradoresDaUnidade(unidadeId);
+      setVinculos(data.filter(v => v.status === 'ATIVO'));
     } catch (err: any) {
-      setError(err.message || 'Erro ao carregar dados dos moradores.');
+      setError(err.message || 'Erro ao carregar moradores da sua unidade.');
     } finally {
       setLoading(false);
     }
@@ -56,17 +45,10 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
-
-  // Map unitId to unit object
-  function getUnitForVinculo(unidadeId: number): Unidade | undefined {
-    return units.find((u) => u.id === unidadeId);
-  }
+  }, [unidadeId]);
 
   const handleOpenAddModal = () => {
     setFormName('');
-    setFormUnit('');
-    setFormType('TITULAR');
     setFormPhone('');
     setFormEmail('');
     setFormCpf('');
@@ -75,11 +57,8 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
   };
 
   const handleOpenEditModal = (vinculo: Vinculo) => {
-    const unit = getUnitForVinculo(vinculo.unidadeId);
     setSelectedVinculo(vinculo);
     setFormName(vinculo.usuario.nome);
-    setFormUnit(unit ? `${unit.numero}${unit.bloco ? ' - ' + unit.bloco : ''}` : '');
-    setFormType(vinculo.tipo);
     setFormPhone(vinculo.usuario.telefone || '');
     setFormEmail(vinculo.usuario.email);
     setFormCpf(vinculo.usuario.cpf || '');
@@ -87,36 +66,29 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
     setShowEditModal(true);
   };
 
-  // Handle open view modal
   const handleOpenViewModal = (vinculo: Vinculo) => {
     setSelectedVinculo(vinculo);
     setShowViewModal(true);
   };
 
-  // Create Resident
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
     setFormSubmitting(true);
 
     try {
-      const unitId = Number(formUnit);
-      if (!unitId) {
-        throw new Error('Selecione uma unidade.');
-      }
-
-      await moradorService.addMorador(unitId, {
+      await moradorService.addMorador(unidadeId, {
         nome: formName,
         email: formEmail,
         telefone: formPhone,
         cpf: formCpf,
-        tipoViculo: formType,
+        tipoViculo: 'DEPENDENTE'
       }, requesterId);
 
       setShowAddModal(false);
       loadData();
     } catch (err: any) {
-      setFormError(err.message || 'Erro ao salvar morador.');
+      setFormError(err.message || 'Erro ao adicionar dependente.');
     } finally {
       setFormSubmitting(false);
     }
@@ -129,37 +101,36 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
     setFormSubmitting(true);
 
     try {
-      await moradorService.updateMorador(selectedVinculo.id, selectedVinculo.usuario.id, {
-        nome: formName,
-        email: formEmail,
-        telefone: formPhone,
-        cpf: formCpf,
-        tipoViculo: formType,
-      }, requesterId);
+      await moradorService.updateMorador(
+        selectedVinculo.id,
+        selectedVinculo.usuario.id,
+        {
+          nome: formName,
+          email: formEmail,
+          telefone: formPhone,
+          cpf: formCpf,
+          tipoViculo: selectedVinculo.tipo
+        },
+        requesterId
+      );
 
       setShowEditModal(false);
       setSelectedVinculo(null);
       loadData();
     } catch (err: any) {
-      setFormError(err.message || 'Erro ao atualizar morador.');
+      setFormError(err.message || 'Erro ao atualizar dados.');
     } finally {
       setFormSubmitting(false);
     }
   };
 
-  const handleHomologar = async (vinculoId: number, name: string) => {
-    if (window.confirm(`Deseja homologar (aprovar) o cadastro de ${name}?`)) {
-      try {
-        await moradorService.homologarMorador(vinculoId, requesterId);
-        loadData();
-      } catch (err: any) {
-        alert(err.message || 'Erro ao homologar morador.');
-      }
+  const handleDelete = async (vinculoId: number, type: 'TITULAR' | 'DEPENDENTE', name: string) => {
+    if (type === 'TITULAR') {
+      alert('Você não pode remover o titular da unidade.');
+      return;
     }
-  };
 
-  const handleDelete = async (vinculoId: number, name: string) => {
-    if (window.confirm(`Tem certeza que deseja remover o vínculo de ${name}?`)) {
+    if (window.confirm(`Tem certeza que deseja remover o morador ${name} da sua unidade?`)) {
       try {
         await moradorService.removeMorador(vinculoId, requesterId);
         loadData();
@@ -169,23 +140,21 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
     }
   };
 
-  const filteredVinculos = vinculos.filter((vinculo) => {
-    const unit = getUnitForVinculo(vinculo.unidadeId);
-    const unitStr = unit ? `${unit.numero} ${unit.bloco || ''}`.toLowerCase() : '';
-    const nameStr = vinculo.usuario.nome.toLowerCase();
-    const matchesSearch =
-      nameStr.includes(searchTerm.toLowerCase()) || unitStr.includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === 'ALL' || vinculo.tipo === typeFilter;
-    return matchesSearch && matchesType;
+  const filteredVinculos = vinculos.filter((v) => {
+    const nameStr = v.usuario.nome.toLowerCase();
+    const emailStr = v.usuario.email.toLowerCase();
+    return nameStr.includes(searchTerm.toLowerCase()) || emailStr.includes(searchTerm.toLowerCase());
   });
+
+  const displayUnitName = `${unidadeNumero}${unidadeBloco ? ' - Bloco ' + unidadeBloco : ''}`;
 
   return (
     <div className="moradores-container animate-fade-in">
       <div className="moradores-header">
         <div>
-          <h1>Gestão de Moradores</h1>
+          <h1>Moradores da Unidade {displayUnitName}</h1>
           <p className="moradores-sub">
-            {vinculos.length} moradores em {units.length} unidades cadastradas
+            Gerencie os dependentes e moradores vinculados ao seu apartamento
           </p>
         </div>
         <button className="add-morador-btn" onClick={handleOpenAddModal}>
@@ -204,24 +173,13 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
       )}
 
       <div className="moradores-card">
+        {/* Search */}
         <div className="filters-bar">
-          <div className="filter-select-wrapper">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value as any)}
-              className="filter-select"
-            >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="TITULAR">Titular</option>
-              <option value="DEPENDENTE">Dependente</option>
-            </select>
-          </div>
-
           <div className="search-input-wrapper">
             <Search size={18} />
             <input
               type="text"
-              placeholder="Buscar por nome ou unidade..."
+              placeholder="Buscar por nome ou e-mail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -238,7 +196,7 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
           <div className="empty-state-container">
             <Users size={48} className="empty-icon" />
             <h3>Nenhum morador encontrado</h3>
-            <p>Tente ajustar os filtros ou adicione um novo morador.</p>
+            <p>Clique em "Adicionar Morador" para cadastrar dependentes.</p>
           </div>
         ) : (
           <div className="table-responsive">
@@ -246,80 +204,52 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
               <thead>
                 <tr>
                   <th>NOME</th>
-                  <th>UNIDADE</th>
                   <th>TIPO</th>
                   <th>TELEFONE</th>
-                  <th>STATUS</th>
+                  <th>E-MAIL</th>
                   <th>AÇÕES</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredVinculos.map((vinculo) => {
-                  const unit = getUnitForVinculo(vinculo.unidadeId);
-                  const isUnitInadimplente = unit?.status === 'INADIMPLENTE';
-                  return (
-                    <tr key={vinculo.id}>
-                      <td className="font-bold text-slate-800">{vinculo.usuario.nome}</td>
-                      <td>
-                        {unit ? `${unit.numero}${unit.bloco ? ' - ' + unit.bloco : ''}` : '—'}
-                      </td>
-                      <td>
-                        <span
-                          className={`badge-tipo ${vinculo.tipo === 'TITULAR' ? 'badge-titular' : 'badge-dependente'
-                            }`}
+                {filteredVinculos.map((v) => (
+                  <tr key={v.id}>
+                    <td className="font-bold text-slate-800">{v.usuario.nome}</td>
+                    <td>
+                      <span className={`badge-tipo ${v.tipo === 'TITULAR' ? 'badge-titular' : 'badge-dependente'}`}>
+                        {v.tipo === 'TITULAR' ? 'Titular' : 'Dependente'}
+                      </span>
+                    </td>
+                    <td>{v.usuario.telefone || '—'}</td>
+                    <td>{v.usuario.email}</td>
+                    <td>
+                      <div className="action-buttons-group">
+                        <button
+                          className="action-btn key-btn"
+                          title="Visualizar Informações"
+                          onClick={() => handleOpenViewModal(v)}
                         >
-                          {vinculo.tipo === 'TITULAR' ? 'Titular' : 'Dependente'}
-                        </span>
-                      </td>
-                      <td>{vinculo.usuario.telefone || '—'}</td>
-                      <td>
-                        {vinculo.status === 'INATIVO' ? (
-                          <span className="badge-status badge-status-inativo">Inativo</span>
-                        ) : isUnitInadimplente ? (
-                          <span className="badge-status badge-status-inadimplente">
-                            Inadimplente
-                          </span>
-                        ) : (
-                          <span className="badge-status badge-status-ativo">Ativo</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="action-buttons-group">
-                          {vinculo.status === 'INATIVO' && (
-                            <button
-                              className="action-btn homologar-btn"
-                              title="Homologar Cadastro"
-                              onClick={() => handleHomologar(vinculo.id, vinculo.usuario.nome)}
-                            >
-                              <Check size={14} />
-                            </button>
-                          )}
-                          <button
-                            className="action-btn key-btn"
-                            title="Visualizar Informações"
-                            onClick={() => handleOpenViewModal(vinculo)}
-                          >
-                            <Eye size={14} />
-                          </button>
-                          <button
-                            className="action-btn edit-btn"
-                            title="Editar Morador"
-                            onClick={() => handleOpenEditModal(vinculo)}
-                          >
-                            <Edit2 size={14} />
-                          </button>
+                          <Eye size={14} />
+                        </button>
+                        <button
+                          className="action-btn edit-btn"
+                          title="Editar Morador"
+                          onClick={() => handleOpenEditModal(v)}
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        {v.tipo !== 'TITULAR' && (
                           <button
                             className="action-btn delete-btn"
                             title="Remover Morador"
-                            onClick={() => handleDelete(vinculo.id, vinculo.usuario.nome)}
+                            onClick={() => handleDelete(v.id, v.tipo, v.usuario.nome)}
                           >
                             <Trash2 size={14} />
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -349,39 +279,10 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
 
               <div className="form-row">
                 <div className="form-group-half">
-                  <label>UNIDADE</label>
-                  <select
-                    value={formUnit}
-                    onChange={(e) => setFormUnit(e.target.value)}
-                    required
-                  >
-                    <option value="">Selecione...</option>
-                    {units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.numero}{u.bloco ? ` - Bloco ${u.bloco}` : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group-half">
-                  <label>TIPO</label>
-                  <select
-                    value={formType}
-                    onChange={(e) => setFormType(e.target.value as any)}
-                    required
-                  >
-                    <option value="TITULAR">Titular</option>
-                    <option value="DEPENDENTE">Dependente</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group-half">
                   <label>TELEFONE</label>
                   <input
                     type="text"
-                    placeholder="(11) 9 0000-0000"
+                    placeholder="(81) 9 9999-9999"
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                   />
@@ -433,7 +334,7 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
         </div>
       )}
 
-      {showEditModal && (
+      {showEditModal && selectedVinculo && (
         <div className="modal-overlay">
           <div className="modal-card">
             <div className="modal-header">
@@ -456,34 +357,10 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
 
               <div className="form-row">
                 <div className="form-group-half">
-                  <label>UNIDADE</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: 304"
-                    value={formUnit}
-                    disabled
-                    className="disabled-input"
-                  />
-                </div>
-                <div className="form-group-half">
-                  <label>TIPO</label>
-                  <select
-                    value={formType}
-                    onChange={(e) => setFormType(e.target.value as any)}
-                    required
-                  >
-                    <option value="TITULAR">Titular</option>
-                    <option value="DEPENDENTE">Dependente</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group-half">
                   <label>TELEFONE</label>
                   <input
                     type="text"
-                    placeholder="(11) 9 0000-0000"
+                    placeholder="(81) 9 9999-9999"
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                   />
@@ -527,7 +404,7 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
                   Cancelar
                 </button>
                 <button type="submit" className="save-btn" disabled={formSubmitting}>
-                  {formSubmitting ? 'Salvando...' : 'Salvar Morador'}
+                  {formSubmitting ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
               </div>
             </form>
@@ -554,14 +431,11 @@ export default function MoradoresAdmin({ requesterId }: MoradoresAdminProps) {
                 <div className="detail-item" style={{ flex: 1 }}>
                   <span className="detail-label" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Unidade</span>
                   <div className="detail-value" style={{ fontSize: '15px', fontWeight: 600, color: 'var(--gray-800)', marginTop: '4px' }}>
-                    {(() => {
-                      const unit = getUnitForVinculo(selectedVinculo.unidadeId);
-                      return unit ? `${unit.numero}${unit.bloco ? ' - Bloco ' + unit.bloco : ''}` : '—';
-                    })()}
+                    {displayUnitName}
                   </div>
                 </div>
                 <div className="detail-item" style={{ flex: 1 }}>
-                  <span className="detail-label" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tipo</span>
+                  <span className="detail-label" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tipo de Vínculo</span>
                   <div className="detail-value" style={{ marginTop: '4px' }}>
                     <span className={`badge-tipo ${selectedVinculo.tipo === 'TITULAR' ? 'badge-titular' : 'badge-dependente'}`}>
                       {selectedVinculo.tipo === 'TITULAR' ? 'Titular' : 'Dependente'}
