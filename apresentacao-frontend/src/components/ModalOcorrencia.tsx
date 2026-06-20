@@ -75,7 +75,9 @@ export const ModalOcorrencia: React.FC<ModalOcorrenciaProps> = ({
 
   const handleEncerrar = (e: React.FormEvent) => {
     e.preventDefault();
-    onEncerrar(ocorrencia.id, { penalidade, observacao });
+    if (onEncerrar) {
+      onEncerrar(ocorrencia.id, { penalidade, observacao });
+    }
   };
 
   // ─── modo visualização de ocorrência encerrada ───────────────

@@ -27,6 +27,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
   const [reservaEmEdicao, setReservaEmEdicao] = useState<Reserva | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorReserva, setErrorReserva] = useState<string | null>(null);
 
   // States to control active calendar month/year dynamically
   const [anoAtivo, setAnoAtivo] = useState(new Date().getFullYear());
@@ -100,12 +101,14 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
   };
 
   const handleEditar = (reserva: Reserva) => {
+    setErrorReserva(null);
     setReservaEmEdicao(reserva);
     setModalAberto(true);
   };
 
   const handleCriarOuEditarReserva = async (form: any) => {
     try {
+      setErrorReserva(null);
       if (reservaEmEdicao) {
         // UPDATE (U in CRUD)
         await atualizarReserva(
@@ -152,15 +155,18 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
       setReservaEmEdicao(null);
       carregarReservas();
       setDiaSelecionado(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao salvar reserva", error);
-      showToast("Erro ao salvar agendamento. Verifique se há conflito de horários.");
+      const msg = error?.message || "Erro ao salvar agendamento. Verifique se há conflito de horários.";
+      showToast(msg);
+      setErrorReserva(msg);
     }
   };
 
   const handleCloseModal = () => {
     setModalAberto(false);
     setReservaEmEdicao(null);
+    setErrorReserva(null);
   };
 
   const mudarMes = (direcao: number) => {
@@ -344,7 +350,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
                   {reservas.filter((r) => r.status === "ATIVA" || r.status === "PENDENTE" || r.status === "AGUARDANDO_CONFIRMACAO").length}
                 </span>
               </div>
-              <button className="btn btn-sm btn-primary" onClick={() => setModalAberto(true)}>
+              <button className="btn btn-sm btn-primary" onClick={() => { setErrorReserva(null); setModalAberto(true); }}>
                 Nova Reserva
               </button>
             </div>
@@ -394,6 +400,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
             <Disponibilidade
               itens={disponibilidadeHoje}
               onReservar={() => {
+                setErrorReserva(null);
                 setModalAberto(true);
               }}
             />
@@ -406,6 +413,7 @@ export default function ReservaView({ onVoltar }: ReservaProps) {
         onClose={handleCloseModal}
         onSalvar={handleCriarOuEditarReserva}
         reservaEmEdicao={reservaEmEdicao}
+        erro={errorReserva}
       />
     </div>
   );
