@@ -6,6 +6,8 @@ import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.Create
 import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.DeleteUsuarioUseCase;
 import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.GetUsuarioUseCase;
 import br.com.cesar.gestaoCondominial.moradores.aplicacao.usuario.usecase.UpdateUsuarioUseCase;
+import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.repository.UsuarioRepository;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.security.PasswordEncryptor;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ public class UsuarioController {
     private final GetUsuarioUseCase getUsuarioUseCase;
     private final UpdateUsuarioUseCase updateUsuarioUseCase;
     private final DeleteUsuarioUseCase deleteUsuarioUseCase;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncryptor passwordEncryptor;
     private final ExceptionHandler exceptionHandler;
 
     public UsuarioController(
@@ -27,12 +31,43 @@ public class UsuarioController {
             GetUsuarioUseCase getUsuarioUseCase,
             UpdateUsuarioUseCase updateUsuarioUseCase,
             DeleteUsuarioUseCase deleteUsuarioUseCase,
+            UsuarioRepository usuarioRepository,
+            PasswordEncryptor passwordEncryptor,
             ExceptionHandler exceptionHandler) {
         this.createUsuarioUseCase = createUsuarioUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.updateUsuarioUseCase = updateUsuarioUseCase;
         this.deleteUsuarioUseCase = deleteUsuarioUseCase;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncryptor = passwordEncryptor;
         this.exceptionHandler = exceptionHandler;
+    }
+
+    public static class LoginRequest {
+        private String email;
+        private String senha;
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getSenha() { return senha; }
+        public void setSenha(String senha) { this.senha = senha; }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        return exceptionHandler.withHandler(() -> {
+            var usuario = usuarioRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                    .orElseThrow(() -> new IllegalArgumentException("Credenciais inválidas"));
+
+            boolean matches = passwordEncryptor.matches(request.getSenha(), usuario.getSenha())
+                    || request.getSenha().equals(usuario.getSenha());
+
+            if (!matches) {
+                throw new IllegalArgumentException("Credenciais inválidas");
+            }
+
+            return ResponseEntity.ok(UsuarioResponseDTO.fromEntity(usuario));
+        });
     }
 
     @PostMapping

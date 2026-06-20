@@ -18,7 +18,9 @@ import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.TipoUsuario;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.Usuario;
 import br.com.cesar.gestaoCondominial.moradores.dominio.usuario.repository.UsuarioRepository;
 import br.com.cesar.gestaoCondominial.moradores.dominio.morador.TipoVinculo;
+import br.com.cesar.gestaoCondominial.moradores.aplicacao.security.PasswordEncryptor;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class CreateVinculoMoradorUseCase {
@@ -27,6 +29,7 @@ public class CreateVinculoMoradorUseCase {
     private final UnidadeRepository unidadeRepository;
     private final UsuarioRepository usuarioRepository;
     private final CreateUsuarioUseCase createUsuarioUseCase;
+    private final PasswordEncryptor passwordEncryptor;
 
     @Value("${dominium.unidade.max-moradores:5}")
     private int maxMoradores;
@@ -35,11 +38,13 @@ public class CreateVinculoMoradorUseCase {
             VinculoMoradorRepository vinculoMoradorRepository,
             UnidadeRepository unidadeRepository,
             UsuarioRepository usuarioRepository,
-            CreateUsuarioUseCase createUsuarioUseCase) {
+            CreateUsuarioUseCase createUsuarioUseCase,
+            PasswordEncryptor passwordEncryptor) {
         this.vinculoMoradorRepository = vinculoMoradorRepository;
         this.unidadeRepository = unidadeRepository;
         this.usuarioRepository = usuarioRepository;
         this.createUsuarioUseCase = createUsuarioUseCase;
+        this.passwordEncryptor = passwordEncryptor;
     }
 
     @Transactional
@@ -54,14 +59,16 @@ public class CreateVinculoMoradorUseCase {
                     .orElseThrow(() -> new IllegalArgumentException("Usuário solicitante não encontrado"));
 
             if (requester.getTipo() != TipoUsuario.SINDICO) {
-                List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(requesterId,
+                List<VinculoMorador> vinculosSolicitante = vinculoMoradorRepository.findByUsuarioIdAndStatus(
+                        requesterId,
                         StatusVinculo.ATIVO);
                 boolean isTitularDaMesmaUnidade = vinculosSolicitante.stream()
                         .anyMatch(v -> v.getTipo() == TipoVinculo.TITULAR &&
                                 v.getUnidade().getId().equals(unidade.getId()));
 
                 if (!isTitularDaMesmaUnidade) {
-                    throw new IllegalStateException("Apenas o titular da unidade ou o síndico podem adicionar um morador");
+                    throw new IllegalStateException(
+                            "Apenas o titular da unidade ou o síndico podem adicionar um morador");
                 }
             }
         } else {
@@ -76,9 +83,30 @@ public class CreateVinculoMoradorUseCase {
 
         Usuario usuario;
         if (request.getNovoUsuario() != null) {
-            UsuarioResponseDTO createdUserDto = createUsuarioUseCase.execute(request.getNovoUsuario());
-            usuario = usuarioRepository.findById(createdUserDto.getId())
-                    .orElseThrow(() -> new IllegalStateException("Falha ao recuperar usuário recém-criado"));
+            String email = request.getNovoUsuario().getEmail();
+            var existingUserOpt = usuarioRepository.findByEmail(email);
+            if (existingUserOpt.isPresent()) {
+                usuario = existingUserOpt.get();
+                if (requesterId == null) {
+                    if (request.getNovoUsuario().getSenha() != null && !request.getNovoUsuario().getSenha().isBlank()) {
+                        usuario.setSenha(passwordEncryptor.encode(request.getNovoUsuario().getSenha()));
+                    }
+                    if (request.getNovoUsuario().getNome() != null) {
+                        usuario.setNome(request.getNovoUsuario().getNome());
+                    }
+                    if (request.getNovoUsuario().getTelefone() != null) {
+                        usuario.setTelefone(request.getNovoUsuario().getTelefone());
+                    }
+                    if (request.getNovoUsuario().getCpf() != null) {
+                        usuario.setCpf(request.getNovoUsuario().getCpf());
+                    }
+                    usuario = usuarioRepository.save(usuario);
+                }
+            } else {
+                UsuarioResponseDTO createdUserDto = createUsuarioUseCase.execute(request.getNovoUsuario());
+                usuario = usuarioRepository.findById(createdUserDto.getId())
+                        .orElseThrow(() -> new IllegalStateException("Falha ao recuperar usuário recém-criado"));
+            }
         } else if (request.getUsuarioId() != null) {
             usuario = usuarioRepository.findById(request.getUsuarioId())
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
@@ -86,7 +114,22 @@ public class CreateVinculoMoradorUseCase {
             throw new IllegalArgumentException("É necessário informar o usuarioId ou os dados de um novoUsuario");
         }
 
-        if (!vinculoMoradorRepository.findByUsuarioIdAndStatus(usuario.getId(), StatusVinculo.ATIVO).isEmpty()) {
+        var existingVinculos = new ArrayList<VinculoMorador>(
+                vinculoMoradorRepository.findByUsuarioIdAndStatus(usuario.getId(), StatusVinculo.ATIVO));
+        existingVinculos
+                .addAll(vinculoMoradorRepository.findByUsuarioIdAndStatus(usuario.getId(), StatusVinculo.INATIVO));
+
+        var sameUnitVinculoOpt = existingVinculos.stream()
+                .filter(v -> v.getUnidade().getId().equals(unidade.getId()))
+                .findFirst();
+
+        if (sameUnitVinculoOpt.isPresent()) {
+            return VinculoResponseDTO.fromEntity(sameUnitVinculoOpt.get());
+        }
+
+        boolean belongsToOtherUnit = existingVinculos.stream()
+                .anyMatch(v -> !v.getUnidade().getId().equals(unidade.getId()) && v.getStatus() == StatusVinculo.ATIVO);
+        if (belongsToOtherUnit) {
             throw new IllegalStateException("Morador já possui vínculo ativo com outra unidade");
         }
 

@@ -31,7 +31,6 @@ export const Cadastro: React.FC<CadastroProps> = ({ onNavigate }) => {
     setError('');
 
     try {
-      // 1. Fetch all units to find the matching one
       const units = await moradorService.fetchUnits();
       const matchedUnit = units.find(
         (u) =>
@@ -43,10 +42,8 @@ export const Cadastro: React.FC<CadastroProps> = ({ onNavigate }) => {
         throw new Error(`Unidade não encontrada: Bloco ${bloco} - Apto ${apto}. Verifique os dados ou fale com o síndico.`);
       }
 
-      // Self-registration defaults to TITULAR vinculo type (pending homologação)
       const tipoVinculo = 'TITULAR';
 
-      // 2. Create user and relationship with status INATIVO (requesterId = null)
       await moradorService.addMorador(
         matchedUnit.id,
         {

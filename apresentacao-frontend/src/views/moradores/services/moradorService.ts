@@ -25,7 +25,7 @@ export const moradorService = {
       novoUsuario: {
         nome: data.nome,
         email: data.email,
-        senha: data.senha || '123456', // default password
+        senha: data.senha || '123456',
         telefone: data.telefone,
         cpf: data.cpf,
         tipo: 'MORADOR'
@@ -68,7 +68,6 @@ export const moradorService = {
     },
     requesterId?: number
   ): Promise<void> {
-    // 1. Update Vínculo Type and Status
     const vinculoPayload: any = {
       tipo: data.tipoViculo
     };
@@ -77,7 +76,7 @@ export const moradorService = {
     }
     const vinculoRes = await fetch(`/api/moradores/${vinculoId}`, {
       method: 'PUT',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'X-Requester-Id': requesterId ? String(requesterId) : '2'
       },
@@ -88,11 +87,10 @@ export const moradorService = {
       throw new Error(errText || 'Erro ao atualizar vínculo do morador');
     }
 
-    // 2. Update User details
     const usuarioPayload = {
       nome: data.nome,
       email: data.email,
-      senha: '', // blank/null is allowed since we updated the backend to allow blank passwords on update
+      senha: '',
       telefone: data.telefone,
       cpf: data.cpf,
       tipo: 'MORADOR'

@@ -18,39 +18,24 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
     setError('');
     setLoading(true);
     try {
-      // 1. Fetch all users from backend to verify user existence and role
-      const usersRes = await fetch('/usuarios');
-      if (!usersRes.ok) {
-        throw new Error('Erro ao conectar com o servidor.');
-      }
-      const users = await usersRes.json();
-      const user = users.find(
-        (u: any) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-      );
+      const loginRes = await fetch('/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
 
-      if (!user) {
+      if (!loginRes.ok) {
         setError('Credenciais inválidas.');
         return;
       }
 
-      // If user is SINDICO, bypass unit vinculo checks
+      const user = await loginRes.json();
+
       if (user.tipo === 'SINDICO') {
-        if (senha === 'admin123') {
-          onLoginSuccess('admin', email);
-        } else {
-          setError('Credenciais inválidas.');
-        }
+        onLoginSuccess('admin', email);
         return;
       }
 
-      // For morador users:
-      // Simple verification for the seed user
-      if (user.email === 'ana.lima@email.com' && senha !== 'senha123') {
-        setError('Credenciais inválidas.');
-        return;
-      }
-
-      // 2. Fetch all units and their residents to find this user's active relationship status
       const unitsRes = await fetch('/unidades');
       if (!unitsRes.ok) {
         throw new Error('Erro ao carregar dados do condomínio.');
@@ -80,7 +65,6 @@ export const LoginMorador: React.FC<LoginMoradorProps> = ({ onLoginSuccess, onNa
         return;
       }
 
-      // Successful login
       onLoginSuccess('morador', email);
     } catch (err: any) {
       setError(err.message || 'Erro ao realizar login.');
