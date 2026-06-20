@@ -19,6 +19,8 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
     private Long moradorIdContexto;
     private VinculoRequestDTO vinculoRequest;
     private boolean usuarioLogadoEhTitular;
+    private Long vinculoIdContexto;
+    private Long requesterIdContexto;
 
     @Given("a {string} {string} o limite máximo de moradores")
     public void a_unidade_p2_o_limite_maximo_de_moradores(String p1, String situacao) {
@@ -105,14 +107,45 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
             unidade = unidadeRepository.save(unidade);
             unidadeIdContexto = unidade.getId();
         }
+
+        Unidade unidade = unidadeRepository.findById(unidadeIdContexto).orElseThrow();
+
+        // 1. Criar o morador (dependente) que será removido
+        Usuario moradorParaRemover = new Usuario();
+        moradorParaRemover.setNome("Dependente Teste");
+        moradorParaRemover = usuarioRepository.save(moradorParaRemover);
+        moradorIdContexto = moradorParaRemover.getId();
+
+        VinculoMorador vinculoParaRemover = new VinculoMorador();
+        vinculoParaRemover.setUnidade(unidade);
+        vinculoParaRemover.setUsuario(moradorParaRemover);
+        vinculoParaRemover.setTipo(TipoVinculo.DEPENDENTE);
+        vinculoParaRemover.setStatus(StatusVinculo.ATIVO);
+        vinculoParaRemover = vinculoMoradorRepository.save(vinculoParaRemover);
+        vinculoIdContexto = vinculoParaRemover.getId();
+
+        // 2. Criar o usuário que solicita a remoção
+        Usuario requester = new Usuario();
+        requester.setNome("Solicitante Teste");
+        requester = usuarioRepository.save(requester);
+        requesterIdContexto = requester.getId();
+
+        VinculoMorador vinculoRequester = new VinculoMorador();
+        vinculoRequester.setUnidade(unidade);
+        vinculoRequester.setUsuario(requester);
+        vinculoRequester.setStatus(StatusVinculo.ATIVO);
+        if (usuarioLogadoEhTitular) {
+            vinculoRequester.setTipo(TipoVinculo.TITULAR);
+        } else {
+            vinculoRequester.setTipo(TipoVinculo.DEPENDENTE);
+        }
+        vinculoMoradorRepository.save(vinculoRequester);
     }
 
     @When("o usuário solicita a remoção de um {string}")
     public void o_usuario_solicita_a_remocao(String p1) {
         try {
-            if (!usuarioLogadoEhTitular) {
-                throw new RuntimeException("Apenas titulares podem remover dependentes");
-            }
+            endVinculoMoradorUseCase.execute(vinculoIdContexto, requesterIdContexto);
         } catch (RuntimeException e) {
             this.excecao = e;
         }
@@ -132,7 +165,30 @@ public class GestaoDeMoradoresSteps extends DominiumFuncionalidade {
     @Then("o sistema bloqueia a ação informando que apenas titulares podem remover dependentes")
     public void o_sistema_bloqueia_remocao_nao_titular() {
         assertNotNull(this.excecao, "O sistema deveria ter bloqueado a remoção por falta de privilégios.");
-        assertTrue(this.excecao.getMessage().contains("titulares"),
+        assertTrue(this.excecao.getMessage().toLowerCase().contains("titular"),
                 "A mensagem de erro deve informar que apenas titulares têm essa permissão.");
     }
+
+    @When("o síndico atualiza o vínculo do morador para {string}")
+    public void o_sindico_atualiza_o_vinculo_do_morador_para(String novoTipo) {
+        VinculoRequestDTO updateRequest = new VinculoRequestDTO();
+        updateRequest.setTipo(TipoVinculo.valueOf(novoTipo.toUpperCase()));
+        try {
+            updateVinculoMoradorUseCase.execute(vinculoIdContexto, updateRequest);
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
+
+    @Then("o vínculo do morador é atualizado para {string} com sucesso")
+    public void o_vinculo_do_morador_e_atualizado_com_sucesso(String tipoEsperado) {
+        assertNull(this.excecao, "A atualização do vínculo não deveria ter falhado.");
+
+        VinculoMorador vinculo = vinculoMoradorRepository.findById(vinculoIdContexto)
+                .orElseThrow(() -> new RuntimeException("Vínculo não encontrado"));
+
+        assertEquals(TipoVinculo.valueOf(tipoEsperado.toUpperCase()), vinculo.getTipo(),
+                "O tipo do vínculo deveria ter sido atualizado.");
+    }
 }
+

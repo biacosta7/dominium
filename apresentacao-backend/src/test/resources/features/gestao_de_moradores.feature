@@ -26,3 +26,9 @@ Feature: Gestão de Moradores
     Given o usuário logado "não é" "titular" da unidade
      When o usuário solicita a remoção de um "morador"
      Then o sistema bloqueia a ação informando que apenas titulares podem remover dependentes
+
+  Scenario: Atualizar tipo de vínculo de um morador
+    Given o usuário logado "é" "titular" da unidade
+     When o síndico atualiza o vínculo do morador para "TITULAR"
+     Then o vínculo do morador é atualizado para "TITULAR" com sucesso
+

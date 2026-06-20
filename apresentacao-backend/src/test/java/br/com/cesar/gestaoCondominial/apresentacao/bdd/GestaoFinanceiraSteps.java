@@ -167,4 +167,46 @@ public class GestaoFinanceiraSteps extends DominiumFuncionalidade {
         assertEquals(0, BigDecimal.ZERO.compareTo(orcamento.getValorGasto()),
                 "O orçamento não deve ser impactado enquanto a despesa estiver pendente de aprovação.");
     }
+
+    @Given("que o condomínio adota a política financeira {string}")
+    public void que_o_condominio_adota_a_politica_financeira(String politica) {
+        br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.strategy.PoliticaFinanceiraStrategy strategy;
+        if ("flexível".equalsIgnoreCase(politica) || "flexivel".equalsIgnoreCase(politica)) {
+            strategy = new br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.strategy.PoliticaFinanceiraFlexivelStrategy();
+        } else if ("rígida".equalsIgnoreCase(politica) || "rigida".equalsIgnoreCase(politica)) {
+            strategy = new br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.strategy.PoliticaFinanceiraRigidaStrategy();
+        } else {
+            strategy = new br.com.cesar.gestaoCondominial.financeiro.dominio.financeiro.strategy.PoliticaFinanceiraConservadoraStrategy();
+        }
+        org.springframework.test.util.ReflectionTestUtils.setField(registrarDespesaUseCase, "politicaFinanceira", strategy);
+    }
+
+    @Then("a despesa registrada fica com status {string}")
+    public void a_despesa_registrada_fica_com_status(String statusEsperado) {
+        if (this.excecao != null) {
+            fail("O sistema lançou um erro inesperado: " + this.excecao.getMessage());
+        }
+
+        Despesa despesa = despesaRepository.findAll().stream()
+                .filter(d -> d.getDescricao().equals(despesaRequest.getDescricao()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Despesa não encontrada no repositório"));
+
+        assertEquals(StatusDespesa.valueOf(statusEsperado.toUpperCase()), despesa.getStatus());
+    }
+
+    @When("o síndico aprova a despesa extraordinária")
+    public void o_sindico_aprova_a_despesa_extraordinaria() {
+        Despesa despesaPendente = despesaRepository.findAll().stream()
+                .filter(d -> d.getDescricao().equals(despesaRequest.getDescricao()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Despesa pendente não encontrada"));
+
+        try {
+            aprovarDespesaExtraordinariaUseCase.execute(despesaPendente.getId());
+        } catch (RuntimeException e) {
+            this.excecao = e;
+        }
+    }
 }
+
