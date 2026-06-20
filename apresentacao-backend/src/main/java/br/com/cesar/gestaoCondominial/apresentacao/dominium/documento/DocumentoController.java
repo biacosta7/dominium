@@ -4,9 +4,6 @@ import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.dto.Docume
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.dto.VersaoDocumentoResponse;
 import br.com.cesar.gestaoCondominial.comunicacao.aplicacao.documento.usecase.*;
 import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.CategoriaDocumento;
-import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.VersaoDocumento;
-import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.repository.VersaoDocumentoRepository;
-import br.com.cesar.gestaoCondominial.comunicacao.dominio.documento.DocumentoId;
 import br.com.cesar.gestaoCondominial.apresentacao.dominium.exception.ExceptionHandler;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +26,7 @@ public class DocumentoController {
     private final InativarDocumentoUseCase inativarUseCase;
     private final ListarDocumentosUseCase listarUseCase;
     private final BaixarDocumentoUseCase baixarUseCase;
-    private final VersaoDocumentoRepository versaoRepository;
+    private final ObterHistoricoDocumentoUseCase historicoUseCase;
     private final ExceptionHandler exceptionHandler;
 
     public DocumentoController(CadastrarDocumentoUseCase cadastrarUseCase,
@@ -37,14 +34,14 @@ public class DocumentoController {
                                InativarDocumentoUseCase inativarUseCase,
                                ListarDocumentosUseCase listarUseCase,
                                BaixarDocumentoUseCase baixarUseCase,
-                               VersaoDocumentoRepository versaoRepository,
+                               ObterHistoricoDocumentoUseCase historicoUseCase,
                                ExceptionHandler exceptionHandler) {
         this.cadastrarUseCase = cadastrarUseCase;
         this.atualizarUseCase = atualizarUseCase;
         this.inativarUseCase = inativarUseCase;
         this.listarUseCase = listarUseCase;
         this.baixarUseCase = baixarUseCase;
-        this.versaoRepository = versaoRepository;
+        this.historicoUseCase = historicoUseCase;
         this.exceptionHandler = exceptionHandler;
     }
 
@@ -58,12 +55,12 @@ public class DocumentoController {
     ) {
         return exceptionHandler.withHandler(() -> {
             try {
-                var documento = cadastrarUseCase.executar(
+                DocumentoComVersao resultado = cadastrarUseCase.executar(
                         sindicoId, nome, categoria, dataValidade,
                         arquivo.getOriginalFilename(), arquivo.getBytes()
                 );
-                var versao = versaoRepository.findUltimaVersao(documento.getId()).orElse(null);
-                return ResponseEntity.status(HttpStatus.CREATED).body(DocumentoResponse.from(documento, versao));
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(DocumentoResponse.from(resultado.documento(), resultado.ultimaVersao()));
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao processar a leitura do arquivo de upload", e);
             }
@@ -78,7 +75,7 @@ public class DocumentoController {
     ) {
         return exceptionHandler.withHandler(() -> {
             try {
-                VersaoDocumento novaVersao = atualizarUseCase.executar(
+                var novaVersao = atualizarUseCase.executar(
                         sindicoId, id, arquivo.getOriginalFilename(), arquivo.getBytes()
                 );
                 return ResponseEntity.ok(VersaoDocumentoResponse.from(novaVersao));
@@ -94,9 +91,8 @@ public class DocumentoController {
             @PathVariable String id
     ) {
         return exceptionHandler.withHandler(() -> {
-            var documento = inativarUseCase.executar(sindicoId, id);
-            var versao = versaoRepository.findUltimaVersao(documento.getId()).orElse(null);
-            return ResponseEntity.ok(DocumentoResponse.from(documento, versao));
+            DocumentoComVersao resultado = inativarUseCase.executar(sindicoId, id);
+            return ResponseEntity.ok(DocumentoResponse.from(resultado.documento(), resultado.ultimaVersao()));
         });
     }
 
@@ -107,7 +103,7 @@ public class DocumentoController {
         return exceptionHandler.withHandler(() -> {
             List<DocumentoResponse> response = listarUseCase.executar(incluirInativos)
                     .stream()
-                    .map(d -> DocumentoResponse.from(d, versaoRepository.findUltimaVersao(d.getId()).orElse(null)))
+                    .map(r -> DocumentoResponse.from(r.documento(), r.ultimaVersao()))
                     .toList();
             return ResponseEntity.ok(response);
         });
@@ -116,8 +112,7 @@ public class DocumentoController {
     @GetMapping("/{id}/historico")
     public ResponseEntity<?> historico(@PathVariable String id) {
         return exceptionHandler.withHandler(() -> {
-            List<VersaoDocumentoResponse> historico = versaoRepository
-                    .findHistorico(DocumentoId.de(id))
+            List<VersaoDocumentoResponse> historico = historicoUseCase.executar(id)
                     .stream()
                     .map(VersaoDocumentoResponse::from)
                     .toList();
