@@ -46,7 +46,18 @@ export const atualizarReserva = async (id: string, data: string, horaInicio: str
   const res = await fetch(`/reservas/${id}?${params.toString()}`, {
     method: "PUT"
   });
-  if (!res.ok) throw new Error("Erro ao atualizar reserva");
+  if (!res.ok) {
+    let message = "Erro ao atualizar reserva";
+    try {
+      const body = await res.json();
+      message = body.message || message;
+    } catch {
+      // mantém mensagem padrão
+    }
+    const error = new Error(message) as Error & { status?: number };
+    error.status = res.status;
+    throw error;
+  }
   const result = await res.json();
   return { data: result };
 };

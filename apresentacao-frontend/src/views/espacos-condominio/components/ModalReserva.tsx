@@ -6,6 +6,7 @@ interface Props {
   onClose: () => void;
   onSalvar: (dados: any) => void;
   reservaEmEdicao?: Reserva | null;
+  erro?: string | null;
 }
 
 export default function ModalReserva({
@@ -13,6 +14,7 @@ export default function ModalReserva({
   onClose,
   onSalvar,
   reservaEmEdicao,
+  erro,
 }: Props) {
 
   const [form, setForm] = useState({
@@ -49,6 +51,25 @@ export default function ModalReserva({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-titulo">{reservaEmEdicao ? "Editar Agendamento" : "Nova Reserva"}</h2>
+
+        {erro && (
+          <div className="error-message-box" style={{ 
+            backgroundColor: "rgba(185, 28, 28, 0.08)", 
+            border: "1px solid var(--text-danger, #b91c1c)", 
+            borderRadius: "var(--r-sm, 8px)", 
+            padding: "10px 12px", 
+            color: "var(--text-danger, #b91c1c)", 
+            marginBottom: "14px",
+            fontSize: "13.5px",
+            fontWeight: "500",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}>
+            <span>⚠️</span>
+            <span>{erro}</span>
+          </div>
+        )}
 
         <div className="modal-form">
           <label className="form-label">

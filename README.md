@@ -150,29 +150,28 @@ Na **Gestão de Funcionários**, o `FuncionarioRepositoryValidacaoProxy` adicion
 | `subdominio-operacional/.../infraestrutura/funcionario/FuncionarioRepositoryImpl.java` | Implementação JDBC real (*RealSubject*), qualificada como `funcionarioRepositoryJdbc` |
 | `subdominio-operacional/.../aplicacao/funcionario/proxy/FuncionarioRepositoryValidacaoProxy.java` | Proxy de validação: bloqueia automaticamente funcionários com contrato vencido ao serem buscados |
 
-### Strategy
+### Iterator
 
-**Implementado por:** Beatriz Costa
+**Implementado por:** Sofia Gomes Tenório
 
 **Motivação:**
-Na gestão financeira de um condomínio, o fluxo de aprovação e autorização de despesas pode variar de forma dinâmica dependendo das regras e da rigidez administrativa do próprio condomínio. Em vez de acoplar o processo de registro de despesas a regras rígidas codificadas diretamente nas classes de serviço ou utilizar desvios condicionais baseados em tipos de despesas ordinárias/extraordinárias, emprega-se o padrão **Strategy**. Isso permite desacoplar a definição da política financeira ([PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java)) da lógica de registro de despesas ([RegistrarDespesaUseCase](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java)), facilitando a substituição dinâmica de políticas (ex: Flexível, Conservadora, Rígida) e permitindo a extensão para novos tipos de políticas sem a necessidade de modificar o caso de uso existente (respeitando o Princípio Aberto/Fechado - OCP).
+Na Gestão de Reservas de Espaços Comuns, a classe `PoliticaReserva` precisa validar a criação ou atualização de novas reservas. Para isso, ela deve iterar sobre as reservas existentes e ativas no mesmo período para verificar disponibilidade, conflito de horários ou capacidade máxima excedida. O padrão **Iterator** foi escolhido para desacoplar a lógica de validação de regras de negócio de como a coleção de reservas existentes é estruturada internamente (por exemplo, encapsulando se é mantida como `List`, `Set`, `Map` ou outra coleção na memória), permitindo percorrer os dados de forma uniforme e simplificada.
 
 **Como foi implementado:**
-A implementação define uma interface [PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) contendo o método `determinarStatusInicial`, responsável por avaliar uma despesa associada a um determinado orçamento e retornar o seu status inicial ([StatusDespesa](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/StatusDespesa.java)).
-
-Três classes concretas de estratégia implementam esse comportamento:
-1. [PoliticaFinanceiraFlexivelStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraFlexivelStrategy.java): Qualquer despesa com saldo orçamentário disponível é aprovada imediatamente.
-2. [PoliticaFinanceiraConservadoraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraConservadoraStrategy.java) (Estratégia `@Primary` padrão): Segue as regras padrão do condomínio, onde despesas extraordinárias que superam um limite de R$ 5.000,00 ficam pendentes para votação em assembleia.
-3. [PoliticaFinanceiraRigidaStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraRigidaStrategy.java): Exige que todas as despesas extraordinárias (independente de valor) e quaisquer despesas ordinárias que excedam R$ 10.000,00 fiquem pendentes de aprovação/auditoria manual pelo síndico.
-
-O caso de uso [RegistrarDespesaUseCase](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java) recebe a interface [PoliticaFinanceiraStrategy](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) por injeção de dependência e delega a ela a responsabilidade de decidir se a despesa deve nascer aprovada ou pendente. A anotação `@Primary` do Spring garante que a política conservadora padrão seja selecionada por padrão, preservando toda a compatibilidade com a base de código e testes existentes.
+A implementação segue a estrutura clássica do padrão Iterator:
+1. A interface `ReservaIterator` define os métodos clássicos `hasNext()` e `next()` para navegar pela coleção de reservas de forma abstrata.
+2. A classe `ReservaCollection` atua como a estrutura agregadora, encapsulando a lista bruta (`List<Reserva> reservas`) e fornecendo o método `iterator()`.
+3. A classe `ReservaListIterator` é a implementação concreta do iterador, mantendo o controle do cursor de iteração (`position`) sobre a lista interna de reservas.
+4. O método `validarNovaReserva` em `PoliticaReserva` foi projetado para receber o iterador (`ReservaIterator`) em vez da lista concreta, consumindo os elementos de maneira abstrata.
+5. Nos casos de uso `CriarReservaUseCase` e `AtualizarReservaUseCase`, após buscar as reservas existentes no banco de dados, cria-se a `ReservaCollection` e o iterador é gerado e passado para o método de validação da política de reserva.
 
 **Arquivos envolvidos:**
 
 | Arquivo | Papel no padrão |
 |---|---|
-| [PoliticaFinanceiraStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraStrategy.java) | Interface da estratégia (*Strategy*) |
-| [PoliticaFinanceiraFlexivelStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraFlexivelStrategy.java) | Estratégia concreta: Política flexível |
-| [PoliticaFinanceiraConservadoraStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraConservadoraStrategy.java) | Estratégia concreta: Política conservadora (Padrão) |
-| [PoliticaFinanceiraRigidaStrategy.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/dominio/financeiro/strategy/PoliticaFinanceiraRigidaStrategy.java) | Estratégia concreta: Política rígida |
-| [RegistrarDespesaUseCase.java](file:///Users/beatrizcosta/Projects/cesar/requisitos/dominium/subdominio-financeiro/src/main/java/br/com/cesar/gestaoCondominial/financeiro/aplicacao/financeiro/usecase/RegistrarDespesaUseCase.java) | Contexto que utiliza a estratégia (*Context*) |
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaIterator.java` | Interface do iterador (*Iterator*) |
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaCollection.java` | Agregador de dados (*Aggregate*) |
+| `subdominio-espacos-condominio/.../dominio/reservas/iterator/ReservaListIterator.java` | Implementador concreto do iterador (*ConcreteIterator*) |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/service/PoliticaReserva.java` | Cliente que consome o iterador para validar políticas de agendamento |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/CriarReservaUseCase.java` | Instancia e passa o iterador durante a criação de uma reserva |
+| `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/AtualizarReservaUseCase.java` | Instancia e passa o iterador durante a atualização de uma reserva |
