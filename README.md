@@ -224,3 +224,27 @@ A implementação segue a estrutura clássica do padrão Iterator:
 | `subdominio-espacos-condominio/.../aplicacao/reservas/service/PoliticaReserva.java` | Cliente que consome o iterador para validar políticas de agendamento |
 | `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/CriarReservaUseCase.java` | Instancia e passa o iterador durante a criação de uma reserva |
 | `subdominio-espacos-condominio/.../aplicacao/reservas/usecase/AtualizarReservaUseCase.java` | Instancia e passa o iterador durante a atualização de uma reserva |
+
+### Template Method
+
+**Implementado por:** Felipe Santos Marques Filho
+
+**Motivação:**
+Nas funcionalidades de Gestão de Notificações e Gestão de Documentos, havia dois algoritmos com estrutura fixa mas com etapas variáveis por implementação concreta. No envio de notificações, todo canal de entrega (banco de dados, console, e-mail, push) segue sempre a mesma sequência: formatar a mensagem, criar a entidade de domínio, persistir e despachar — mas cada canal define de forma diferente como persiste e como despacha. Nos alertas de documentos, o fluxo de execução é sempre o mesmo: buscar documentos, filtrar os elegíveis, identificar o destinatário, construir a mensagem e disparar a notificação — mas cada tipo de alerta define seus próprios critérios e textos. O padrão **Template Method** foi escolhido para fixar o esqueleto desses algoritmos na classe base, garantindo que a ordem das etapas nunca seja alterada, e delegar apenas as variações específicas às subclasses via métodos abstratos e hooks.
+
+**Como foi implementado:**
+O padrão foi aplicado em dois templates independentes dentro do bounded context de Comunicação:
+
+No **envio de notificações**, a classe abstrata `NotificacaoServiceTemplate` implementa a interface `NotificacaoService` e define o template method `enviar()` como `final`, impedindo que subclasses alterem a sequência. O algoritmo chama: `formatarMensagem()` (hook — padrão retorna a mensagem sem alteração), `Notificacao.criar()` (etapa fixa de domínio), `persistir()` (hook — padrão não persiste, adequado para console e testes) e `despachar()` (método abstract — cada canal define sua forma de entrega). A subclasse `NotificacaoServiceImpl` sobrescreve `persistir()` para salvar no banco e implementa `despachar()` sem envio externo. A subclasse `ConsoleNotificacaoService` não sobrescreve `persistir()` e implementa `despachar()` imprimindo no console, sendo útil para ambiente de desenvolvimento e testes.
+
+Nos **alertas de documentos**, a classe abstrata `AlertaDocumentoTemplate` define o template method `executar()` como `final`, com o algoritmo: `obterDocumentos()` (hook — padrão retorna todos os ativos do repositório), iteração com `deveAlertar()` (abstract — critério de elegibilidade), `obterDestinatario()` (hook — padrão usa o síndico do documento), `construirMensagem()` (abstract — texto personalizado) e `obterTipoNotificacao()` (abstract — tipo do enum de notificação). A subclasse concreta `NotificarDocumentosVencendoUseCase` implementa os três métodos abstratos: alerta documentos cuja data de validade está a 30 dias ou menos, constrói a mensagem com o nome e a data de vencimento do documento, e associa o tipo `DOCUMENTO_VENCENDO`. A arquitetura abre espaço para novas classes — como `AlertarDocumentosExpirados` ou `AlertarDocumentosSemVersao` — sem modificar o template existente, respeitando o Princípio Aberto/Fechado.
+
+**Arquivos envolvidos:**
+
+| Arquivo | Papel no padrão |
+|---|---|
+| `subdominio-comunicacao/.../infraestrutura/notification/NotificacaoServiceTemplate.java` | Template Method de notificação: define o esqueleto `enviar()` com hooks e método abstract `despachar()` |
+| `subdominio-comunicacao/.../infraestrutura/notification/NotificacaoServiceImpl.java` | Subclasse concreta: persiste no banco e implementa `despachar()` sem envio externo |
+| `subdominio-comunicacao/.../infraestrutura/notification/ConsoleNotificacaoService.java` | Subclasse concreta: ignora persistência e implementa `despachar()` via console |
+| `subdominio-comunicacao/.../aplicacao/documento/usecase/AlertaDocumentoTemplate.java` | Template Method de alertas: define o esqueleto `executar()` com hooks e métodos abstratos de critério, mensagem e tipo |
+| `subdominio-comunicacao/.../aplicacao/documento/usecase/NotificarDocumentosVencendoUseCase.java` | Subclasse concreta: alerta documentos com validade em até 30 dias |
